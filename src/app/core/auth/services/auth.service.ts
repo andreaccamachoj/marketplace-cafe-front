@@ -115,6 +115,11 @@ export class AuthService {
     await this.navigateByRole(role);
   }
 
+  async recoverPassword(email: string): Promise<void> {
+    await Promise.resolve();
+    this.notify.info(`Si el correo ${email} existe, recibirás un enlace de recuperación.`);
+  }
+
   logout(): void {
     this.storage.clear();
     this.currentUser.set(null);

@@ -1,0 +1,46 @@
+.role-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  &__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  &__label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #333;
+  }
+
+  &__input,
+  &__select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid #ddd;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+    background: #fff;
+    transition: border-color 0.2s;
+
+    &:focus {
+      outline: none;
+      border-color: var(--espresso, #3d1c02);
+      box-shadow: 0 0 0 3px rgba(61, 28, 2, 0.08);
+    }
+
+    &--error { border-color: #dc3545; }
+  }
+
+  &__error { font-size: 0.8rem; color: #dc3545; }
+}

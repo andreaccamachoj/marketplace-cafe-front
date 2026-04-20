@@ -1,0 +1,70 @@
+.role-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  &__title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--espresso, #3d1c02);
+  }
+
+  &__subtitle {
+    margin: 0;
+    color: #666;
+    font-size: 0.9rem;
+  }
+
+  &__cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+
+    @media (max-width: 480px) {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+.role-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+
+  &:hover {
+    border-color: var(--espresso, #3d1c02);
+    box-shadow: 0 4px 12px rgba(61, 28, 2, 0.1);
+  }
+
+  &--active {
+    border-color: var(--espresso, #3d1c02);
+    background: rgba(61, 28, 2, 0.04);
+    box-shadow: 0 4px 12px rgba(61, 28, 2, 0.15);
+  }
+
+  &__icon {
+    font-size: 2.5rem;
+    line-height: 1;
+  }
+
+  &__title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--espresso, #3d1c02);
+  }
+
+  &__desc {
+    font-size: 0.8rem;
+    color: #666;
+    line-height: 1.4;
+  }
+}

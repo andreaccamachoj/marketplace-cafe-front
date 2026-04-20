@@ -1,0 +1,117 @@
+.personal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  &__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+
+    @media (max-width: 480px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__footer {
+    margin-top: 8px;
+    display: flex;
+    justify-content: flex-end;
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  &__label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #333;
+  }
+
+  &__input-wrap { position: relative; }
+
+  &__input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid #ddd;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+
+    &:focus {
+      outline: none;
+      border-color: var(--espresso, #3d1c02);
+      box-shadow: 0 0 0 3px rgba(61, 28, 2, 0.08);
+    }
+
+    &--error { border-color: #dc3545; }
+  }
+
+  &__toggle-visibility {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    color: #888;
+    padding: 0;
+  }
+
+  &__error {
+    font-size: 0.8rem;
+    color: #dc3545;
+  }
+
+  &--checkbox { flex-direction: row; align-items: flex-start; gap: 8px; }
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  cursor: pointer;
+
+  &__link {
+    color: var(--verde-selva, #2d6a4f);
+    &:hover { text-decoration: underline; }
+  }
+}
+
+.password-strength {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  &__bar {
+    flex: 1;
+    height: 4px;
+    background: #e0e0e0;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  &__fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.3s ease, background-color 0.3s ease;
+
+    &--1 { background: #dc3545; }
+    &--2 { background: #fd7e14; }
+    &--3 { background: #ffc107; }
+    &--4 { background: #28a745; }
+  }
+
+  &__label {
+    font-size: 0.75rem;
+    color: #666;
+    white-space: nowrap;
+  }
+}
