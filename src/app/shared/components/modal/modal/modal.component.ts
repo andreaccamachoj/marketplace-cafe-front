@@ -1,13 +1,21 @@
-import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+  ViewChild,
+} from '@angular/core';
 
 @Component({
   selector: 'app-modal',
-  imports: [CommonModule],
+  standalone: true,
+  imports: [],
   templateUrl: './modal.component.html',
-  styleUrl: './modal.component.scss'
+  styleUrl: './modal.component.scss',
 })
-
 export class ModalComponent implements OnChanges {
   @Input({ required: true }) title!: string;
   @Input() subtitle?: string;
@@ -28,7 +36,7 @@ export class ModalComponent implements OnChanges {
     if (!dialog) return;
 
     if (isOpen && !dialog.open) {
-      dialog.showModal(); // API nativa: atrapa el foco y crea el backdrop
+      dialog.showModal();
     } else if (!isOpen && dialog.open) {
       dialog.close();
     }
@@ -40,7 +48,6 @@ export class ModalComponent implements OnChanges {
   }
 
   onBackdropClick(): void {
-    // Maneja el cierre nativo con la tecla Escape
     this.closeModal();
   }
 }

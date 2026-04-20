@@ -1,0 +1,82 @@
+/* ── Base ─────────────────────────────────────────────────── */
+.avatar {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--espresso);
+  color: var(--white, #fff);
+  overflow: hidden;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+/* ── Sizes ───────────────────────────────────────────────── */
+$sizes: (
+  xs: (24px, 0.625rem),
+  sm: (32px, 0.75rem),
+  md: (40px, 0.875rem),
+  lg: (56px, 1.125rem),
+  xl: (80px, 1.5rem),
+);
+
+@each $key, $vals in $sizes {
+  $size: nth($vals, 1);
+  $fs:   nth($vals, 2);
+
+  .avatar--#{$key} {
+    width: $size;
+    height: $size;
+
+    .avatar__initials {
+      font-size: $fs;
+      font-weight: 700;
+    }
+
+    .avatar__fallback {
+      width: calc(#{$size} * 0.55);
+      height: calc(#{$size} * 0.55);
+    }
+  }
+}
+
+/* ── Image ───────────────────────────────────────────────── */
+.avatar__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ── Initials ────────────────────────────────────────────── */
+.avatar__initials {
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+
+/* ── Fallback SVG ────────────────────────────────────────── */
+.avatar__fallback {
+  opacity: 0.8;
+}
+
+/* ── Status dot ──────────────────────────────────────────── */
+.avatar__status-dot {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 28%;
+  height: 28%;
+  min-width: 8px;
+  min-height: 8px;
+  border-radius: 50%;
+  border: 2px solid var(--white, #fff);
+  background: var(--neutral-300, #d1d5db);
+}
+
+.avatar--online .avatar__status-dot {
+  background: var(--verde-selva, #2e7d32);
+}
+
+.avatar--offline .avatar__status-dot {
+  background: var(--neutral-300, #d1d5db);
+}

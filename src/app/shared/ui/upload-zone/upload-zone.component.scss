@@ -1,0 +1,122 @@
+.upload-zone-wrap { display: flex; flex-direction: column; gap: var(--sp-4); }
+
+.drop-zone {
+  border: 2px dashed var(--neutral-300, #d1d5db);
+  border-radius: var(--r-lg);
+  padding: var(--sp-8);
+  text-align: center;
+  cursor: pointer;
+  transition:
+    border-color var(--transition-fast),
+    background var(--transition-fast);
+  background: var(--neutral-50, #f9fafb);
+
+  &:hover:not(.drop-zone--disabled) {
+    border-color: var(--espresso);
+    background: rgba(55, 38, 23, 0.04);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--espresso);
+    outline-offset: 2px;
+  }
+
+  &--dragover {
+    border-color: var(--espresso);
+    background: rgba(55, 38, 23, 0.08);
+  }
+
+  &--error {
+    border-color: var(--error, #dc2626);
+    background: rgba(220, 38, 38, 0.04);
+  }
+
+  &--disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.drop-zone__hidden-input { display: none; }
+
+.drop-zone__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.drop-zone__icon { font-size: 2.5rem; }
+
+.drop-zone__text {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--neutral-800);
+}
+
+.drop-zone__hint {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--neutral-500);
+}
+
+/* ── Validation error ──────────────────────────────────────── */
+.upload-error {
+  margin: 0;
+  padding: var(--sp-3) var(--sp-4);
+  background: rgba(220, 38, 38, 0.1);
+  border: 1px solid var(--error, #dc2626);
+  border-radius: var(--r-md);
+  color: var(--error, #dc2626);
+  font-size: 0.875rem;
+}
+
+/* ── Preview grid ──────────────────────────────────────────── */
+.preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: var(--sp-3);
+}
+
+.preview-item {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  background: var(--neutral-200);
+}
+
+.preview-item__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.preview-item__remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  color: white;
+  font-size: 1.25rem;
+  font-weight: 700;
+  cursor: pointer;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+
+  .preview-item:hover & { opacity: 1; }
+
+  &:focus-visible {
+    outline: 2px solid white;
+    outline-offset: 1px;
+  }
+}

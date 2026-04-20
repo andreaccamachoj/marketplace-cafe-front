@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Panel del Administrador — World Coffee Marketplace">
+<title>Panel del Administrador — World Coffee Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Mulish:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════
+   DESIGN TOKENS
+══════════════════════════════════════ */
+:root {
+  --espresso:      #372617;
+  --cafe-oscuro:   #3E2919;
+  --cafe-medio:    #7A5C42;
+  --cafe-claro:    #A8866A;
+  --crema:         #CDC4B5;
+  --marfil:        #E4DCD1;
+  --marfil-light:  #EDE6DD;
+  --blanco:        #F7F3EF;
+  --verde-selva:   #1E5E29;
+  --verde-fresco:  #4A8C56;
+  --verde-light:   #D4EAD7;
+  --amber:         #C07820;
+  --amber-light:   #FFF0D0;
+  --blue-info:     #1A6B8A;
+  --blue-light:    #E0F2F8;
+  --error:         #8B2020;
+  --error-light:   #FDEAEA;
+  --purple:        #5B3E8F;
+  --purple-light:  #EDE8F8;
+
+  --font-display:  'Playfair Display', Georgia, serif;
+  --font-body:     'Mulish', 'Segoe UI', sans-serif;
+
+  --r-sm: 6px; --r-md: 10px; --r-lg: 16px; --r-xl: 24px;
+  --shadow-sm:  0 1px 4px rgba(55,38,23,.07);
+  --shadow-md:  0 4px 16px rgba(55,38,23,.1);
+  --shadow-lg:  0 8px 32px rgba(55,38,23,.13);
+  --nav-h:      64px;
+  --side-w:     252px;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:var(--font-body);background:var(--blanco);color:var(--espresso);line-height:1.6;min-height:100vh}
+a{text-decoration:none;color:inherit}
+button{font-family:var(--font-body);cursor:pointer;border:none;background:none}
+ul,ol{list-style:none}
+input,select,textarea{font-family:var(--font-body)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+:focus-visible{outline:3px solid var(--espresso);outline-offset:2px;border-radius:var(--r-sm)}
+
+/* ══════════════════════════════════════
+   TOP NAV
+══════════════════════════════════════ */
+.topnav{position:fixed;top:0;left:0;right:0;height:var(--nav-h);background:var(--espresso);z-index:300;display:flex;align-items:center;box-shadow:0 2px 16px rgba(0,0,0,.28)}
+.topnav-inner{width:100%;padding:0 20px;display:flex;align-items:center;gap:14px}
+.nav-logo{display:flex;align-items:center;gap:9px;flex-shrink:0}
+.nav-logo-icon{width:34px;height:34px;background:rgba(205,196,181,.12);border:1px solid rgba(205,196,181,.18);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.nav-logo-name{font-family:var(--font-display);font-size:.8125rem;font-weight:700;color:var(--marfil);line-height:1.2}
+.nav-logo-sub{font-size:.5625rem;color:rgba(205,196,181,.45);letter-spacing:.18em;text-transform:uppercase}
+.nav-sep{width:1px;height:24px;background:rgba(205,196,181,.15);flex-shrink:0}
+.nav-page-title{font-size:.875rem;font-weight:700;color:rgba(205,196,181,.6)}
+.nav-spacer{flex:1}
+.nav-right{display:flex;align-items:center;gap:10px}
+.admin-badge{display:flex;align-items:center;gap:6px;padding:5px 13px;background:rgba(91,62,143,.25);border:1px solid rgba(91,62,143,.35);border-radius:40px;font-size:.6875rem;font-weight:800;color:#c4b0f0;letter-spacing:.08em;white-space:nowrap}
+.admin-badge-dot{width:6px;height:6px;border-radius:50%;background:#c4b0f0}
+.nav-notif{position:relative;width:36px;height:36px;border-radius:var(--r-md);border:1.5px solid rgba(205,196,181,.2);display:flex;align-items:center;justify-content:center;color:rgba(205,196,181,.7);transition:all .2s}
+.nav-notif:hover{background:rgba(205,196,181,.1);color:var(--marfil)}
+.notif-dot{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--error);border:1.5px solid var(--espresso)}
+.nav-avatar{width:34px;height:34px;border-radius:50%;background:var(--purple);border:2px solid rgba(205,196,181,.3);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex-shrink:0}
+.nav-user-name{font-size:.8125rem;font-weight:700;color:var(--marfil);line-height:1.2}
+.nav-user-role{font-size:.5625rem;color:rgba(205,196,181,.45);letter-spacing:.15em;text-transform:uppercase}
+.btn-menu-open{display:none;width:36px;height:36px;border-radius:var(--r-md);border:1.5px solid rgba(205,196,181,.2);color:rgba(205,196,181,.8);align-items:center;justify-content:center}
+.btn-menu-open:hover{background:rgba(205,196,181,.1)}
+
+/* ══════════════════════════════════════
+   LAYOUT
+══════════════════════════════════════ */
+.page-layout{display:flex;padding-top:var(--nav-h);min-height:100vh}
+
+/* ══════════════════════════════════════
+   SIDEBAR
+══════════════════════════════════════ */
+.sidebar{width:var(--side-w);flex-shrink:0;background:var(--espresso);position:fixed;top:var(--nav-h);left:0;bottom:0;overflow-y:auto;z-index:200;display:flex;flex-direction:column;padding:20px 0 24px;scrollbar-width:none}
+.sidebar::-webkit-scrollbar{display:none}
+.sidebar-section{padding:0 12px;margin-bottom:6px}
+.sidebar-label{font-size:.5625rem;font-weight:800;letter-spacing:.22em;text-transform:uppercase;color:rgba(205,196,181,.28);padding:0 8px;margin-bottom:5px;display:block}
+.sidebar-nav{display:flex;flex-direction:column;gap:2px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--r-md);font-size:.875rem;font-weight:600;color:rgba(205,196,181,.5);cursor:pointer;transition:all .15s;position:relative;border:none;width:100%;text-align:left;background:none}
+.nav-item:hover{background:rgba(205,196,181,.08);color:rgba(205,196,181,.85)}
+.nav-item.active{background:rgba(205,196,181,.13);color:var(--marfil)}
+.nav-item.active::before{content:'';position:absolute;left:0;top:6px;bottom:6px;width:3px;background:#c4b0f0;border-radius:0 2px 2px 0}
+.nav-icon{width:18px;height:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nav-pill{margin-left:auto;padding:2px 7px;border-radius:20px;font-size:.65rem;font-weight:800}
+.np-red{background:var(--error);color:#fff}
+.np-amber{background:var(--amber);color:#fff}
+.np-green{background:var(--verde-fresco);color:#fff}
+.np-blue{background:var(--blue-info);color:#fff}
+.sidebar-sep{height:1px;background:rgba(205,196,181,.08);margin:10px 20px}
+.sidebar-bottom{margin-top:auto;padding:0 12px}
+.nav-item.danger{color:rgba(220,100,100,.5)}
+.nav-item.danger:hover{background:rgba(220,100,100,.08);color:rgba(220,100,100,.75)}
+
+/* ══════════════════════════════════════
+   MAIN CONTENT
+══════════════════════════════════════ */
+.main-content{flex:1;margin-left:var(--side-w);padding:26px 28px 64px;min-width:0}
+
+/* ─ Page header ─ */
+.page-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:12px}
+.page-eyebrow{font-size:.6875rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#c4b0f0;margin-bottom:3px}
+.page-title{font-family:var(--font-display);font-size:1.75rem;font-weight:700;color:var(--espresso);letter-spacing:-.02em;line-height:1.15}
+.page-subtitle{font-size:.875rem;color:var(--cafe-medio);margin-top:3px;font-weight:400}
+.header-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* ─ Buttons ─ */
+.btn-primary{padding:10px 20px;border-radius:var(--r-md);background:var(--espresso);color:var(--marfil);font-size:.875rem;font-weight:700;letter-spacing:.02em;transition:all .2s;display:inline-flex;align-items:center;gap:7px}
+.btn-primary:hover{background:var(--cafe-oscuro);box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.btn-primary:active{transform:none}
+.btn-secondary{padding:10px 20px;border-radius:var(--r-md);border:1.5px solid rgba(55,38,23,.18);color:var(--cafe-medio);font-size:.875rem;font-weight:700;transition:all .2s;display:inline-flex;align-items:center;gap:7px}
+.btn-secondary:hover{border-color:var(--espresso);color:var(--espresso);background:rgba(55,38,23,.04)}
+.btn-approve{padding:8px 16px;border-radius:var(--r-md);background:var(--verde-selva);color:#fff;font-size:.8125rem;font-weight:700;transition:all .2s;display:inline-flex;align-items:center;gap:5px}
+.btn-approve:hover{background:#174d20;box-shadow:0 4px 12px rgba(30,94,41,.3);transform:translateY(-1px)}
+.btn-reject{padding:8px 16px;border-radius:var(--r-md);border:1.5px solid rgba(139,32,32,.3);color:var(--error);font-size:.8125rem;font-weight:700;transition:all .2s;display:inline-flex;align-items:center;gap:5px}
+.btn-reject:hover{background:var(--error-light);border-color:var(--error)}
+.btn-icon{width:32px;height:32px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;transition:all .15s;color:var(--cafe-medio)}
+.btn-icon:hover{background:var(--marfil-light);color:var(--espresso)}
+.btn-icon.danger:hover{background:var(--error-light);color:var(--error)}
+
+/* ─ Stats ─ */
+.stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:22px}
+.stat-card{background:#fff;border:1px solid rgba(55,38,23,.07);border-radius:var(--r-lg);padding:16px 18px;transition:box-shadow .2s;cursor:default}
+.stat-card:hover{box-shadow:var(--shadow-md)}
+.stat-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:9px}
+.stat-label{font-size:.6875rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--cafe-medio);margin-bottom:3px}
+.stat-value{font-family:var(--font-display);font-size:1.5rem;font-weight:700;color:var(--espresso);line-height:1}
+.stat-sub{font-size:.6875rem;color:var(--cafe-medio);margin-top:4px}
+.stat-up{color:var(--verde-selva);font-weight:700}
+.stat-warn{color:var(--amber);font-weight:700}
+.stat-red{color:var(--error);font-weight:700}
+
+/* ─ Tabs ─ */
+.tabs-row{display:flex;gap:4px;margin-bottom:20px;border-bottom:1.5px solid rgba(55,38,23,.08)}
+.tab{padding:10px 18px;font-size:.875rem;font-weight:700;color:var(--cafe-medio);border:none;background:none;cursor:pointer;position:relative;border-radius:var(--r-md) var(--r-md) 0 0;transition:color .15s,background .15s;display:flex;align-items:center;gap:7px;white-space:nowrap}
+.tab:hover{color:var(--espresso);background:rgba(55,38,23,.04)}
+.tab.active{color:var(--espresso)}
+.tab.active::after{content:'';position:absolute;bottom:-1.5px;left:0;right:0;height:2.5px;background:var(--espresso);border-radius:2px 2px 0 0}
+.tc{padding:2px 7px;border-radius:20px;font-size:.65rem;font-weight:800}
+.tc-red{background:var(--error-light);color:var(--error)}
+.tc-amber{background:var(--amber-light);color:var(--amber)}
+.tc-green{background:var(--verde-light);color:var(--verde-selva)}
+.tc-esp{background:rgba(55,38,23,.1);color:var(--espresso)}
+.tc-blue{background:var(--blue-light);color:var(--blue-info)}
+
+.tab-panel{display:none}
+.tab-panel.active{display:block;animation:fadeUp .3s both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* ══════════════════════════════════════
+   TOOLBAR COMPARTIDO
+══════════════════════════════════════ */
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.search-wrap{position:relative;flex:1;min-width:180px;max-width:320px}
+.search-input{width:100%;padding:9px 14px 9px 36px;border:1.5px solid rgba(55,38,23,.15);border-radius:40px;font-size:.875rem;color:var(--espresso);outline:none;background:#fff;transition:border-color .2s}
+.search-input:focus{border-color:var(--espresso)}
+.search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--cafe-medio);pointer-events:none;display:flex}
+.chip{padding:7px 14px;border-radius:40px;font-size:.8125rem;font-weight:600;border:1.5px solid rgba(55,38,23,.15);color:var(--cafe-medio);background:transparent;cursor:pointer;transition:all .18s;white-space:nowrap}
+.chip:hover{border-color:var(--espresso);color:var(--espresso)}
+.chip.active{background:var(--espresso);color:var(--marfil);border-color:var(--espresso)}
+.t-spacer{flex:1}
+
+/* ══════════════════════════════════════
+   TARJETAS DE PRODUCTOR PENDIENTE
+══════════════════════════════════════ */
+.producers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:18px}
+.producer-card{background:#fff;border:1px solid rgba(55,38,23,.07);border-radius:var(--r-lg);overflow:hidden;transition:box-shadow .2s}
+.producer-card:hover{box-shadow:var(--shadow-md)}
+
+.pc-header{display:flex;align-items:flex-start;gap:14px;padding:18px 18px 14px}
+.pc-avatar{width:52px;height:52px;border-radius:14px;background:var(--marfil-light);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;border:1px solid rgba(55,38,23,.08)}
+.pc-info{flex:1;min-width:0}
+.pc-name{font-family:var(--font-display);font-size:1rem;font-weight:700;color:var(--espresso);line-height:1.2}
+.pc-email{font-size:.75rem;color:var(--cafe-medio);margin-top:1px}
+.pc-date{font-size:.6875rem;color:var(--cafe-medio);display:flex;align-items:center;gap:4px;margin-top:3px}
+.pc-status{flex-shrink:0}
+
+.pc-body{padding:0 18px 14px;display:flex;flex-direction:column;gap:10px}
+.pc-farm-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pc-field{display:flex;flex-direction:column;gap:2px;padding:8px 10px;background:var(--blanco);border-radius:var(--r-md)}
+.pc-field-label{font-size:.6rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--cafe-medio)}
+.pc-field-value{font-size:.875rem;font-weight:700;color:var(--espresso)}
+
+.pc-docs{display:flex;gap:6px;flex-wrap:wrap}
+.doc-chip{display:flex;align-items:center;gap:5px;padding:5px 10px;border:1px solid rgba(55,38,23,.12);border-radius:40px;font-size:.75rem;font-weight:600;color:var(--cafe-medio);transition:all .15s;cursor:pointer}
+.doc-chip:hover{border-color:var(--espresso);color:var(--espresso);background:rgba(55,38,23,.04)}
+.doc-chip.verified{border-color:rgba(30,94,41,.25);color:var(--verde-selva);background:var(--verde-light)}
+
+.pc-footer{padding:12px 18px;border-top:1px solid rgba(55,38,23,.06);display:flex;gap:8px;justify-content:flex-end;background:var(--blanco)}
+
+/* Status badges */
+.status-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:40px;font-size:.6875rem;font-weight:800;letter-spacing:.05em;white-space:nowrap}
+.status-pill::before{content:'';width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.sp-pending {background:var(--amber-light);color:var(--amber)} .sp-pending::before{background:var(--amber);animation:blink 1.5s infinite}
+.sp-approved{background:var(--verde-light);color:var(--verde-selva)} .sp-approved::before{background:var(--verde-selva)}
+.sp-rejected{background:var(--error-light);color:var(--error)} .sp-rejected::before{background:var(--error)}
+.sp-suspended{background:rgba(55,38,23,.08);color:var(--cafe-medio)} .sp-suspended::before{background:var(--cafe-medio)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ══════════════════════════════════════
+   TABLA PRODUCTORES (APROBADOS/TODOS)
+══════════════════════════════════════ */
+.table-wrap{background:#fff;border:1px solid rgba(55,38,23,.07);border-radius:var(--r-lg);overflow:hidden}
+.table-head{display:grid;gap:0;padding:10px 20px;background:var(--blanco);border-bottom:1px solid rgba(55,38,23,.06)}
+.th{font-size:.6rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--cafe-medio)}
+.th.r{text-align:right}
+
+/* Cols: productor / región / estado / productos / ventas / acciones */
+.producers-cols{grid-template-columns:1fr 130px 120px 80px 110px 90px}
+.table-row{display:grid;align-items:center;padding:13px 20px;border-bottom:1px solid rgba(55,38,23,.045);transition:background .15s}
+.table-row:last-child{border-bottom:none}
+.table-row:hover{background:rgba(55,38,23,.018)}
+
+.row-producer{display:flex;align-items:center;gap:11px;min-width:0}
+.row-avatar{width:38px;height:38px;border-radius:10px;background:var(--marfil-light);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;border:1px solid rgba(55,38,23,.06)}
+.row-name{font-family:var(--font-display);font-size:.9375rem;font-weight:700;color:var(--espresso);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row-sub{font-size:.6875rem;color:var(--cafe-medio);margin-top:1px}
+.row-actions{display:flex;justify-content:flex-end;gap:4px}
+
+/* ══════════════════════════════════════
+   CATEGORÍAS
+══════════════════════════════════════ */
+/* Cols: nombre / productos / estado / orden / acciones */
+.cats-cols{grid-template-columns:1fr 80px 110px 70px 90px}
+
+.cat-name-cell{display:flex;align-items:center;gap:10px}
+.cat-icon-box{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.cat-name{font-size:.9375rem;font-weight:700;color:var(--espresso)}
+.cat-parent{font-size:.6875rem;color:var(--cafe-medio);margin-top:1px}
+
+.cat-status-toggle{display:flex;align-items:center;gap:6px}
+.toggle-track{position:relative;width:38px;height:22px;border-radius:20px;transition:background .2s;cursor:pointer;flex-shrink:0}
+.toggle-track.on{background:var(--verde-selva)}
+.toggle-track.off{background:rgba(55,38,23,.15)}
+.toggle-thumb{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.2);transition:left .2s}
+.toggle-track.on .toggle-thumb{left:19px}
+.toggle-lbl{font-size:.75rem;font-weight:700;color:var(--cafe-medio)}
+.toggle-track.on + .toggle-lbl{color:var(--verde-selva)}
+
+/* Add category form inline */
+.add-cat-card{background:#fff;border:1.5px dashed rgba(55,38,23,.18);border-radius:var(--r-lg);padding:20px 22px;margin-top:14px;display:none}
+.add-cat-card.show{display:block;animation:fadeUp .25s both}
+.add-cat-row{display:grid;grid-template-columns:1fr 1fr 80px 44px;gap:10px;align-items:end}
+
+/* ══════════════════════════════════════
+   USUARIOS
+══════════════════════════════════════ */
+/* Cols: usuario / rol / estado / último acceso / acciones */
+.users-cols{grid-template-columns:1fr 110px 120px 150px 90px}
+
+/* ══════════════════════════════════════
+   MODAL DETALLE PRODUCTOR
+══════════════════════════════════════ */
+.modal-overlay{position:fixed;inset:0;background:rgba(55,38,23,.5);z-index:800;display:flex;align-items:flex-start;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .25s;backdrop-filter:blur(3px);overflow-y:auto}
+.modal-overlay.open{opacity:1;pointer-events:auto}
+.modal{background:#fff;border-radius:var(--r-xl);width:100%;max-width:620px;box-shadow:var(--shadow-lg);transform:translateY(14px);transition:transform .3s cubic-bezier(.22,.68,0,1.1);margin:auto}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-head{padding:24px 28px 16px;display:flex;align-items:flex-start;justify-content:space-between;border-bottom:1px solid rgba(55,38,23,.07)}
+.modal-title{font-family:var(--font-display);font-size:1.375rem;font-weight:700;color:var(--espresso)}
+.modal-sub{font-size:.875rem;color:var(--cafe-medio);margin-top:2px}
+.btn-close{width:34px;height:34px;border-radius:50%;background:rgba(55,38,23,.06);display:flex;align-items:center;justify-content:center;color:var(--espresso);font-size:18px;transition:background .15s;flex-shrink:0}
+.btn-close:hover{background:rgba(55,38,23,.12)}
+.modal-body{padding:22px 28px;display:flex;flex-direction:column;gap:18px}
+.modal-footer{padding:16px 28px 24px;display:flex;gap:10px;border-top:1px solid rgba(55,38,23,.07);flex-wrap:wrap}
+
+.detail-section-title{font-size:.6875rem;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--cafe-medio);margin-bottom:10px}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.detail-field{display:flex;flex-direction:column;gap:3px;padding:10px 12px;background:var(--blanco);border-radius:var(--r-md)}
+.detail-label{font-size:.6rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--cafe-medio)}
+.detail-value{font-size:.9375rem;font-weight:700;color:var(--espresso)}
+.detail-docs{display:flex;flex-direction:column;gap:8px}
+.detail-doc{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid rgba(55,38,23,.08);border-radius:var(--r-md);transition:background .15s}
+.detail-doc:hover{background:var(--blanco)}
+.doc-icon{width:34px;height:34px;border-radius:8px;background:var(--marfil-light);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.doc-info{flex:1}
+.doc-name{font-size:.875rem;font-weight:700;color:var(--espresso)}
+.doc-status{font-size:.75rem;color:var(--cafe-medio);margin-top:1px}
+.btn-doc-view{font-size:.75rem;font-weight:700;color:var(--blue-info);border-bottom:1px solid var(--blue-info);padding-bottom:1px}
+
+/* Rechazo: campo de motivo */
+.rejection-field{padding:16px;background:var(--error-light);border:1px solid rgba(139,32,32,.15);border-radius:var(--r-md);display:none;flex-direction:column;gap:8px}
+.rejection-field.show{display:flex;animation:fadeUp .2s both}
+.rejection-label{font-size:.8125rem;font-weight:700;color:var(--error)}
+.rejection-textarea{padding:10px 13px;border:1.5px solid rgba(139,32,32,.3);border-radius:var(--r-md);font-size:.875rem;color:var(--espresso);outline:none;background:#fff;resize:vertical;min-height:80px;transition:border-color .2s}
+.rejection-textarea:focus{border-color:var(--error);box-shadow:0 0 0 3px rgba(139,32,32,.08)}
+
+/* ══════════════════════════════════════
+   FIELD (form genérico)
+══════════════════════════════════════ */
+.field{display:flex;flex-direction:column;gap:5px}
+.field-label{font-size:.8125rem;font-weight:700;color:var(--espresso);display:flex;align-items:center;gap:4px}
+.req{color:var(--error);font-weight:700}
+.field-input,.field-select{padding:9px 13px;border:1.5px solid rgba(55,38,23,.15);border-radius:var(--r-md);font-size:.875rem;color:var(--espresso);outline:none;background:var(--blanco);transition:border-color .2s,box-shadow .2s;width:100%}
+.field-input:focus,.field-select:focus{border-color:var(--espresso);background:#fff;box-shadow:0 0 0 3px rgba(55,38,23,.07)}
+.field-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23372617' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;padding-right:30px}
+
+/* ══════════════════════════════════════
+   PANEL ACTIVIDAD RECIENTE
+══════════════════════════════════════ */
+.activity-feed{display:flex;flex-direction:column;gap:0}
+.activity-item{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid rgba(55,38,23,.05)}
+.activity-item:last-child{border-bottom:none}
+.activity-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.activity-body{flex:1}
+.activity-text{font-size:.875rem;color:var(--espresso);font-weight:500;line-height:1.45}
+.activity-text strong{font-weight:700}
+.activity-time{font-size:.75rem;color:var(--cafe-medio);margin-top:1px}
+
+/* ══════════════════════════════════════
+   TOAST
+══════════════════════════════════════ */
+.toast-wrap{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast-item{display:flex;align-items:center;gap:10px;padding:12px 18px;border-radius:40px;font-size:.875rem;font-weight:600;box-shadow:0 8px 28px rgba(0,0,0,.2);transform:translateX(120%);opacity:0;transition:transform .3s cubic-bezier(.22,.68,0,1.2),opacity .3s;pointer-events:auto}
+.toast-item.show{transform:translateX(0);opacity:1}
+.t-success{background:var(--verde-selva);color:#fff}
+.t-info{background:var(--espresso);color:var(--marfil)}
+.t-warning{background:var(--amber);color:#fff}
+.t-error{background:var(--error);color:#fff}
+
+/* ══════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════ */
+@media(max-width:1200px){.stats-row{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:1024px){
+  .producers-grid{grid-template-columns:1fr}
+  .table-head,.table-row{grid-template-columns:1fr auto!important}
+  .producers-cols .th:not(:first-child):not(:last-child),.producers-cols .table-row>*:not(:first-child):not(:last-child){display:none}
+  .cats-cols .th:not(:first-child):not(:last-child),.cats-cols .table-row>*:not(:first-child):not(:last-child){display:none}
+  .users-cols .th:not(:first-child):not(:last-child),.users-cols .table-row>*:not(:first-child):not(:last-child){display:none}
+  .add-cat-row{grid-template-columns:1fr 1fr;gap:8px}
+}
+@media(max-width:900px){
+  :root{--side-w:0px}
+  .sidebar{transform:translateX(-100%);transition:transform .25s}
+  .sidebar.open{transform:translateX(0);width:252px}
+  .sidebar-overlay{position:fixed;inset:0;background:rgba(55,38,23,.4);z-index:190;display:none}
+  .sidebar.open~.sidebar-overlay{display:block}
+  .main-content{margin-left:0;padding:18px 14px 56px}
+  .btn-menu-open{display:flex!important}
+  .nav-user-name,.nav-user-role,.admin-badge{display:none}
+}
+@media(max-width:600px){
+  .stats-row{grid-template-columns:1fr 1fr}
+  .header-actions{width:100%}
+  .modal-body .detail-grid{grid-template-columns:1fr}
+  .add-cat-row{grid-template-columns:1fr}
+  .modal-footer{flex-direction:column}
+  .modal-footer button{width:100%;justify-content:center}
+}
+@media(max-width:380px){.stats-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- ══════════ NAV ══════════ -->
+<header>
+<nav class="topnav" role="navigation" aria-label="Navegación principal">
+  <div class="topnav-inner">
+    <button class="btn-menu-open" id="menuBtn" onclick="toggleSidebar()" aria-label="Abrir menú" aria-expanded="false">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+    <a href="landing_marketplace_cafe.html" class="nav-logo" aria-label="World Coffee Marketplace">
+      <div class="nav-logo-icon" aria-hidden="true">☕</div>
+      <div><div class="nav-logo-name">World Coffee</div><div class="nav-logo-sub">Marketplace</div></div>
+    </a>
+    <div class="nav-sep" aria-hidden="true"></div>
+    <span class="nav-page-title">Panel del Administrador</span>
+    <div class="nav-spacer"></div>
+    <div class="nav-right">
+      <div class="admin-badge" role="note" aria-label="Rol: Administrador">
+        <span class="admin-badge-dot" aria-hidden="true"></span>
+        Administrador
+      </div>
+      <button class="nav-notif" aria-label="Notificaciones — 5 pendientes">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <div class="notif-dot" aria-hidden="true"></div>
+      </button>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="nav-avatar" role="img" aria-label="Admin WC">AD</div>
+        <div>
+          <div class="nav-user-name">Admin WCMP</div>
+          <div class="nav-user-role">Super Admin</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+</header>
+
+<div class="page-layout">
+
+<!-- ══════════ SIDEBAR ══════════ -->
+<aside class="sidebar" id="sidebar" role="navigation" aria-label="Menú de administración">
+  <div class="sidebar-section">
+    <span class="sidebar-label">Gestión principal</span>
+    <div class="sidebar-nav">
+      <button class="nav-item active" onclick="switchTab('pendientes');selNav(this)" aria-current="page">
+        <span class="nav-icon">⏳</span>
+        Pendientes aprobación
+        <span class="nav-pill np-red" id="sidePendingPill">3</span>
+      </button>
+      <button class="nav-item" onclick="switchTab('productores');selNav(this)">
+        <span class="nav-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+        </span>
+        Productores
+        <span class="nav-pill np-green" id="sideProducerPill">12</span>
+      </button>
+      <button class="nav-item" onclick="switchTab('categorias');selNav(this)">
+        <span class="nav-icon">🏷️</span>
+        Categorías
+        <span class="nav-pill np-blue">8</span>
+      </button>
+      <button class="nav-item" onclick="switchTab('usuarios');selNav(this)">
+        <span class="nav-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        </span>
+        Usuarios
+        <span class="nav-pill np-amber">2</span>
+      </button>
+    </div>
+  </div>
+  <div class="sidebar-sep"></div>
+  <div class="sidebar-section">
+    <span class="sidebar-label">Plataforma</span>
+    <div class="sidebar-nav">
+      <button class="nav-item" onclick="showToast('Módulo en construcción','info')">
+        <span class="nav-icon">📊</span>Reportes
+      </button>
+      <button class="nav-item" onclick="showToast('Módulo en construcción','info')">
+        <span class="nav-icon">📦</span>Todos los pedidos
+      </button>
+      <button class="nav-item" onclick="showToast('Módulo en construcción','info')">
+        <span class="nav-icon">💰</span>Finanzas
+      </button>
+      <button class="nav-item" onclick="showToast('Módulo en construcción','info')">
+        <span class="nav-icon">🔔</span>Notificaciones
+      </button>
+    </div>
+  </div>
+  <div class="sidebar-sep"></div>
+  <div class="sidebar-bottom">
+    <div class="sidebar-nav">
+      <button class="nav-item" onclick="showToast('Configuración del sistema','info')">
+        <span class="nav-icon">⚙</span>Configuración
+      </button>
+      <button class="nav-item" onclick="showToast('Registros de auditoría','info')">
+        <span class="nav-icon">📋</span>Audit logs
+      </button>
+      <button class="nav-item danger" onclick="showToast('Sesión cerrada','info')">
+        <span class="nav-icon">↩</span>Cerrar sesión
+      </button>
+    </div>
+  </div>
+</aside>
+<div class="sidebar-overlay" id="sideOverlay" onclick="toggleSidebar()"></div>
+
+<!-- ══════════ MAIN ══════════ -->
+<main class="main-content" role="main">
+
+  <!-- KPIs -->
+  <div class="stats-row" role="list" aria-label="Métricas del sistema">
+    <div class="stat-card" role="listitem">
+      <div class="stat-icon" style="background:var(--error-light)">⏳</div>
+      <div class="stat-label">Pendientes</div>
+      <div class="stat-value" id="kpiPending">3</div>
+      <div class="stat-sub"><span class="stat-red">requieren acción</span></div>
+    </div>
+    <div class="stat-card" role="listitem">
+      <div class="stat-icon" style="background:var(--verde-light)">✓</div>
+      <div class="stat-label">Productores activos</div>
+      <div class="stat-value" id="kpiActive">12</div>
+      <div class="stat-sub"><span class="stat-up">↑ 3 este mes</span></div>
+    </div>
+    <div class="stat-card" role="listitem">
+      <div class="stat-icon" style="background:var(--blue-light)">🏷️</div>
+      <div class="stat-label">Categorías</div>
+      <div class="stat-value">8</div>
+      <div class="stat-sub">3 subcategorías</div>
+    </div>
+    <div class="stat-card" role="listitem">
+      <div class="stat-icon" style="background:var(--marfil-light)">👥</div>
+      <div class="stat-label">Usuarios totales</div>
+      <div class="stat-value">284</div>
+      <div class="stat-sub"><span class="stat-up">↑ 22 este mes</span></div>
+    </div>
+    <div class="stat-card" role="listitem">
+      <div class="stat-icon" style="background:var(--amber-light)">🫘</div>
+      <div class="stat-label">Productos activos</div>
+      <div class="stat-value">47</div>
+      <div class="stat-sub"><span class="stat-warn">6 sin stock</span></div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs-row" role="tablist" aria-label="Secciones del panel">
+    <button class="tab active" role="tab" id="tab-pendientes" aria-selected="true" aria-controls="panel-pendientes" onclick="switchTab('pendientes')">
+      ⏳ Pendientes <span class="tc tc-red" id="tcPending">3</span>
+    </button>
+    <button class="tab" role="tab" id="tab-productores" aria-selected="false" aria-controls="panel-productores" onclick="switchTab('productores')">
+      Productores <span class="tc tc-green" id="tcProducers">12</span>
+    </button>
+    <button class="tab" role="tab" id="tab-categorias" aria-selected="false" aria-controls="panel-categorias" onclick="switchTab('categorias')">
+      🏷️ Categorías <span class="tc tc-esp">8</span>
+    </button>
+    <button class="tab" role="tab" id="tab-usuarios" aria-selected="false" aria-controls="panel-usuarios" onclick="switchTab('usuarios')">
+      Usuarios <span class="tc tc-amber">2</span>
+    </button>
+  </div>
+
+  <!-- ════ TAB: PENDIENTES ════ -->
+  <div class="tab-panel active" id="panel-pendientes" role="tabpanel" aria-labelledby="tab-pendientes">
+    <div class="page-header">
+      <div>
+        <div class="page-eyebrow">Revisión de perfiles</div>
+        <h1 class="page-title">Productores pendientes</h1>
+        <p class="page-subtitle" id="pendingSubtitle">3 solicitudes esperan tu revisión</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn-secondary" onclick="showToast('Exportando solicitudes...','info')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Exportar
+        </button>
+      </div>
+    </div>
+    <div class="producers-grid" id="pendingGrid" aria-label="Solicitudes pendientes" role="list"></div>
+  </div>
+
+  <!-- ════ TAB: PRODUCTORES ════ -->
+  <div class="tab-panel" id="panel-productores" role="tabpanel" aria-labelledby="tab-productores">
+    <div class="page-header">
+      <div>
+        <div class="page-eyebrow">Gestión de productores</div>
+        <h1 class="page-title">Todos los productores</h1>
+        <p class="page-subtitle">Consulta, suspende o elimina productores registrados</p>
+      </div>
+    </div>
+    <div class="toolbar">
+      <div class="search-wrap">
+        <span class="search-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></span>
+        <input type="search" class="search-input" placeholder="Buscar productor..." aria-label="Buscar productor" oninput="filterAllProducers(this.value)">
+      </div>
+      <button class="chip active" onclick="filterProducerStatus('todos',this)" aria-pressed="true">Todos</button>
+      <button class="chip" onclick="filterProducerStatus('approved',this)" aria-pressed="false">Aprobados</button>
+      <button class="chip" onclick="filterProducerStatus('rejected',this)" aria-pressed="false">Rechazados</button>
+      <button class="chip" onclick="filterProducerStatus('suspended',this)" aria-pressed="false">Suspendidos</button>
+    </div>
+    <div class="table-wrap">
+      <div class="table-head producers-cols" aria-hidden="true">
+        <div class="th">Productor</div>
+        <div class="th">Región</div>
+        <div class="th" style="text-align:center">Estado</div>
+        <div class="th" style="text-align:center">Productos</div>
+        <div class="th r">Ventas mes</div>
+        <div class="th r">Acciones</div>
+      </div>
+      <div id="allProducersBody" role="list" aria-label="Lista de productores"></div>
+    </div>
+  </div>
+
+  <!-- ════ TAB: CATEGORÍAS ════ -->
+  <div class="tab-panel" id="panel-categorias" role="tabpanel" aria-labelledby="tab-categorias">
+    <div class="page-header">
+      <div>
+        <div class="page-eyebrow">Clasificación del catálogo</div>
+        <h1 class="page-title">Categorías de producto</h1>
+        <p class="page-subtitle">Crea, edita y gestiona la clasificación de productos del marketplace</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn-primary" onclick="toggleAddCatForm()" aria-label="Añadir nueva categoría" id="btnAddCat">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Nueva categoría
+        </button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <div class="table-head cats-cols" aria-hidden="true">
+        <div class="th">Categoría</div>
+        <div class="th" style="text-align:center">Productos</div>
+        <div class="th" style="text-align:center">Estado</div>
+        <div class="th" style="text-align:center">Orden</div>
+        <div class="th r">Acciones</div>
+      </div>
+      <div id="catsBody" role="list" aria-label="Lista de categorías"></div>
+    </div>
+
+    <!-- Formulario de nueva categoría -->
+    <div class="add-cat-card" id="addCatCard" aria-label="Formulario nueva categoría" role="form">
+      <div style="font-family:var(--font-display);font-size:1rem;font-weight:700;color:var(--espresso);margin-bottom:14px">➕ Agregar categoría</div>
+      <div class="add-cat-row">
+        <div class="field">
+          <label class="field-label" for="catName">Nombre <span class="req">*</span></label>
+          <input type="text" id="catName" class="field-input" placeholder="Ej. Tostado claro" aria-required="true">
+        </div>
+        <div class="field">
+          <label class="field-label" for="catParent">Categoría padre</label>
+          <select id="catParent" class="field-select">
+            <option value="">Ninguna (raíz)</option>
+            <option>Grano entero</option>
+            <option>Molido</option>
+            <option>Tostado oscuro</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label" for="catIcon">Icono</label>
+          <input type="text" id="catIcon" class="field-input" placeholder="🫘" maxlength="4" style="font-size:1.25rem;text-align:center">
+        </div>
+        <div class="field" style="justify-content:flex-end">
+          <button class="btn-primary" style="width:44px;height:38px;padding:0;justify-content:center" onclick="addCategory()" aria-label="Guardar nueva categoría">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ TAB: USUARIOS ════ -->
+  <div class="tab-panel" id="panel-usuarios" role="tabpanel" aria-labelledby="tab-usuarios">
+    <div class="page-header">
+      <div>
+        <div class="page-eyebrow">Control de acceso</div>
+        <h1 class="page-title">Gestión de usuarios</h1>
+        <p class="page-subtitle">Administra roles, accesos y estado de los usuarios</p>
+      </div>
+    </div>
+    <div class="toolbar">
+      <div class="search-wrap">
+        <span class="search-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></span>
+        <input type="search" class="search-input" placeholder="Buscar usuario..." aria-label="Buscar usuario" oninput="filterUsers(this.value)">
+      </div>
+      <button class="chip active" onclick="filterUserRole('todos',this)" aria-pressed="true">Todos</button>
+      <button class="chip" onclick="filterUserRole('comprador',this)" aria-pressed="false">Compradores</button>
+      <button class="chip" onclick="filterUserRole('productor',this)" aria-pressed="false">Productores</button>
+      <button class="chip" onclick="filterUserRole('admin',this)" aria-pressed="false">Admins</button>
+    </div>
+    <div class="table-wrap">
+      <div class="table-head users-cols" aria-hidden="true">
+        <div class="th">Usuario</div>
+        <div class="th" style="text-align:center">Rol</div>
+        <div class="th" style="text-align:center">Estado</div>
+        <div class="th">Último acceso</div>
+        <div class="th r">Acciones</div>
+      </div>
+      <div id="usersBody" role="list" aria-label="Lista de usuarios"></div>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<!-- ══════════ MODAL DETALLE PRODUCTOR ══════════ -->
+<div class="modal-overlay" id="producerModal" role="dialog" aria-modal="true" aria-labelledby="producerModalTitle" aria-hidden="true">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="producerModalTitle">Detalle del productor</div>
+        <div class="modal-sub" id="producerModalSub">Revisa la información antes de decidir</div>
+      </div>
+      <button class="btn-close" onclick="closeModal()" aria-label="Cerrar detalle">✕</button>
+    </div>
+    <div class="modal-body" id="producerModalBody"></div>
+    <div class="modal-footer" id="producerModalFooter"></div>
+  </div>
+</div>
+
+<!-- ══════════ MODAL EDITAR CATEGORÍA ══════════ -->
+<div class="modal-overlay" id="catModal" role="dialog" aria-modal="true" aria-labelledby="catModalTitle" aria-hidden="true">
+  <div class="modal" style="max-width:460px">
+    <div class="modal-head">
+      <div><div class="modal-title" id="catModalTitle">Editar categoría</div></div>
+      <button class="btn-close" onclick="closeCatModal()" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label class="field-label" for="editCatName">Nombre <span class="req">*</span></label>
+        <input type="text" id="editCatName" class="field-input">
+      </div>
+      <div class="field">
+        <label class="field-label" for="editCatIcon">Icono</label>
+        <input type="text" id="editCatIcon" class="field-input" maxlength="4" style="font-size:1.25rem;text-align:center;width:64px">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" style="flex:1" onclick="closeCatModal()">Cancelar</button>
+      <button class="btn-primary" style="flex:2;justify-content:center" onclick="saveCatEdit()">Guardar cambios</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap" aria-live="polite" aria-atomic="false"></div>
+
+<script>
+/* ═══════════════════════════════════
+   DATOS
+═══════════════════════════════════ */
+let PENDING = [
+  {id:'P001',name:'Diego Salcedo',email:'diego@fincaelsol.co',avatar:'👨‍🌾',farm:'Finca El Sol',region:'Nariño',municipality:'La Unión',altitude:'2.100 msnm',hectares:'8',date:'14 jun 2025',docs:['Cédula de ciudadanía','RUT','Cámara de comercio'],desc:'Pequeño productor con 15 años de experiencia en café de altura. Miembro de la cooperativa regional de Nariño.'},
+  {id:'P002',name:'Claudia Rincón',email:'claudia@haciendaverde.co',avatar:'👩‍🌾',farm:'Hacienda Verde',region:'Cauca',municipality:'Popayán',altitude:'1.850 msnm',hectares:'24',date:'12 jun 2025',docs:['Cédula de ciudadanía','RUT'],desc:'Productora con certificación orgánica en proceso. Exporta café especial a Europa desde 2019.'},
+  {id:'P003',name:'Hernán Ospina',email:'hernan@coopandina.co',avatar:'🧑‍🌾',farm:'Coop. Andina',region:'Antioquia',municipality:'Andes',altitude:'1.650 msnm',hectares:'45',date:'10 jun 2025',docs:['Cédula de ciudadanía','RUT','Cámara de comercio'],desc:'Cooperativa de 12 familias cafeteras en Andes, Antioquia. Productores de Caturra y Castillo bajo sombra.'},
+];
+
+let ALL_PRODUCERS = [
+  {id:'A001',name:'Carlos Mendoza',email:'carlos@laesperanza.co',avatar:'👨‍🌾',farm:'Finca La Esperanza',region:'Huila',status:'approved',products:6,sales:912000},
+  {id:'A002',name:'María Coop.',email:'maria@narinoverde.co',avatar:'👩‍🌾',farm:'Coop. Nariño Verde',region:'Nariño',status:'approved',products:4,sales:654000},
+  {id:'A003',name:'Juan Sierra',email:'juan@sierranevada.co',avatar:'🧑‍🌾',farm:'Sierra Nevada Farms',region:'Magdalena',status:'approved',products:3,sales:430000},
+  {id:'A004',name:'Rosa Quindío',email:'rosa@ejecafetero.co',avatar:'👩‍🌾',farm:'Coop. Eje Cafetero',region:'Quindío',status:'approved',products:5,sales:780000},
+  {id:'A005',name:'Luis Cauca',email:'luis@haciendadivisa.co',avatar:'👨‍🌾',farm:'Hacienda La Divisa',region:'Cauca',status:'approved',products:2,sales:196000},
+  {id:'A006',name:'Ana Tolima',email:'ana@familiatol.co',avatar:'👩‍🌾',farm:'Familia Guerrero',region:'Tolima',status:'suspended',products:3,sales:0},
+  {id:'A007',name:'Pedro Ant.',email:'pedro@tosart.co',avatar:'👨‍🌾',farm:'Tostadora Artesanal',region:'Cundinamarca',status:'rejected',products:0,sales:0},
+];
+
+let CATEGORIES = [
+  {id:'C1',name:'Grano entero',icon:'🫘',parent:'',products:18,active:true,order:1},
+  {id:'C2',name:'Molido',icon:'☕',parent:'',products:12,active:true,order:2},
+  {id:'C3',name:'Tostado medio',icon:'🌟',parent:'Grano entero',products:8,active:true,order:3},
+  {id:'C4',name:'Tostado oscuro',icon:'🖤',parent:'Grano entero',products:7,active:true,order:4},
+  {id:'C5',name:'Descafeinado',icon:'💧',parent:'',products:4,active:true,order:5},
+  {id:'C6',name:'Origen único',icon:'🌍',parent:'',products:9,active:true,order:6},
+  {id:'C7',name:'Blends',icon:'🔀',parent:'',products:5,active:false,order:7},
+  {id:'C8',name:'Proceso natural',icon:'🌸',parent:'Grano entero',products:6,active:true,order:8},
+];
+
+let USERS = [
+  {id:'U01',name:'María García',email:'maria@gmail.com',avatar:'MG',role:'comprador',status:'active',lastAccess:'Hoy, 10:32 am'},
+  {id:'U02',name:'Luis Torres',email:'luis@gmail.com',avatar:'LT',role:'comprador',status:'active',lastAccess:'Hoy, 9:15 am'},
+  {id:'U03',name:'Ana Martínez',email:'ana@gmail.com',avatar:'AM',role:'comprador',status:'active',lastAccess:'Ayer'},
+  {id:'U04',name:'Diego Salcedo',email:'diego@fincaelsol.co',avatar:'DS',role:'productor',status:'pending',lastAccess:'Nunca'},
+  {id:'U05',name:'Carlos Mendoza',email:'carlos@laesperanza.co',avatar:'CM',role:'productor',status:'active',lastAccess:'Hoy, 8:50 am'},
+  {id:'U06',name:'Juan Rodríguez',email:'juan.r@gmail.com',avatar:'JR',role:'comprador',status:'suspended',lastAccess:'15 jun'},
+  {id:'U07',name:'Admin WCMP',email:'admin@wcmarket.co',avatar:'AD',role:'admin',status:'active',lastAccess:'Ahora'},
+];
+
+let pSearch='', pStatusFilter='todos', userSearch='', userRoleFilter='todos', editingCatId=null, modalCurrentId=null;
+
+/* ═══════════════════════════════════
+   HELPERS
+═══════════════════════════════════ */
+function fmt(n){return '$'+n.toLocaleString('es-CO')}
+function sp(s){
+  return {
+    approved:  '<span class="status-pill sp-approved">Aprobado</span>',
+    pending:   '<span class="status-pill sp-pending">Pendiente</span>',
+    rejected:  '<span class="status-pill sp-rejected">Rechazado</span>',
+    suspended: '<span class="status-pill sp-suspended">Suspendido</span>',
+    active:    '<span class="status-pill sp-approved">Activo</span>',
+  }[s]||`<span class="status-pill">${s}</span>`;
+}
+
+/* ═══════════════════════════════════
+   PENDIENTES
+═══════════════════════════════════ */
+function renderPending(){
+  const grid=document.getElementById('pendingGrid');
+  const count=PENDING.length;
+  document.getElementById('pendingSubtitle').textContent=`${count} solicitud${count!==1?'es':''} ${count?'esperan tu revisión':'pendientes'}`;
+  document.getElementById('tcPending').textContent=count;
+  document.getElementById('kpiPending').textContent=count;
+  document.getElementById('sidePendingPill').textContent=count;
+
+  if(!count){
+    grid.innerHTML=`<div style="grid-column:1/-1;padding:64px 24px;text-align:center">
+      <div style="font-size:52px;margin-bottom:12px">✅</div>
+      <div style="font-family:var(--font-display);font-size:1.25rem;font-weight:700;color:var(--espresso);margin-bottom:6px">Todo al día</div>
+      <div style="font-size:.875rem;color:var(--cafe-medio)">No hay productores pendientes de aprobación.</div>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML=PENDING.map(p=>`
+  <div class="producer-card" id="pc-${p.id}" role="listitem" aria-label="Solicitud de ${p.name}">
+    <div class="pc-header">
+      <div class="pc-avatar" aria-hidden="true">${p.avatar}</div>
+      <div class="pc-info">
+        <div class="pc-name">${p.name}</div>
+        <div class="pc-email">${p.email}</div>
+        <div class="pc-date">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Solicitud: ${p.date}
+        </div>
+      </div>
+      <div class="pc-status"><span class="status-pill sp-pending">Pendiente</span></div>
+    </div>
+    <div class="pc-body">
+      <div class="pc-farm-row">
+        <div class="pc-field"><div class="pc-field-label">Finca</div><div class="pc-field-value">${p.farm}</div></div>
+        <div class="pc-field"><div class="pc-field-label">Región</div><div class="pc-field-value">${p.region}</div></div>
+        <div class="pc-field"><div class="pc-field-label">Municipio</div><div class="pc-field-value">${p.municipality}</div></div>
+        <div class="pc-field"><div class="pc-field-label">Altitud</div><div class="pc-field-value">${p.altitude}</div></div>
+      </div>
+      <div>
+        <div style="font-size:.6875rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--cafe-medio);margin-bottom:6px">Documentos adjuntos</div>
+        <div class="pc-docs">
+          ${p.docs.map(d=>`<div class="doc-chip verified" onclick="showToast('Abriendo: '+d,'info')" tabindex="0" role="button">📄 ${d}</div>`).join('')}
+        </div>
+      </div>
+    </div>
+    <div class="pc-footer">
+      <button class="btn-secondary" style="padding:8px 14px;font-size:.8125rem" onclick="openProducerModal('${p.id}','pending')" aria-label="Ver detalle completo de ${p.name}">Ver detalle</button>
+      <button class="btn-reject" onclick="rejectProducer('${p.id}')" aria-label="Rechazar productor ${p.name}">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        Rechazar
+      </button>
+      <button class="btn-approve" onclick="approveProducer('${p.id}')" aria-label="Aprobar productor ${p.name}">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Aprobar
+      </button>
+    </div>
+  </div>`).join('');
+}
+
+function approveProducer(id){
+  const p=PENDING.find(x=>x.id===id);
+  if(!p)return;
+  const el=document.getElementById('pc-'+id);
+  if(el){el.style.transition='all .35s';el.style.opacity='0';el.style.transform='scale(.96)'}
+  setTimeout(()=>{
+    PENDING=PENDING.filter(x=>x.id!==id);
+    ALL_PRODUCERS.unshift({id:'A'+Date.now(),name:p.name,email:p.email,avatar:p.avatar,farm:p.farm,region:p.region,status:'approved',products:0,sales:0});
+    document.getElementById('kpiActive').textContent=ALL_PRODUCERS.filter(x=>x.status==='approved').length;
+    document.getElementById('tcProducers').textContent=ALL_PRODUCERS.length;
+    document.getElementById('sideProducerPill').textContent=ALL_PRODUCERS.filter(x=>x.status==='approved').length;
+    renderPending();
+    if(document.getElementById('panel-productores').classList.contains('active')) renderAllProducers();
+  },340);
+  closeModal();
+  showToast(`✓ ${p.name} aprobado. Ya puede publicar productos en el marketplace.`,'success');
+}
+
+function rejectProducer(id){
+  const p=PENDING.find(x=>x.id===id)||ALL_PRODUCERS.find(x=>x.id===id);
+  if(!p)return;
+  openProducerModal(id,'pending','reject');
+}
+
+/* ═══════════════════════════════════
+   MODAL PRODUCTOR
+═══════════════════════════════════ */
+function openProducerModal(id, type='pending', action=''){
+  const p=PENDING.find(x=>x.id===id)||ALL_PRODUCERS.find(x=>x.id===id);
+  if(!p)return;
+  modalCurrentId=id;
+  const overlay=document.getElementById('producerModal');
+  document.getElementById('producerModalTitle').textContent=p.name;
+  document.getElementById('producerModalSub').textContent=p.email;
+
+  const body=document.getElementById('producerModalBody');
+  const hasFarm=!!p.farm;
+
+  body.innerHTML=`
+    <div>
+      <div class="detail-section-title">Información personal</div>
+      <div class="detail-grid">
+        <div class="detail-field"><div class="detail-label">Nombre completo</div><div class="detail-value">${p.name}</div></div>
+        <div class="detail-field"><div class="detail-label">Correo electrónico</div><div class="detail-value" style="font-size:.875rem">${p.email}</div></div>
+        <div class="detail-field"><div class="detail-label">Finca</div><div class="detail-value">${p.farm||'No especificada'}</div></div>
+        <div class="detail-field"><div class="detail-label">Región</div><div class="detail-value">${p.region||'—'}</div></div>
+        ${p.altitude?`<div class="detail-field"><div class="detail-label">Altitud</div><div class="detail-value">${p.altitude}</div></div>`:''}
+        ${p.municipality?`<div class="detail-field"><div class="detail-label">Municipio</div><div class="detail-value">${p.municipality}</div></div>`:''}
+      </div>
+    </div>
+    ${p.desc?`<div>
+      <div class="detail-section-title">Descripción del productor</div>
+      <p style="font-size:.9rem;color:var(--cafe-medio);line-height:1.75">${p.desc}</p>
+    </div>`:''}
+    ${p.docs?`<div>
+      <div class="detail-section-title">Documentos adjuntos</div>
+      <div class="detail-docs">
+        ${p.docs.map(d=>`<div class="detail-doc">
+          <div class="doc-icon">📄</div>
+          <div class="doc-info"><div class="doc-name">${d}</div><div class="doc-status">Cargado · Pendiente revisión</div></div>
+          <button class="btn-doc-view" onclick="showToast('Abriendo documento...','info')">Ver</button>
+        </div>`).join('')}
+      </div>
+    </div>`:''}
+    <div class="rejection-field ${action==='reject'?'show':''}" id="rejectionField">
+      <div class="rejection-label">⚠ Motivo de rechazo (requerido)</div>
+      <textarea class="rejection-textarea" id="rejectionReason" placeholder="Describe el motivo del rechazo para notificar al productor..." aria-label="Motivo del rechazo" aria-required="true"></textarea>
+    </div>`;
+
+  const footer=document.getElementById('producerModalFooter');
+  const isPending=type==='pending';
+  const isApproved=p.status==='approved';
+
+  if(isPending){
+    footer.innerHTML=`
+      <button class="btn-secondary" style="flex:1" onclick="closeModal()">Cancelar</button>
+      <button class="btn-reject" style="flex:1;justify-content:center" id="modalRejectBtn" onclick="confirmRejectFromModal()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        Rechazar
+      </button>
+      <button class="btn-approve" style="flex:2;justify-content:center" onclick="approveProducer('${id}')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Aprobar productor
+      </button>`;
+  } else if(isApproved){
+    footer.innerHTML=`
+      <button class="btn-secondary" style="flex:1" onclick="closeModal()">Cerrar</button>
+      <button class="btn-reject" style="flex:1;justify-content:center" onclick="suspendProducer('${id}')">⏸ Suspender</button>`;
+  } else {
+    footer.innerHTML=`<button class="btn-secondary" style="flex:1" onclick="closeModal()">Cerrar</button>`;
+  }
+
+  if(action==='reject') setTimeout(()=>document.getElementById('rejectionReason')?.focus(),200);
+
+  overlay.classList.add('open'); overlay.setAttribute('aria-hidden','false');
+  setTimeout(()=>overlay.querySelector('button')?.focus(),100);
+}
+
+function confirmRejectFromModal(){
+  const rf=document.getElementById('rejectionField');
+  if(!rf.classList.contains('show')){
+    rf.classList.add('show');
+    document.getElementById('rejectionReason').focus();
+    document.getElementById('modalRejectBtn').textContent='Confirmar rechazo';
+    return;
+  }
+  const reason=document.getElementById('rejectionReason').value.trim();
+  if(!reason){showToast('Ingresa el motivo del rechazo','warning');document.getElementById('rejectionReason').focus();return}
+  const p=PENDING.find(x=>x.id===modalCurrentId);
+  if(!p)return;
+  const el=document.getElementById('pc-'+modalCurrentId);
+  if(el){el.style.transition='all .35s';el.style.opacity='0';el.style.transform='scale(.96)'}
+  setTimeout(()=>{
+    PENDING=PENDING.filter(x=>x.id!==modalCurrentId);
+    renderPending();
+  },340);
+  closeModal();
+  showToast(`${p.name} rechazado. Se envió notificación por correo.`,'warning');
+}
+
+function suspendProducer(id){
+  const p=ALL_PRODUCERS.find(x=>x.id===id);
+  if(!p)return;
+  p.status='suspended';
+  closeModal();
+  renderAllProducers();
+  showToast(`${p.name} suspendido temporalmente`,'warning');
+}
+
+function closeModal(){
+  document.getElementById('producerModal').classList.remove('open');
+  document.getElementById('producerModal').setAttribute('aria-hidden','true');
+}
+
+/* ═══════════════════════════════════
+   TODOS LOS PRODUCTORES
+═══════════════════════════════════ */
+function renderAllProducers(){
+  let list=[...ALL_PRODUCERS];
+  if(pStatusFilter!=='todos') list=list.filter(p=>p.status===pStatusFilter);
+  if(pSearch){const q=pSearch.toLowerCase();list=list.filter(p=>p.name.toLowerCase().includes(q)||p.region.toLowerCase().includes(q)||p.farm.toLowerCase().includes(q))}
+
+  document.getElementById('tcProducers').textContent=list.length;
+  const body=document.getElementById('allProducersBody');
+
+  if(!list.length){
+    body.innerHTML=`<div style="padding:48px 24px;text-align:center;color:var(--cafe-medio)">No hay productores con esos filtros.</div>`;
+    return;
+  }
+
+  body.innerHTML=list.map(p=>`
+  <div class="table-row producers-cols" role="listitem" aria-label="${p.name}">
+    <div class="row-producer">
+      <div class="row-avatar" aria-hidden="true">${p.avatar}</div>
+      <div>
+        <div class="row-name">${p.name}</div>
+        <div class="row-sub">${p.farm} · ${p.email}</div>
+      </div>
+    </div>
+    <div style="font-size:.875rem;font-weight:600;color:var(--espresso)">${p.region}</div>
+    <div style="text-align:center">${sp(p.status)}</div>
+    <div style="text-align:center;font-family:var(--font-display);font-size:1rem;font-weight:700;color:var(--espresso)">${p.products}</div>
+    <div style="text-align:right;font-family:var(--font-display);font-size:.9375rem;font-weight:700;color:var(--espresso)">${p.sales?fmt(p.sales):'—'}</div>
+    <div class="row-actions">
+      <button class="btn-icon" onclick="openProducerModal('${p.id}','all')" aria-label="Ver detalle de ${p.name}" title="Ver detalle">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+      ${p.status==='approved'?`<button class="btn-icon" onclick="suspendProducer('${p.id}')" aria-label="Suspender ${p.name}" title="Suspender">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+      </button>`:''}
+      ${p.status==='suspended'?`<button class="btn-icon" onclick="reinstateProducer('${p.id}')" aria-label="Reactivar ${p.name}" title="Reactivar">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      </button>`:''}
+      <button class="btn-icon danger" onclick="deleteProducer('${p.id}')" aria-label="Eliminar productor ${p.name}" title="Eliminar">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+      </button>
+    </div>
+  </div>`).join('');
+}
+
+function filterAllProducers(val){pSearch=val;renderAllProducers()}
+function filterProducerStatus(val,btn){
+  pStatusFilter=val;
+  document.querySelectorAll('#panel-productores .chip').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-pressed','false')});
+  btn.classList.add('active');btn.setAttribute('aria-pressed','true');
+  renderAllProducers();
+}
+function reinstateProducer(id){
+  const p=ALL_PRODUCERS.find(x=>x.id===id);
+  if(!p)return;
+  p.status='approved';
+  renderAllProducers();
+  showToast(`${p.name} reactivado`,'success');
+}
+function deleteProducer(id){
+  const p=ALL_PRODUCERS.find(x=>x.id===id);
+  if(!p||!confirm(`¿Eliminar a ${p.name} del sistema?`))return;
+  ALL_PRODUCERS=ALL_PRODUCERS.filter(x=>x.id!==id);
+  renderAllProducers();
+  showToast(`${p.name} eliminado del sistema`,'warning');
+}
+
+/* ═══════════════════════════════════
+   CATEGORÍAS
+═══════════════════════════════════ */
+function renderCategories(){
+  const body=document.getElementById('catsBody');
+  body.innerHTML=CATEGORIES.map(c=>`
+  <div class="table-row cats-cols" id="cat-${c.id}" role="listitem" aria-label="Categoría ${c.name}">
+    <div class="cat-name-cell">
+      <div class="cat-icon-box" style="background:${c.active?'var(--marfil-light)':'rgba(55,38,23,.05)'}">${c.icon}</div>
+      <div>
+        <div class="cat-name" style="color:${c.active?'var(--espresso)':'var(--cafe-medio)'}">${c.name}</div>
+        ${c.parent?`<div class="cat-parent">↳ ${c.parent}</div>`:'<div class="cat-parent" style="color:var(--verde-fresco);font-size:.6875rem;font-weight:700">Categoría raíz</div>'}
+      </div>
+    </div>
+    <div style="text-align:center;font-family:var(--font-display);font-size:1rem;font-weight:700;color:${c.products?'var(--espresso)':'var(--cafe-medio)'}">
+      ${c.products}<div style="font-size:.625rem;color:var(--cafe-medio);font-family:var(--font-body);font-weight:600">productos</div>
+    </div>
+    <div style="display:flex;justify-content:center">
+      <div class="cat-status-toggle" aria-label="Estado de ${c.name}">
+        <div class="toggle-track ${c.active?'on':'off'}" onclick="toggleCat('${c.id}')" role="switch" aria-checked="${c.active}" tabindex="0" aria-label="${c.active?'Activo':'Inactivo'}">
+          <div class="toggle-thumb"></div>
+        </div>
+        <span class="toggle-lbl">${c.active?'Activa':'Inactiva'}</span>
+      </div>
+    </div>
+    <div style="text-align:center;font-size:.875rem;font-weight:700;color:var(--cafe-medio)">${c.order}</div>
+    <div class="row-actions">
+      <button class="btn-icon" onclick="openEditCat('${c.id}')" aria-label="Editar categoría ${c.name}" title="Editar">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      </button>
+      <button class="btn-icon danger" onclick="deleteCat('${c.id}')" aria-label="Eliminar categoría ${c.name}" title="Eliminar" ${c.products>0?'disabled style="opacity:.3;cursor:not-allowed"':''}>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+      </button>
+    </div>
+  </div>`).join('');
+}
+
+function toggleCat(id){
+  const c=CATEGORIES.find(x=>x.id===id);
+  if(!c)return;
+  if(!c.active===false && c.products>0){showToast('No se puede desactivar una categoría con productos activos','warning');return}
+  c.active=!c.active;
+  renderCategories();
+  showToast(`Categoría "${c.name}" ${c.active?'activada':'desactivada'}`,'info');
+}
+function deleteCat(id){
+  const c=CATEGORIES.find(x=>x.id===id);
+  if(!c)return;
+  if(c.products>0){showToast('No puedes eliminar una categoría con productos asociados','error');return}
+  if(!confirm(`¿Eliminar la categoría "${c.name}"?`))return;
+  CATEGORIES=CATEGORIES.filter(x=>x.id!==id);
+  renderCategories();
+  showToast(`Categoría "${c.name}" eliminada`,'warning');
+}
+function toggleAddCatForm(){
+  const card=document.getElementById('addCatCard');
+  const visible=card.classList.toggle('show');
+  document.getElementById('btnAddCat').textContent=visible?'✕ Cancelar':'+ Nueva categoría';
+  if(visible) document.getElementById('catName').focus();
+}
+function addCategory(){
+  const name=document.getElementById('catName').value.trim();
+  const icon=document.getElementById('catIcon').value||'📦';
+  const parent=document.getElementById('catParent').value;
+  if(!name){showToast('Ingresa el nombre de la categoría','warning');document.getElementById('catName').focus();return}
+  CATEGORIES.push({id:'C'+Date.now(),name,icon,parent,products:0,active:true,order:CATEGORIES.length+1});
+  document.getElementById('catName').value='';
+  document.getElementById('catIcon').value='';
+  renderCategories();
+  showToast(`Categoría "${name}" creada exitosamente`,'success');
+}
+function openEditCat(id){
+  const c=CATEGORIES.find(x=>x.id===id);
+  if(!c)return;
+  editingCatId=id;
+  document.getElementById('editCatName').value=c.name;
+  document.getElementById('editCatIcon').value=c.icon;
+  document.getElementById('catModal').classList.add('open');
+  document.getElementById('catModal').setAttribute('aria-hidden','false');
+  document.getElementById('catModalTitle').textContent=`Editar: ${c.name}`;
+  setTimeout(()=>document.getElementById('editCatName').focus(),100);
+}
+function closeCatModal(){
+  document.getElementById('catModal').classList.remove('open');
+  document.getElementById('catModal').setAttribute('aria-hidden','true');
+}
+function saveCatEdit(){
+  const c=CATEGORIES.find(x=>x.id===editingCatId);
+  if(!c)return;
+  const name=document.getElementById('editCatName').value.trim();
+  if(!name){showToast('El nombre es requerido','warning');return}
+  const btn=document.querySelector('#catModal .btn-primary');
+  const orig=btn.textContent; btn.disabled=true; btn.textContent='Guardando...';
+  setTimeout(()=>{
+    c.name=name; c.icon=document.getElementById('editCatIcon').value||c.icon;
+    btn.disabled=false; btn.textContent=orig;
+    closeCatModal(); renderCategories();
+    showToast(`Categoría actualizada: "${c.name}"`,'success');
+  },900);
+}
+
+/* ═══════════════════════════════════
+   USUARIOS
+═══════════════════════════════════ */
+const ROLE_LABELS={comprador:'Comprador',productor:'Productor',admin:'Administrador'};
+const ROLE_COLORS={comprador:'var(--blue-light)','comprador-c':'var(--blue-info)',productor:'var(--verde-light)','productor-c':'var(--verde-selva)',admin:'var(--purple-light)','admin-c':'var(--purple)'};
+
+function renderUsers(){
+  let list=[...USERS];
+  if(userRoleFilter!=='todos') list=list.filter(u=>u.role===userRoleFilter);
+  if(userSearch){const q=userSearch.toLowerCase();list=list.filter(u=>u.name.toLowerCase().includes(q)||u.email.toLowerCase().includes(q))}
+
+  const body=document.getElementById('usersBody');
+  if(!list.length){body.innerHTML=`<div style="padding:40px 24px;text-align:center;color:var(--cafe-medio)">Sin resultados.</div>`;return}
+
+  body.innerHTML=list.map(u=>{
+    const isSelf=u.role==='admin';
+    const roleBg=ROLE_COLORS[u.role]||'var(--marfil-light)';
+    const roleColor=ROLE_COLORS[u.role+'-c']||'var(--cafe-medio)';
+    return `
+  <div class="table-row users-cols" role="listitem" aria-label="${u.name}">
+    <div style="display:flex;align-items:center;gap:11px;min-width:0">
+      <div style="width:38px;height:38px;border-radius:10px;background:${roleBg};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:${roleColor};flex-shrink:0">${u.avatar}</div>
+      <div>
+        <div style="font-family:var(--font-display);font-size:.9375rem;font-weight:700;color:var(--espresso)">${u.name}</div>
+        <div style="font-size:.6875rem;color:var(--cafe-medio)">${u.email}</div>
+      </div>
+    </div>
+    <div style="text-align:center">
+      <span style="padding:4px 10px;border-radius:40px;font-size:.6875rem;font-weight:800;background:${roleBg};color:${roleColor}">${ROLE_LABELS[u.role]||u.role}</span>
+    </div>
+    <div style="text-align:center">${sp(u.status)}</div>
+    <div style="font-size:.8125rem;color:var(--cafe-medio);font-weight:500">${u.lastAccess}</div>
+    <div class="row-actions">
+      ${!isSelf?`<button class="btn-icon" onclick="toggleUserStatus('${u.id}')" aria-label="${u.status==='active'?'Suspender':'Reactivar'} usuario ${u.name}" title="${u.status==='active'?'Suspender':'Reactivar'}">
+        ${u.status==='active'
+          ?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>'
+          :'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>'}
+      </button>
+      <button class="btn-icon danger" onclick="deleteUser('${u.id}')" aria-label="Eliminar usuario ${u.name}" title="Eliminar">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+      </button>` : '<span style="font-size:.6875rem;color:var(--cafe-medio)">—</span>'}
+    </div>
+  </div>`}).join('');
+}
+
+function toggleUserStatus(id){
+  const u=USERS.find(x=>x.id===id);
+  if(!u)return;
+  u.status=u.status==='active'?'suspended':'active';
+  renderUsers();
+  showToast(`${u.name} ${u.status==='active'?'reactivado':'suspendido'}`,'info');
+}
+function deleteUser(id){
+  const u=USERS.find(x=>x.id===id);
+  if(!u||!confirm(`¿Eliminar a ${u.name}?`))return;
+  USERS=USERS.filter(x=>x.id!==id);
+  renderUsers();
+  showToast(`${u.name} eliminado`,'warning');
+}
+function filterUsers(val){userSearch=val;renderUsers()}
+function filterUserRole(val,btn){
+  userRoleFilter=val;
+  document.querySelectorAll('#panel-usuarios .chip').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-pressed','false')});
+  btn.classList.add('active');btn.setAttribute('aria-pressed','true');
+  renderUsers();
+}
+
+/* ═══════════════════════════════════
+   TABS
+═══════════════════════════════════ */
+function switchTab(name){
+  document.querySelectorAll('.tab').forEach(t=>{t.classList.remove('active');t.setAttribute('aria-selected','false')});
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  document.getElementById('tab-'+name).setAttribute('aria-selected','true');
+  document.getElementById('panel-'+name).classList.add('active');
+  if(name==='productores') renderAllProducers();
+  if(name==='categorias') renderCategories();
+  if(name==='usuarios') renderUsers();
+}
+function selNav(btn){
+  document.querySelectorAll('.nav-item').forEach(b=>{b.classList.remove('active');b.removeAttribute('aria-current')});
+  btn.classList.add('active');btn.setAttribute('aria-current','page');
+}
+
+/* ═══════════════════════════════════
+   SIDEBAR MOBILE
+═══════════════════════════════════ */
+function toggleSidebar(){
+  const s=document.getElementById('sidebar');
+  const open=s.classList.toggle('open');
+  document.getElementById('menuBtn').setAttribute('aria-expanded',open);
+}
+
+/* ═══════════════════════════════════
+   MODALES — CERRAR CON ESC
+═══════════════════════════════════ */
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape')return;
+  if(document.getElementById('producerModal').classList.contains('open')) closeModal();
+  if(document.getElementById('catModal').classList.contains('open')) closeCatModal();
+});
+document.getElementById('producerModal').addEventListener('click',function(e){if(e.target===this)closeModal()});
+document.getElementById('catModal').addEventListener('click',function(e){if(e.target===this)closeCatModal()});
+
+/* ═══════════════════════════════════
+   TOAST
+═══════════════════════════════════ */
+function showToast(msg,type='info'){
+  const wrap=document.getElementById('toastWrap');
+  const el=document.createElement('div');
+  el.className=`toast-item t-${type}`;el.textContent=msg;
+  el.setAttribute('role','status');
+  wrap.appendChild(el);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('show')));
+  setTimeout(()=>{el.classList.remove('show');setTimeout(()=>el.remove(),350)},3500);
+}
+
+/* ═══════════════════════════════════
+   INIT
+═══════════════════════════════════ */
+renderPending();
+</script>
+</body>
+</html>

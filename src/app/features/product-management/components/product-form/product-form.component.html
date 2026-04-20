@@ -10,7 +10,9 @@
         [placeholder]="COPY.PLACEHOLDERS.NAME"
         [attr.aria-invalid]="f.name.invalid && f.name.touched"
       >
-      <small class="error-text" *ngIf="f.name.invalid && f.name.touched">El nombre es obligatorio</small>
+      @if (f.name.invalid && f.name.touched) {
+        <small class="error-text">El nombre es obligatorio</small>
+      }
     </div>
 
     <div class="form-group">
@@ -62,46 +64,59 @@
     </div>
   </div>
 
+  <!-- Images upload -->
   <div class="form-group">
-    <label>{{ COPY.LABELS.IMAGES }}</label>
+    <p class="form-group__title">{{ COPY.LABELS.IMAGES }}</p>
     <div
       class="drop-zone"
+      role="button"
+      tabindex="0"
       appDragDrop
       (fileDropped)="onFilesDropped($event)"
       (click)="fileInput.click()"
-      [class.has-error]="f.images.invalid && f.images.touched">
-
+      (keydown.enter)="fileInput.click()"
+      (keydown.space)="fileInput.click()"
+      [class.has-error]="f.images.invalid && f.images.touched"
+      aria-label="Zona de carga de imágenes — haz clic o arrastra archivos"
+    >
       <input
         type="file"
+        id="file-upload"
         #fileInput
         multiple
         accept="image/jpeg, image/png"
         class="hidden-input"
+        aria-label="Subir imágenes"
         (change)="onFileSelected($event)"
       >
 
-      <div class="drop-content">
+      <div class="drop-content" aria-hidden="true">
         <span class="icon-camera">📷</span>
         <p>Haz clic o arrastra tus imágenes aquí</p>
         <small>JPG, PNG · máx. 5 MB por imagen</small>
       </div>
     </div>
-    <small class="error-text" *ngIf="f.images.errors?.['minLengthArray'] && f.images.touched">
-      Debes subir al menos 3 imágenes.
-    </small>
+    @if (f.images.errors?.['minLengthArray'] && f.images.touched) {
+      <small class="error-text">Debes subir al menos 3 imágenes.</small>
+    }
   </div>
 
-  <div class="form-group">
-    <label>{{ COPY.LABELS.CERTIFICATIONS }}</label>
+  <!-- Certifications -->
+  <fieldset class="form-group">
+    <legend class="form-group__title">{{ COPY.LABELS.CERTIFICATIONS }}</legend>
     <div class="pills-group">
-      <button type="button" class="pill" (click)="toggleCertification('ORGANIC')" [class.active]="hasCertification('ORGANIC')">🌿 Orgánico</button>
-      <button type="button" class="pill" (click)="toggleCertification('FAIRTRADE')" [class.active]="hasCertification('FAIRTRADE')">⚖️ Fairtrade</button>
-      <button type="button" class="pill" (click)="toggleCertification('RAINFOREST')" [class.active]="hasCertification('RAINFOREST')">🌊 Rainforest Alliance</button>
+      <button type="button" class="pill" (click)="toggleCertification('ORGANIC')"
+              [class.active]="hasCertification('ORGANIC')">🌿 Orgánico</button>
+      <button type="button" class="pill" (click)="toggleCertification('FAIRTRADE')"
+              [class.active]="hasCertification('FAIRTRADE')">⚖️ Fairtrade</button>
+      <button type="button" class="pill" (click)="toggleCertification('RAINFOREST')"
+              [class.active]="hasCertification('RAINFOREST')">🌊 Rainforest Alliance</button>
     </div>
-  </div>
+  </fieldset>
 
-  <div class="form-group">
-    <label>{{ COPY.LABELS.STATUS }}</label>
+  <!-- Status -->
+  <fieldset class="form-group">
+    <legend class="form-group__title">{{ COPY.LABELS.STATUS }}</legend>
     <div class="status-group">
       <label class="status-card" [class.selected]="f.status.value === 'DRAFT'">
         <input type="radio" formControlName="status" value="DRAFT" class="visually-hidden">
@@ -119,7 +134,7 @@
       </label>
     </div>
     <small class="hint-text">Solo los productos "Publicados" aparecen en el catálogo público.</small>
-  </div>
+  </fieldset>
 
   <div class="form-actions">
     <button type="button" class="btn-secondary" (click)="onCancel()">{{ COPY.BUTTONS.CANCEL }}</button>

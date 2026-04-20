@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Crear cuenta — World Coffee Marketplace">
+<title>Registrarse — World Coffee Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Mulish:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════
+   DESIGN TOKENS
+══════════════════════════════════════ */
+:root {
+  --espresso:      #372617;
+  --cafe-oscuro:   #3E2919;
+  --cafe-medio:    #7A5C42;
+  --cafe-claro:    #A8866A;
+  --crema:         #CDC4B5;
+  --marfil:        #E4DCD1;
+  --marfil-light:  #EDE6DD;
+  --blanco:        #F7F3EF;
+  --verde-selva:   #1E5E29;
+  --verde-fresco:  #4A8C56;
+  --verde-light:   #D4EAD7;
+  --amber:         #C07820;
+  --amber-light:   #FFF0D0;
+  --blue-info:     #1A6B8A;
+  --blue-light:    #E0F2F8;
+  --purple:        #5B3E8F;
+  --purple-light:  #EDE8F8;
+  --error:         #8B2020;
+  --error-light:   #FDEAEA;
+  --success:       #1E5E29;
+
+  --font-display:  'Playfair Display', Georgia, serif;
+  --font-body:     'Mulish', 'Segoe UI', sans-serif;
+
+  --r-sm: 6px; --r-md: 10px; --r-lg: 16px; --r-xl: 24px;
+  --shadow-sm:  0 1px 4px rgba(55,38,23,.07);
+  --shadow-md:  0 4px 16px rgba(55,38,23,.1);
+  --shadow-lg:  0 8px 32px rgba(55,38,23,.13);
+  --shadow-focus: 0 0 0 3px rgba(55,38,23,.15);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px}
+body{font-family:var(--font-body);background:var(--crema);color:var(--espresso);min-height:100vh}
+a{text-decoration:none;color:inherit}
+button{font-family:var(--font-body);cursor:pointer;border:none;background:none}
+input,select,textarea{font-family:var(--font-body)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+:focus-visible{outline:3px solid var(--espresso);outline-offset:2px;border-radius:var(--r-sm)}
+
+/* ── Skip link ── */
+.skip{position:absolute;top:-100%;left:16px;background:var(--espresso);color:var(--marfil);padding:8px 16px;border-radius:0 0 8px 8px;z-index:9999;font-size:.8125rem;font-weight:600}
+.skip:focus{top:0}
+
+/* Grain overlay */
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");pointer-events:none;z-index:9998;opacity:.55}
+
+/* ══════════════════════════════════════
+   PAGE LAYOUT
+══════════════════════════════════════ */
+.page{display:flex;min-height:100vh}
+
+/* ══════════════════════════════════════
+   PANEL IZQUIERDO — MARCA
+══════════════════════════════════════ */
+.brand-panel{
+  width:44%;flex-shrink:0;background:var(--espresso);
+  display:flex;flex-direction:column;justify-content:space-between;
+  padding:48px 48px;position:relative;overflow:hidden;
+}
+.brand-panel::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 15% 85%,rgba(153,120,93,.15) 0%,transparent 65%),radial-gradient(ellipse 50% 45% at 90% 15%,rgba(74,140,86,.08) 0%,transparent 55%),repeating-linear-gradient(-50deg,transparent,transparent 28px,rgba(205,196,181,.025) 28px,rgba(205,196,181,.025) 29px);pointer-events:none}
+.deco-letter{position:absolute;font-family:var(--font-display);font-weight:700;font-size:min(340px,32vw);color:rgba(255,255,255,.022);line-height:1;bottom:-60px;right:-20px;letter-spacing:-.04em;pointer-events:none;user-select:none}
+
+.brand-logo{position:relative;z-index:2;display:flex;align-items:center;gap:12px;animation:fadeUp .7s .1s both}
+.brand-icon{width:44px;height:44px;background:rgba(205,196,181,.12);border:1px solid rgba(205,196,181,.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px}
+.brand-name{font-family:var(--font-display);font-size:.875rem;font-weight:700;color:var(--marfil);line-height:1.2;letter-spacing:.03em}
+.brand-sub{font-size:.5625rem;color:rgba(205,196,181,.45);letter-spacing:.2em;text-transform:uppercase;margin-top:1px}
+
+.brand-body{position:relative;z-index:2;animation:fadeUp .7s .25s both}
+.brand-eyebrow{font-size:.6875rem;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:var(--verde-fresco);margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.brand-eyebrow::before{content:'';display:block;width:24px;height:1.5px;background:var(--verde-fresco)}
+.brand-headline{font-family:var(--font-display);font-size:clamp(1.8rem,2.8vw,2.75rem);font-weight:700;color:var(--marfil);line-height:1.18;letter-spacing:-.02em;margin-bottom:16px}
+.brand-headline em{font-style:italic;font-weight:400;color:rgba(205,196,181,.6)}
+.brand-desc{font-size:.875rem;color:rgba(205,196,181,.5);line-height:1.8;font-weight:300;max-width:320px}
+
+.brand-steps{position:relative;z-index:2;display:flex;flex-direction:column;gap:12px;animation:fadeUp .7s .4s both}
+.step-item{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:rgba(205,196,181,.05);border:1px solid rgba(205,196,181,.1);border-radius:var(--r-lg);transition:background .2s}
+.step-item:hover{background:rgba(205,196,181,.09)}
+.step-num{width:28px;height:28px;border-radius:50%;background:rgba(205,196,181,.12);border:1.5px solid rgba(205,196,181,.2);display:flex;align-items:center;justify-content:center;font-size:.6875rem;font-weight:800;color:var(--marfil);flex-shrink:0}
+.step-text{display:flex;flex-direction:column;gap:1px}
+.step-title{font-size:.875rem;font-weight:700;color:var(--marfil)}
+.step-sub{font-size:.6875rem;color:rgba(205,196,181,.45);font-weight:300}
+
+/* ══════════════════════════════════════
+   PANEL DERECHO — FORMULARIO
+══════════════════════════════════════ */
+.form-panel{
+  flex:1;background:var(--marfil-light);
+  display:flex;align-items:flex-start;justify-content:center;
+  padding:40px 40px 60px;overflow-y:auto;
+  position:relative;
+}
+.form-panel::before{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(-28deg,transparent,transparent 36px,rgba(55,38,23,.025) 36px,rgba(55,38,23,.025) 37px);pointer-events:none}
+
+.form-wrap{width:100%;max-width:480px;position:relative;z-index:2}
+
+/* ─ Selector de rol ─ */
+.role-section{margin-bottom:28px;animation:fadeUp .6s .2s both}
+.role-label-text{font-size:.6875rem;font-weight:800;letter-spacing:.22em;text-transform:uppercase;color:var(--cafe-medio);margin-bottom:10px;display:block}
+.role-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.role-card{
+  padding:14px 10px;border-radius:var(--r-lg);
+  border:2px solid rgba(55,38,23,.12);background:var(--marfil);
+  cursor:pointer;text-align:center;transition:all .2s;
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  position:relative;overflow:hidden;
+}
+.role-card:hover{border-color:rgba(55,38,23,.35);box-shadow:var(--shadow-sm)}
+.role-card.active-buyer{border-color:var(--blue-info);background:var(--blue-light)}
+.role-card.active-producer{border-color:var(--verde-selva);background:var(--verde-light)}
+.role-card.active-admin{border-color:var(--purple);background:var(--purple-light)}
+.role-card-check{position:absolute;top:8px;right:8px;width:18px;height:18px;border-radius:50%;border:2px solid rgba(55,38,23,.15);background:transparent;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.role-card.active-buyer .role-card-check,.role-card.active-producer .role-card-check,.role-card.active-admin .role-card-check{border-color:currentColor}
+.role-card.active-buyer .role-card-check::after,.role-card.active-producer .role-card-check::after,.role-card.active-admin .role-card-check::after{content:'✓';font-size:10px;font-weight:800}
+.role-card.active-buyer .role-card-check{color:var(--blue-info)}
+.role-card.active-producer .role-card-check{color:var(--verde-selva)}
+.role-card.active-admin .role-card-check{color:var(--purple)}
+.role-icon{font-size:26px;line-height:1}
+.role-name{font-size:.8125rem;font-weight:800;color:var(--espresso);letter-spacing:.02em}
+.role-desc{font-size:.625rem;color:var(--cafe-medio);font-weight:400;line-height:1.4}
+
+/* ─ Form header ─ */
+.form-header{margin-bottom:24px;animation:fadeUp .6s .3s both}
+.form-eyebrow{font-size:.6875rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;margin-bottom:6px;transition:color .3s}
+.form-eyebrow.buyer-color{color:var(--blue-info)}
+.form-eyebrow.producer-color{color:var(--verde-fresco)}
+.form-eyebrow.admin-color{color:var(--purple)}
+.form-eyebrow.default-color{color:var(--verde-fresco)}
+.form-title{font-family:var(--font-display);font-size:1.875rem;font-weight:700;color:var(--espresso);letter-spacing:-.02em;line-height:1.15;margin-bottom:4px}
+.form-subtitle{font-size:.875rem;color:var(--cafe-medio);font-weight:400}
+
+/* ─ Steps de progreso ─ */
+.progress-bar{display:flex;align-items:center;gap:0;margin-bottom:26px;animation:fadeUp .6s .35s both}
+.progress-step{display:flex;align-items:center;gap:0;flex:1}
+.p-circle{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;flex-shrink:0;transition:all .3s;border:2px solid transparent}
+.p-circle.done{background:var(--verde-selva);color:#fff;border-color:var(--verde-selva)}
+.p-circle.current{background:var(--espresso);color:var(--marfil);border-color:var(--espresso)}
+.p-circle.pending{background:var(--marfil);color:var(--cafe-medio);border-color:rgba(55,38,23,.15)}
+.p-label{font-size:.625rem;font-weight:700;color:var(--cafe-medio);white-space:nowrap;margin-left:6px;display:none}
+.p-line{flex:1;height:2px;background:rgba(55,38,23,.1);margin:0 4px;transition:background .4s}
+.p-line.filled{background:var(--verde-selva)}
+.progress-step:last-child .p-line{display:none}
+
+/* ─ Step pane ─ */
+.step-pane{display:none}
+.step-pane.active{display:block;animation:fadeUp .35s both}
+
+/* ─ Section subtitle ─ */
+.section-sep{display:flex;align-items:center;gap:10px;margin:18px 0 14px}
+.section-sep-line{flex:1;height:1px;background:rgba(55,38,23,.1)}
+.section-sep-text{font-size:.6875rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--cafe-medio);white-space:nowrap}
+
+/* ─ Form fields ─ */
+.field{margin-bottom:18px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.field-label{display:block;font-size:.8125rem;font-weight:700;color:var(--espresso);margin-bottom:6px}
+.req{color:var(--error);margin-left:2px}
+.hint-label{font-size:.6875rem;color:var(--cafe-medio);font-weight:400;margin-left:6px}
+
+.input-wrap{position:relative;display:flex;align-items:center}
+.field-input,.field-select,.field-textarea{
+  width:100%;padding:11px 14px 11px 42px;
+  background:rgba(55,38,23,.04);border:1.5px solid rgba(55,38,23,.15);
+  border-radius:var(--r-md);font-size:.9375rem;color:var(--espresso);
+  outline:none;transition:border-color .2s,background .2s,box-shadow .2s;
+  line-height:1.5;
+}
+.field-input::placeholder,.field-select::placeholder{color:rgba(55,38,23,.35)}
+.field-input:hover:not(:focus):not([aria-invalid="true"]){border-color:rgba(55,38,23,.35)}
+.field-input:focus,.field-select:focus,.field-textarea:focus{border-color:var(--espresso);background:#fff;box-shadow:var(--shadow-focus)}
+.field-input[aria-invalid="true"]{border-color:var(--error);background:var(--error-light);box-shadow:0 0 0 3px rgba(139,32,32,.1)}
+.field-input[aria-invalid="false"]:not(:placeholder-shown){border-color:var(--verde-selva)}
+.field-select{padding-left:42px;appearance:none;background-image:url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23372617' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+.field-input.no-icon,.field-select.no-icon{padding-left:14px}
+.field-textarea{padding:11px 14px;min-height:90px;resize:vertical;padding-left:14px}
+
+.field-icon{position:absolute;left:13px;color:var(--cafe-medio);pointer-events:none;display:flex;align-items:center;transition:color .2s}
+.input-wrap:focus-within .field-icon{color:var(--espresso)}
+.field-icon-right{position:absolute;right:12px;background:none;border:none;color:var(--cafe-medio);cursor:pointer;padding:4px;border-radius:5px;transition:color .15s}
+.field-icon-right:hover{color:var(--espresso);background:rgba(55,38,23,.06)}
+.status-icon{position:absolute;right:12px;pointer-events:none;font-size:13px;display:none}
+.field-input[aria-invalid="true"] ~ .status-icon.err{display:flex;color:var(--error)}
+.field-input[aria-invalid="false"]:not(:placeholder-shown) ~ .status-icon.ok{display:flex;color:var(--verde-selva)}
+
+.field-msg{font-size:.75rem;font-weight:600;margin-top:5px;min-height:16px;display:flex;align-items:center;gap:4px}
+.msg-error{color:var(--error)}
+.msg-success{color:var(--verde-selva)}
+.msg-hint{color:var(--cafe-medio);font-weight:400}
+
+/* Password strength */
+.pwd-strength{margin-top:6px}
+.pwd-bars{display:flex;gap:3px;margin-bottom:3px}
+.pwd-bar{flex:1;height:3px;border-radius:2px;background:rgba(55,38,23,.1);transition:background .3s}
+.pwd-bar.weak{background:var(--error)}
+.pwd-bar.fair{background:var(--amber)}
+.pwd-bar.good{background:var(--verde-fresco)}
+.pwd-bar.strong{background:var(--verde-selva)}
+.pwd-label{font-size:.6875rem;color:var(--cafe-medio)}
+
+/* Terms checkbox */
+.checkbox-wrap{display:flex;align-items:flex-start;gap:10px;cursor:pointer;margin-bottom:4px}
+.checkbox-wrap input{position:absolute;opacity:0;width:0;height:0}
+.cb-box{width:18px;height:18px;border:1.5px solid rgba(55,38,23,.25);border-radius:5px;background:var(--marfil-light);display:flex;align-items:center;justify-content:center;transition:all .18s;flex-shrink:0;margin-top:1px}
+.checkbox-wrap input:checked + .cb-box{background:var(--espresso);border-color:var(--espresso)}
+.checkbox-wrap input:checked + .cb-box::after{content:'';width:4px;height:8px;border:2px solid var(--marfil);border-top:none;border-left:none;transform:rotate(45deg) translate(-1px,-1px);display:block}
+.checkbox-wrap input:focus-visible + .cb-box{outline:3px solid var(--espresso);outline-offset:2px}
+.cb-label{font-size:.8125rem;color:var(--cafe-medio);line-height:1.55}
+.cb-label a{color:var(--verde-selva);font-weight:700;border-bottom:1px solid var(--verde-selva);padding-bottom:1px;transition:opacity .15s}
+.cb-label a:hover{opacity:.7}
+
+/* ─ Sección específica de productor ─ */
+.producer-section{padding:16px;background:rgba(30,94,41,.05);border:1.5px solid rgba(30,94,41,.15);border-radius:var(--r-lg);margin-bottom:18px}
+.producer-section-title{font-size:.6875rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--verde-selva);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+
+/* ─ Sección específica de admin ─ */
+.admin-section{padding:16px;background:rgba(91,62,143,.06);border:1.5px solid rgba(91,62,143,.18);border-radius:var(--r-lg);margin-bottom:18px}
+.admin-section-title{font-size:.6875rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--purple);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+
+/* Cert checkboxes */
+.cert-grid{display:flex;gap:8px;flex-wrap:wrap}
+.cert-opt{display:flex;align-items:center;gap:7px;padding:7px 13px;border:1.5px solid rgba(55,38,23,.15);border-radius:40px;cursor:pointer;transition:all .18s;user-select:none}
+.cert-opt span{font-size:.8125rem;font-weight:600;color:var(--cafe-medio)}
+.cert-opt input{position:absolute;opacity:0;width:0;height:0}
+.cert-opt:has(input:checked){border-color:var(--verde-selva);background:var(--verde-light)}
+.cert-opt:has(input:checked) span{color:var(--verde-selva);font-weight:700}
+
+/* ─ Botones de navegación ─ */
+.nav-btns{display:flex;gap:10px;margin-top:6px}
+.btn-back{flex:1;padding:13px;border-radius:var(--r-md);border:1.5px solid rgba(55,38,23,.18);color:var(--cafe-medio);font-size:.9375rem;font-weight:700;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:7px}
+.btn-back:hover{border-color:var(--espresso);color:var(--espresso);background:rgba(55,38,23,.04)}
+
+.btn-next{flex:2;padding:14px;border-radius:var(--r-md);background:var(--espresso);color:var(--marfil);font-size:.9375rem;font-weight:800;letter-spacing:.02em;transition:all .2s;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-next::before{content:'';position:absolute;inset:0;background:var(--cafe-oscuro);transform:scaleX(0);transform-origin:left;transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.btn-next:hover:not(:disabled){box-shadow:0 6px 22px rgba(55,38,23,.28);transform:translateY(-1px)}
+.btn-next:hover:not(:disabled)::before{transform:scaleX(1)}
+.btn-next:active:not(:disabled){transform:none}
+.btn-next:disabled{opacity:.55;cursor:not-allowed}
+.btn-next span,.btn-next svg{position:relative;z-index:1}
+.btn-next.success{background:var(--verde-selva)}
+.btn-next.success::before{display:none}
+
+.btn-spinner{width:18px;height:18px;border:2.5px solid rgba(228,220,209,.35);border-top-color:var(--marfil);border-radius:50%;animation:spin .7s linear infinite;display:none;position:relative;z-index:1}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ─ Divider OAuth ─ */
+.oauth-row{display:flex;align-items:center;gap:14px;margin:20px 0}
+.oauth-line{flex:1;height:1px;background:rgba(55,38,23,.1)}
+.oauth-text{font-size:.6875rem;color:rgba(55,38,23,.38);letter-spacing:.12em;text-transform:uppercase;font-weight:600}
+.btn-google{width:100%;padding:12px 20px;border-radius:var(--r-md);border:1.5px solid rgba(55,38,23,.18);color:var(--espresso);font-size:.875rem;font-weight:700;background:transparent;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s}
+.btn-google:hover{background:rgba(55,38,23,.04);border-color:rgba(55,38,23,.35);box-shadow:var(--shadow-sm)}
+.google-logo{width:18px;height:18px;flex-shrink:0}
+
+/* ─ Footer del formulario ─ */
+.form-footer{margin-top:22px;text-align:center;font-size:.8125rem;color:var(--cafe-medio)}
+.login-link{color:var(--espresso);font-weight:800;border-bottom:2px solid var(--espresso);padding-bottom:1px;transition:color .2s,border-color .2s}
+.login-link:hover{color:var(--verde-selva);border-color:var(--verde-selva)}
+
+/* ─ Pantalla de éxito ─ */
+.success-screen{text-align:center;padding:32px 0;animation:fadeUp .5s both}
+.success-icon{width:80px;height:80px;border-radius:50%;background:var(--verde-light);display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 20px;border:3px solid var(--verde-selva)}
+.success-title{font-family:var(--font-display);font-size:1.75rem;font-weight:700;color:var(--espresso);margin-bottom:10px}
+.success-desc{font-size:.9375rem;color:var(--cafe-medio);line-height:1.7;max-width:360px;margin:0 auto 28px}
+.success-desc strong{color:var(--espresso);font-weight:700}
+.btn-go-login{width:100%;padding:14px;border-radius:var(--r-md);background:var(--espresso);color:var(--marfil);font-size:.9375rem;font-weight:800;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-go-login:hover{background:var(--cafe-oscuro);box-shadow:0 6px 22px rgba(55,38,23,.28);transform:translateY(-1px)}
+.success-note{font-size:.8125rem;color:var(--cafe-medio);margin-top:14px}
+
+/* ── Toast ── */
+.toast-wrap{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast-item{display:flex;align-items:center;gap:10px;padding:12px 18px;border-radius:40px;font-size:.875rem;font-weight:600;box-shadow:0 8px 28px rgba(0,0,0,.2);transform:translateX(120%);opacity:0;transition:transform .3s cubic-bezier(.22,.68,0,1.2),opacity .3s;pointer-events:auto;max-width:360px}
+.toast-item.show{transform:translateX(0);opacity:1}
+.t-success{background:var(--verde-selva);color:#fff}
+.t-info{background:var(--espresso);color:var(--marfil)}
+.t-warning{background:var(--amber);color:#fff}
+.t-error{background:var(--error);color:#fff}
+
+/* ══════════════════════════════════════
+   ANIMACIONES
+══════════════════════════════════════ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+/* ══════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════ */
+@media(max-width:960px){
+  .brand-panel{display:none}
+  .form-panel{background:var(--crema);padding:32px 20px 60px;align-items:flex-start}
+  .form-wrap{max-width:100%}
+  .mobile-logo{display:flex!important}
+}
+@media(max-width:600px){
+  .field-row{grid-template-columns:1fr}
+  .role-grid{grid-template-columns:1fr}
+  .cert-grid{flex-direction:column}
+}
+@media(max-width:400px){
+  .form-panel{padding:24px 14px 60px}
+  .btn-back,.btn-next{font-size:.875rem;padding:12px}
+}
+
+/* Mobile logo (hidden on desktop) */
+.mobile-logo{display:none;align-items:center;gap:10px;margin-bottom:28px}
+.mobile-logo-icon{width:38px;height:38px;background:var(--espresso);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.mobile-logo-name{font-family:var(--font-display);font-size:.9375rem;font-weight:700;color:var(--espresso)}
+</style>
+</head>
+<body>
+
+<a href="#main-form" class="skip">Saltar al formulario de registro</a>
+
+<div class="page">
+
+  <!-- ══════ PANEL IZQUIERDO ══════ -->
+  <aside class="brand-panel" aria-hidden="true">
+    <div class="deco-letter">R</div>
+
+    <div class="brand-logo">
+      <div class="brand-icon">☕</div>
+      <div>
+        <div class="brand-name">World Coffee<br>Marketplace</div>
+        <div class="brand-sub">Est. 2025 · Colombia</div>
+      </div>
+    </div>
+
+    <div class="brand-body">
+      <div class="brand-eyebrow">Únete hoy</div>
+      <h2 class="brand-headline">
+        Forma parte del<br>café que <em>transforma</em><br>vidas.
+      </h2>
+      <p class="brand-desc">
+        Más de 120 productores verificados y cientos de compradores
+        comprometidos con el café sostenible, justo y trazable de Colombia.
+      </p>
+    </div>
+
+    <div class="brand-steps">
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <div class="step-text">
+          <div class="step-title">Elige tu rol</div>
+          <div class="step-sub">Comprador, productor o administrador</div>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <div class="step-text">
+          <div class="step-title">Completa tu perfil</div>
+          <div class="step-sub">Datos personales y de tu finca si aplica</div>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">3</div>
+        <div class="step-text">
+          <div class="step-title">Explora el marketplace</div>
+          <div class="step-sub">Empieza a comprar o a publicar productos</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ══════ PANEL FORMULARIO ══════ -->
+  <main class="form-panel" id="main-form">
+    <div class="form-wrap">
+
+      <!-- Logo mobile -->
+      <div class="mobile-logo">
+        <div class="mobile-logo-icon" aria-hidden="true">☕</div>
+        <div class="mobile-logo-name">World Coffee Marketplace</div>
+      </div>
+
+      <!-- ─ Selector de rol ─ -->
+      <div class="role-section">
+        <span class="role-label-text" id="roleGroupLabel">¿Cómo quieres participar?</span>
+        <div class="role-grid" role="radiogroup" aria-labelledby="roleGroupLabel">
+          <div class="role-card" id="role-buyer" onclick="selectRole('buyer')" role="radio" aria-checked="false" tabindex="0" aria-label="Comprador: quiero explorar y comprar cafés">
+            <div class="role-card-check" aria-hidden="true"></div>
+            <div class="role-icon" aria-hidden="true">🛒</div>
+            <div class="role-name">Comprador</div>
+            <div class="role-desc">Explora y compra cafés especiales</div>
+          </div>
+          <div class="role-card" id="role-producer" onclick="selectRole('producer')" role="radio" aria-checked="false" tabindex="0" aria-label="Productor: quiero vender mi café en el marketplace">
+            <div class="role-card-check" aria-hidden="true"></div>
+            <div class="role-icon" aria-hidden="true">🌿</div>
+            <div class="role-name">Productor</div>
+            <div class="role-desc">Vende tu café directamente</div>
+          </div>
+          <div class="role-card" id="role-admin" onclick="selectRole('admin')" role="radio" aria-checked="false" tabindex="0" aria-label="Administrador: acceso con código de invitación">
+            <div class="role-card-check" aria-hidden="true"></div>
+            <div class="role-icon" aria-hidden="true">⚙️</div>
+            <div class="role-name">Administrador</div>
+            <div class="role-desc">Gestión interna del marketplace</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─ Encabezado dinámico ─ -->
+      <div class="form-header">
+        <div class="form-eyebrow default-color" id="formEyebrow">Selecciona tu rol para comenzar</div>
+        <h1 class="form-title" id="formTitle">Crear cuenta</h1>
+        <p class="form-subtitle" id="formSubtitle">Completa el formulario para unirte al marketplace</p>
+      </div>
+
+      <!-- ─ Barra de progreso ─ -->
+      <div class="progress-bar" id="progressBar" role="progressbar" aria-valuemin="1" aria-valuemax="2" aria-valuenow="1" aria-label="Paso 1 de 2">
+        <div class="progress-step">
+          <div class="p-circle current" id="pc1">1</div>
+          <div class="p-line" id="pl1"></div>
+        </div>
+        <div class="progress-step">
+          <div class="p-circle pending" id="pc2">2</div>
+          <div class="p-line" id="pl2"></div>
+        </div>
+        <div class="progress-step">
+          <div class="p-circle pending" id="pc3">✓</div>
+        </div>
+      </div>
+
+      <!-- ════════ PASO 1: Datos personales ════════ -->
+      <div class="step-pane active" id="step1" role="group" aria-labelledby="step1Title">
+        <p id="step1Title" class="sr-only">Paso 1: Datos personales</p>
+
+        <!-- Nombre y apellido -->
+        <div class="field-row">
+          <div class="field" id="fn-field">
+            <label class="field-label" for="firstName">Nombre <span class="req" aria-label="requerido">*</span></label>
+            <div class="input-wrap">
+              <span class="field-icon" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </span>
+              <input type="text" id="firstName" class="field-input" placeholder="María" required aria-required="true" aria-describedby="fn-msg" autocomplete="given-name" onblur="validateField('firstName','fn-msg','min2')" oninput="clearErr('firstName','fn-msg')">
+              <span class="status-icon err" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+              </span>
+              <span class="status-icon ok" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>
+              </span>
+            </div>
+            <div class="field-msg" id="fn-msg" role="alert" aria-live="polite"></div>
+          </div>
+          <div class="field" id="ln-field">
+            <label class="field-label" for="lastName">Apellido <span class="req">*</span></label>
+            <div class="input-wrap">
+              <span class="field-icon" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </span>
+              <input type="text" id="lastName" class="field-input" placeholder="García" required aria-required="true" aria-describedby="ln-msg" autocomplete="family-name" onblur="validateField('lastName','ln-msg','min2')" oninput="clearErr('lastName','ln-msg')">
+              <span class="status-icon err" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg></span>
+              <span class="status-icon ok" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg></span>
+            </div>
+            <div class="field-msg" id="ln-msg" role="alert" aria-live="polite"></div>
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="field" id="em-field">
+          <label class="field-label" for="email">Correo electrónico <span class="req">*</span></label>
+          <div class="input-wrap">
+            <span class="field-icon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M2 7l10 7 10-7"/></svg>
+            </span>
+            <input type="email" id="email" class="field-input" placeholder="nombre@ejemplo.com" required aria-required="true" aria-describedby="em-msg" autocomplete="email" inputmode="email" onblur="validateField('email','em-msg','email')" oninput="clearErr('email','em-msg')">
+            <span class="status-icon err" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg></span>
+            <span class="status-icon ok" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg></span>
+          </div>
+          <div class="field-msg" id="em-msg" role="alert" aria-live="polite"></div>
+        </div>
+
+        <!-- Teléfono -->
+        <div class="field" id="ph-field">
+          <label class="field-label" for="phone">Teléfono <span class="hint-label">(opcional)</span></label>
+          <div class="input-wrap">
+            <span class="field-icon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8a19.79 19.79 0 01-3.07-8.67A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.09 6.09l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>
+            </span>
+            <input type="tel" id="phone" class="field-input" placeholder="+57 300 000 0000" autocomplete="tel" inputmode="tel">
+          </div>
+        </div>
+
+        <!-- Contraseña -->
+        <div class="field" id="pw-field">
+          <label class="field-label" for="password">Contraseña <span class="req">*</span></label>
+          <div class="input-wrap">
+            <span class="field-icon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            </span>
+            <input type="password" id="password" class="field-input" placeholder="Mínimo 8 caracteres" required aria-required="true" aria-describedby="pw-msg" autocomplete="new-password" onblur="validateField('password','pw-msg','password')" oninput="updatePwdStrength()">
+            <button type="button" class="field-icon-right" id="pwdToggle" onclick="togglePwd()" aria-label="Mostrar contraseña" aria-pressed="false">
+              <svg id="eye-open" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg id="eye-shut" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+          </div>
+          <div class="pwd-strength" aria-live="polite" id="pwdStrength" style="display:none">
+            <div class="pwd-bars"><div class="pwd-bar" id="pb1"></div><div class="pwd-bar" id="pb2"></div><div class="pwd-bar" id="pb3"></div><div class="pwd-bar" id="pb4"></div></div>
+            <div class="pwd-label" id="pwdLabel"></div>
+          </div>
+          <div class="field-msg" id="pw-msg" role="alert" aria-live="polite"></div>
+        </div>
+
+        <!-- Confirmar contraseña -->
+        <div class="field" id="pc-field">
+          <label class="field-label" for="confirmPwd">Confirmar contraseña <span class="req">*</span></label>
+          <div class="input-wrap">
+            <span class="field-icon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            </span>
+            <input type="password" id="confirmPwd" class="field-input" placeholder="Repite tu contraseña" required aria-required="true" aria-describedby="pc-msg" autocomplete="new-password" onblur="validateField('confirmPwd','pc-msg','match')" oninput="clearErr('confirmPwd','pc-msg')">
+          </div>
+          <div class="field-msg" id="pc-msg" role="alert" aria-live="polite"></div>
+        </div>
+
+        <!-- Términos -->
+        <div class="field" style="margin-bottom:22px">
+          <label class="checkbox-wrap" for="terms">
+            <input type="checkbox" id="terms" required aria-required="true" aria-describedby="terms-msg">
+            <div class="cb-box" aria-hidden="true"></div>
+            <span class="cb-label">Acepto los <a href="#">Términos de uso</a> y la <a href="#">Política de privacidad</a> de World Coffee Marketplace</span>
+          </label>
+          <div class="field-msg" id="terms-msg" role="alert" aria-live="polite" style="margin-left:28px"></div>
+        </div>
+
+        <!-- Botón siguiente paso -->
+        <div class="nav-btns">
+          <button class="btn-next" style="flex:1" id="btnStep1" onclick="goStep2()" aria-label="Continuar al paso 2 de 2">
+            <span id="btnStep1Label">Continuar</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            <span class="btn-spinner" id="btnStep1Spinner" role="status"></span>
+          </button>
+        </div>
+
+        <!-- OAuth -->
+        <div class="oauth-row" aria-hidden="true">
+          <div class="oauth-line"></div>
+          <span class="oauth-text">o regístrate con</span>
+          <div class="oauth-line"></div>
+        </div>
+        <button class="btn-google" onclick="showToast('Autenticando con Google...','info')" aria-label="Continuar el registro con cuenta de Google">
+          <svg class="google-logo" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+          </svg>
+          Continuar con Google
+        </button>
+
+        <div class="form-footer">
+          ¿Ya tienes cuenta?&nbsp;
+          <a href="login_ux_marketplace_cafe.html" class="login-link">Iniciar sesión</a>
+        </div>
+      </div>
+
+      <!-- ════════ PASO 2: Datos específicos del rol ════════ -->
+      <div class="step-pane" id="step2" role="group" aria-labelledby="step2Title">
+        <p id="step2Title" class="sr-only">Paso 2: Información adicional según tu rol</p>
+
+        <!-- BUYER extra: departamento, preferencias -->
+        <div id="buyer-fields">
+          <div class="field">
+            <label class="field-label" for="buyerDept">Departamento <span class="hint-label">(opcional)</span></label>
+            <div class="input-wrap">
+              <span class="field-icon" aria-hidden="true">📍</span>
+              <select id="buyerDept" class="field-select">
+                <option value="">Selecciona tu departamento...</option>
+                <option>Bogotá D.C.</option><option>Antioquia</option><option>Valle del Cauca</option>
+                <option>Cundinamarca</option><option>Santander</option><option>Atlántico</option>
+                <option>Huila</option><option>Nariño</option><option>Cauca</option><option>Otro</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">Tipos de café que te interesan <span class="hint-label">(opcional)</span></label>
+            <div class="cert-grid" role="group" aria-label="Preferencias de café">
+              <label class="cert-opt"><input type="checkbox" value="especial"><span>☕ Café especial</span></label>
+              <label class="cert-opt"><input type="checkbox" value="organico"><span>🌿 Orgánico</span></label>
+              <label class="cert-opt"><input type="checkbox" value="filtro"><span>🫖 Filtro</span></label>
+              <label class="cert-opt"><input type="checkbox" value="espresso"><span>⚡ Espresso</span></label>
+              <label class="cert-opt"><input type="checkbox" value="cold_brew"><span>❄️ Cold brew</span></label>
+            </div>
+          </div>
+          <div style="padding:14px;background:var(--blue-light);border:1px solid rgba(26,107,138,.2);border-radius:var(--r-lg);font-size:.8125rem;color:var(--blue-info);font-weight:600;display:flex;align-items:flex-start;gap:10px;margin-bottom:18px">
+            <span style="font-size:18px;flex-shrink:0" aria-hidden="true">ℹ️</span>
+            Como <strong>comprador</strong> podrás explorar el catálogo, agregar al carrito y gestionar tus pedidos de inmediato.
+          </div>
+        </div>
+
+        <!-- PRODUCER extra: finca, certificaciones -->
+        <div id="producer-fields" style="display:none">
+          <div class="producer-section">
+            <div class="producer-section-title">🌿 Información de tu finca</div>
+            <div class="field">
+              <label class="field-label" for="farmName">Nombre de la finca <span class="req">*</span></label>
+              <div class="input-wrap">
+                <span class="field-icon" aria-hidden="true">🏡</span>
+                <input type="text" id="farmName" class="field-input" placeholder="Ej. Finca La Esperanza" aria-required="true">
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label class="field-label" for="farmDept">Departamento <span class="req">*</span></label>
+                <div class="input-wrap">
+                  <span class="field-icon" aria-hidden="true">📍</span>
+                  <select id="farmDept" class="field-select" aria-required="true">
+                    <option value="">Seleccionar...</option>
+                    <option>Huila</option><option>Nariño</option><option>Antioquia</option>
+                    <option>Cauca</option><option>Tolima</option><option>Cundinamarca</option>
+                    <option>Magdalena</option><option>Quindío</option><option>Risaralda</option><option>Otro</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field">
+                <label class="field-label" for="farmMun">Municipio <span class="req">*</span></label>
+                <div class="input-wrap">
+                  <span class="field-icon" aria-hidden="true">🏘️</span>
+                  <input type="text" id="farmMun" class="field-input" placeholder="Ej. Pitalito" aria-required="true">
+                </div>
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label class="field-label" for="farmAlt">Altitud (msnm)</label>
+                <div class="input-wrap">
+                  <span class="field-icon" aria-hidden="true">🏔️</span>
+                  <input type="number" id="farmAlt" class="field-input" placeholder="1780" min="0" max="4000">
+                </div>
+              </div>
+              <div class="field">
+                <label class="field-label" for="farmHa">Hectáreas</label>
+                <div class="input-wrap">
+                  <span class="field-icon" aria-hidden="true">📐</span>
+                  <input type="number" id="farmHa" class="field-input" placeholder="12.5" step="0.1" min="0">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label">Certificaciones actuales <span class="hint-label">(selecciona las que tienes)</span></label>
+            <div class="cert-grid" role="group" aria-label="Certificaciones de sostenibilidad">
+              <label class="cert-opt"><input type="checkbox" value="org"><span>🌿 Orgánico</span></label>
+              <label class="cert-opt"><input type="checkbox" value="fair"><span>⚖️ Fairtrade</span></label>
+              <label class="cert-opt"><input type="checkbox" value="rain"><span>🌊 Rainforest</span></label>
+              <label class="cert-opt"><input type="checkbox" value="utz"><span>🌱 UTZ</span></label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="farmDesc">Descripción de tu finca <span class="hint-label">(opcional)</span></label>
+            <textarea id="farmDesc" class="field-textarea" placeholder="Cuéntanos sobre tu historia, variedades, proceso de beneficio..." maxlength="500"></textarea>
+          </div>
+
+          <div style="padding:14px;background:var(--amber-light);border:1px solid rgba(192,120,32,.2);border-radius:var(--r-lg);font-size:.8125rem;color:var(--amber);font-weight:600;display:flex;align-items:flex-start;gap:10px;margin-bottom:18px">
+            <span style="font-size:18px;flex-shrink:0" aria-hidden="true">⚠️</span>
+            Tu perfil será <strong>revisado por un administrador</strong> antes de que puedas publicar productos. Recibirás una notificación por correo cuando sea aprobado.
+          </div>
+        </div>
+
+        <!-- ADMIN extra: código de acceso -->
+        <div id="admin-fields" style="display:none">
+          <div class="admin-section">
+            <div class="admin-section-title">⚙️ Acceso de administrador</div>
+            <div class="field">
+              <label class="field-label" for="adminCode">Código de invitación <span class="req">*</span></label>
+              <div class="input-wrap">
+                <span class="field-icon" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+                </span>
+                <input type="text" id="adminCode" class="field-input" placeholder="ADMIN-XXXX-XXXX" aria-required="true" aria-describedby="admin-code-msg" style="letter-spacing:.1em;font-weight:700" oninput="this.value=this.value.toUpperCase()">
+              </div>
+              <div class="field-msg msg-hint" id="admin-code-msg">El código te fue proporcionado por el equipo de WCMP</div>
+            </div>
+            <div class="field">
+              <label class="field-label" for="adminDept">Área de gestión</label>
+              <div class="input-wrap">
+                <span class="field-icon" aria-hidden="true">🏢</span>
+                <select id="adminDept" class="field-select">
+                  <option value="">Seleccionar área...</option>
+                  <option>Aprobación de productores</option>
+                  <option>Gestión de categorías</option>
+                  <option>Control de usuarios</option>
+                  <option>Operaciones generales</option>
+                  <option>Tecnología y plataforma</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div style="padding:14px;background:var(--purple-light);border:1px solid rgba(91,62,143,.2);border-radius:var(--r-lg);font-size:.8125rem;color:var(--purple);font-weight:600;display:flex;align-items:flex-start;gap:10px;margin-bottom:18px">
+            <span style="font-size:18px;flex-shrink:0" aria-hidden="true">🔐</span>
+            Las cuentas de administrador requieren <strong>verificación adicional</strong> y solo se crean con código de invitación válido del equipo de WCMP.
+          </div>
+        </div>
+
+        <!-- Navegación -->
+        <div class="nav-btns">
+          <button class="btn-back" onclick="goStep1()" aria-label="Volver al paso anterior">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+            Volver
+          </button>
+          <button class="btn-next" id="btnStep2" onclick="submitForm()" aria-label="Crear mi cuenta">
+            <span id="btnStep2Label">Crear cuenta</span>
+            <svg id="submitIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+            <span class="btn-spinner" id="btnStep2Spinner" role="status"></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ════════ PANTALLA DE ÉXITO ════════ -->
+      <div class="step-pane" id="step-success" role="region" aria-label="Registro completado">
+        <div class="success-screen">
+          <div class="success-icon" aria-hidden="true">✓</div>
+          <h2 class="success-title" id="successTitle">¡Cuenta creada!</h2>
+          <p class="success-desc" id="successDesc">
+            Tu cuenta ha sido creada exitosamente.<br>
+            Revisa tu correo para confirmar tu dirección.
+          </p>
+          <a href="login_ux_marketplace_cafe.html" class="btn-go-login" aria-label="Ir a iniciar sesión">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+            Ir a iniciar sesión
+          </a>
+          <p class="success-note" id="successNote">También puedes explorar el catálogo sin iniciar sesión</p>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Toast container -->
+<div class="toast-wrap" id="toastWrap" aria-live="polite" aria-atomic="false"></div>
+
+<script>
+/* ════════════════════════════════════
+   ESTADO
+════════════════════════════════════ */
+let currentRole = null;
+let currentStep = 1;
+
+/* ════════════════════════════════════
+   SELECCIÓN DE ROL
+════════════════════════════════════ */
+const ROLE_CONFIG = {
+  buyer: {
+    eyebrow: 'Para compradores',
+    eyebrowClass: 'buyer-color',
+    title: 'Crea tu cuenta',
+    subtitle: 'Accede al mejor café de origen colombiano',
+  },
+  producer: {
+    eyebrow: 'Para productores',
+    eyebrowClass: 'producer-color',
+    title: 'Registra tu finca',
+    subtitle: 'Vende tu café directamente a compradores del mundo',
+  },
+  admin: {
+    eyebrow: 'Acceso administrativo',
+    eyebrowClass: 'admin-color',
+    title: 'Panel de control',
+    subtitle: 'Gestión interna del marketplace — requiere invitación',
+  },
+};
+
+const ROLE_ACTIVE_CLASSES = {
+  buyer: 'active-buyer',
+  producer: 'active-producer',
+  admin: 'active-admin',
+};
+
+function selectRole(role) {
+  currentRole = role;
+  // Reset cards
+  document.querySelectorAll('.role-card').forEach(c => {
+    c.className = 'role-card';
+    c.setAttribute('aria-checked', 'false');
+  });
+  // Activate selected
+  const card = document.getElementById('role-' + role);
+  card.classList.add(ROLE_ACTIVE_CLASSES[role]);
+  card.setAttribute('aria-checked', 'true');
+
+  const cfg = ROLE_CONFIG[role];
+  const ew = document.getElementById('formEyebrow');
+  ew.textContent = cfg.eyebrow;
+  ew.className = 'form-eyebrow ' + cfg.eyebrowClass;
+  document.getElementById('formTitle').textContent = cfg.title;
+  document.getElementById('formSubtitle').textContent = cfg.subtitle;
+}
+
+// Keyboard for role cards
+document.querySelectorAll('.role-card').forEach(card => {
+  card.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      selectRole(card.id.replace('role-', ''));
+    }
+  });
+});
+
+/* ════════════════════════════════════
+   PROGRESO
+════════════════════════════════════ */
+function setProgress(step) {
+  currentStep = step;
+  document.getElementById('progressBar').setAttribute('aria-valuenow', step);
+  // Circle 1
+  const pc1 = document.getElementById('pc1');
+  const pc2 = document.getElementById('pc2');
+  const pc3 = document.getElementById('pc3');
+  const pl1 = document.getElementById('pl1');
+
+  if (step === 1) {
+    pc1.className = 'p-circle current'; pc1.textContent = '1';
+    pc2.className = 'p-circle pending'; pc2.textContent = '2';
+    pc3.className = 'p-circle pending'; pc3.textContent = '✓';
+    pl1.classList.remove('filled');
+  } else if (step === 2) {
+    pc1.className = 'p-circle done'; pc1.textContent = '✓';
+    pc2.className = 'p-circle current'; pc2.textContent = '2';
+    pc3.className = 'p-circle pending'; pc3.textContent = '✓';
+    pl1.classList.add('filled');
+  } else {
+    pc1.className = 'p-circle done'; pc1.textContent = '✓';
+    pc2.className = 'p-circle done'; pc2.textContent = '✓';
+    pc3.className = 'p-circle done'; pc3.textContent = '✓';
+    pl1.classList.add('filled');
+  }
+}
+
+/* ════════════════════════════════════
+   VALIDACIÓN
+════════════════════════════════════ */
+function setFieldState(inputId, msgId, state, message) {
+  const input = document.getElementById(inputId);
+  const msg = document.getElementById(msgId);
+  if (!input || !msg) return;
+  if (state === 'error') {
+    input.setAttribute('aria-invalid', 'true');
+    msg.className = 'field-msg msg-error';
+    msg.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg><span>${message}</span>`;
+  } else if (state === 'ok') {
+    input.setAttribute('aria-invalid', 'false');
+    msg.className = 'field-msg msg-success';
+    msg.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg><span>${message}</span>`;
+  } else {
+    input.removeAttribute('aria-invalid');
+    msg.innerHTML = '';
+  }
+}
+
+function clearErr(inputId, msgId) {
+  const input = document.getElementById(inputId);
+  if (input && input.getAttribute('aria-invalid') !== 'true') return;
+  input?.removeAttribute('aria-invalid');
+  const msg = document.getElementById(msgId);
+  if (msg) msg.innerHTML = '';
+}
+
+const VALIDATORS = {
+  min2: v => v.trim().length >= 2 ? null : 'Mínimo 2 caracteres requeridos.',
+  email: v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()) ? null : 'Correo electrónico no válido.',
+  password: v => v.length >= 8 ? null : 'La contraseña debe tener al menos 8 caracteres.',
+  match: v => {
+    const pw = document.getElementById('password')?.value;
+    return v === pw ? null : 'Las contraseñas no coinciden.';
+  },
+};
+
+const SUCCESS_MSGS = {
+  min2: 'Correcto.',
+  email: 'Correo válido.',
+  password: 'Contraseña aceptada.',
+  match: 'Las contraseñas coinciden.',
+};
+
+function validateField(inputId, msgId, rule) {
+  const input = document.getElementById(inputId);
+  if (!input) return false;
+  const val = input.value;
+  if (!val.trim() && input.required) { setFieldState(inputId, msgId, 'error', 'Este campo es requerido.'); return false; }
+  if (!val.trim()) return true;
+  const err = VALIDATORS[rule]?.(val);
+  if (err) { setFieldState(inputId, msgId, 'error', err); return false; }
+  setFieldState(inputId, msgId, 'ok', SUCCESS_MSGS[rule] || 'Correcto.');
+  return true;
+}
+
+/* Indicador de fortaleza de contraseña */
+function updatePwdStrength() {
+  const val = document.getElementById('password').value;
+  clearErr('password', 'pw-msg');
+  const str = document.getElementById('pwdStrength');
+  if (!val) { str.style.display = 'none'; return; }
+  str.style.display = 'block';
+  let score = 0;
+  if (val.length >= 8) score++;
+  if (/[A-Z]/.test(val)) score++;
+  if (/\d/.test(val)) score++;
+  if (/[^A-Za-z0-9]/.test(val)) score++;
+  const levels = ['', 'weak', 'fair', 'good', 'strong'];
+  const labels = ['', 'Débil', 'Regular', 'Buena', 'Fuerte'];
+  for (let i = 1; i <= 4; i++) {
+    const bar = document.getElementById('pb' + i);
+    bar.className = 'pwd-bar' + (i <= score ? ' ' + levels[score] : '');
+  }
+  document.getElementById('pwdLabel').textContent = labels[score] ? `Fortaleza: ${labels[score]}` : '';
+}
+
+/* Toggle contraseña */
+function togglePwd() {
+  const inp = document.getElementById('password');
+  const btn = document.getElementById('pwdToggle');
+  const show = inp.type === 'password';
+  inp.type = show ? 'text' : 'password';
+  document.getElementById('eye-open').style.display = show ? 'none' : '';
+  document.getElementById('eye-shut').style.display = show ? '' : 'none';
+  btn.setAttribute('aria-pressed', show ? 'true' : 'false');
+  btn.setAttribute('aria-label', show ? 'Ocultar contraseña' : 'Mostrar contraseña');
+}
+
+/* ════════════════════════════════════
+   NAVEGACIÓN ENTRE PASOS
+════════════════════════════════════ */
+function goStep2() {
+  if (!currentRole) { showToast('Selecciona tu rol para continuar', 'warning'); document.getElementById('role-buyer').focus(); return; }
+  // Validar campos del paso 1
+  const v1 = validateField('firstName', 'fn-msg', 'min2');
+  const v2 = validateField('lastName', 'ln-msg', 'min2');
+  const v3 = validateField('email', 'em-msg', 'email');
+  const v4 = validateField('password', 'pw-msg', 'password');
+  const v5 = validateField('confirmPwd', 'pc-msg', 'match');
+  if (!document.getElementById('terms').checked) {
+    const tmsg = document.getElementById('terms-msg');
+    tmsg.className = 'field-msg msg-error';
+    tmsg.textContent = 'Debes aceptar los términos y condiciones.';
+  } else {
+    document.getElementById('terms-msg').textContent = '';
+  }
+  if (!v1 || !v2 || !v3 || !v4 || !v5 || !document.getElementById('terms').checked) {
+    showToast('Corrige los campos marcados en rojo', 'error');
+    const first = document.querySelector('[aria-invalid="true"]');
+    first?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    first?.focus();
+    return;
+  }
+
+  // Mostrar campos del rol en paso 2
+  document.getElementById('buyer-fields').style.display = currentRole === 'buyer' ? '' : 'none';
+  document.getElementById('producer-fields').style.display = currentRole === 'producer' ? '' : 'none';
+  document.getElementById('admin-fields').style.display = currentRole === 'admin' ? '' : 'none';
+
+  // Actualizar etiqueta del botón submit
+  const labels = { buyer: 'Crear mi cuenta', producer: 'Solicitar registro', admin: 'Activar acceso' };
+  document.getElementById('btnStep2Label').textContent = labels[currentRole];
+
+  document.getElementById('step1').classList.remove('active');
+  document.getElementById('step2').classList.add('active');
+  setProgress(2);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  document.getElementById('step2').querySelector('input, select, button') ?.focus();
+}
+
+function goStep1() {
+  document.getElementById('step2').classList.remove('active');
+  document.getElementById('step1').classList.add('active');
+  setProgress(1);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ════════════════════════════════════
+   SUBMIT FINAL
+════════════════════════════════════ */
+function submitForm() {
+  // Validar campo obligatorio de productor
+  if (currentRole === 'producer') {
+    const fn = document.getElementById('farmName').value.trim();
+    const fd = document.getElementById('farmDept').value;
+    const fm = document.getElementById('farmMun').value.trim();
+    if (!fn || !fd || !fm) { showToast('Completa el nombre, departamento y municipio de tu finca', 'warning'); return; }
+  }
+  if (currentRole === 'admin') {
+    const code = document.getElementById('adminCode').value.trim();
+    if (!code) { showToast('Ingresa el código de invitación de administrador', 'warning'); document.getElementById('adminCode').focus(); return; }
+    if (!code.startsWith('ADMIN-')) { showToast('Código de invitación no válido', 'error'); return; }
+  }
+
+  const btn = document.getElementById('btnStep2');
+  const lbl = document.getElementById('btnStep2Label');
+  const sp = document.getElementById('btnStep2Spinner');
+  const icon = document.getElementById('submitIcon');
+  btn.disabled = true; lbl.textContent = 'Creando cuenta...'; sp.style.display = 'block'; icon.style.display = 'none';
+
+  setTimeout(() => {
+    btn.disabled = false; sp.style.display = 'none'; icon.style.display = '';
+
+    // Mensajes de éxito según rol
+    const msgs = {
+      buyer: {
+        title: '¡Bienvenido a WCMP!',
+        desc: `Tu cuenta de <strong>comprador</strong> ha sido creada.<br>Confirma tu correo y empieza a explorar.`,
+        note: 'Explora más de 47 cafés especiales de origen colombiano',
+      },
+      producer: {
+        title: '¡Solicitud enviada!',
+        desc: `Tu perfil de <strong>productor</strong> está en revisión.<br>Recibirás un correo cuando sea aprobado (1–2 días hábiles).`,
+        note: 'Mientras tanto, puedes explorar el catálogo como visitante',
+      },
+      admin: {
+        title: '¡Acceso configurado!',
+        desc: `Tu cuenta de <strong>administrador</strong> fue creada.<br>Ya puedes acceder al panel de gestión.`,
+        note: 'Tu sesión de administrador expira cada 8 horas por seguridad',
+      },
+    };
+    const msg = msgs[currentRole];
+    document.getElementById('successTitle').textContent = msg.title;
+    document.getElementById('successDesc').innerHTML = msg.desc;
+    document.getElementById('successNote').textContent = msg.note;
+
+    document.getElementById('step2').classList.remove('active');
+    document.getElementById('step-success').classList.add('active');
+    document.getElementById('progressBar').style.display = 'none';
+    document.querySelector('.role-section').style.display = 'none';
+    document.querySelector('.form-header').style.display = 'none';
+    setProgress(3);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, 1800);
+}
+
+/* ════════════════════════════════════
+   TOAST
+════════════════════════════════════ */
+function showToast(msg, type = 'info') {
+  const wrap = document.getElementById('toastWrap');
+  const el = document.createElement('div');
+  el.className = `toast-item t-${type}`; el.textContent = msg; el.setAttribute('role', 'status');
+  wrap.appendChild(el);
+  requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('show')));
+  setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 350); }, 3400);
+}
+</script>
+</body>
+</html>

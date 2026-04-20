@@ -1,0 +1,26 @@
+/* Breakpoint mixins */
+@mixin xs { @media (max-width: 479px) { @content; } }
+@mixin sm { @media (min-width: 480px) { @content; } }
+@mixin md { @media (min-width: 768px) { @content; } }
+@mixin lg { @media (min-width: 1024px) { @content; } }
+@mixin xl { @media (min-width: 1280px) { @content; } }
+
+/* Container */
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--sp-4);
+
+  @include md { padding-inline: var(--sp-6); }
+  @include xl { padding-inline: var(--sp-8); }
+}
+
+/* Product grid */
+.product-grid {
+  display: grid;
+  gap: var(--sp-5);
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+
+  @include xs { grid-template-columns: 1fr 1fr; }
+}

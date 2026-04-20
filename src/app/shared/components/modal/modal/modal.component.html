@@ -3,7 +3,9 @@
     <header class="modal-header">
       <div>
         <h2 id="modal-title" class="modal-title">{{ title }}</h2>
-        <p *ngIf="subtitle" class="modal-subtitle">{{ subtitle }}</p>
+        @if (subtitle) {
+          <p class="modal-subtitle">{{ subtitle }}</p>
+        }
       </div>
       <button type="button" class="close-btn" (click)="closeModal()" aria-label="Cerrar modal">
         ✕

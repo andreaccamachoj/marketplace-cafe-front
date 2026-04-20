@@ -7,11 +7,12 @@
     [title]="COPY.TITLE"
     [subtitle]="COPY.SUBTITLE">
 
-    <app-product-form
-      *ngIf="isModalOpen"
-      (save)="handleSaveProduct($event)"
-      (cancel)="closeProductModal()">
-    </app-product-form>
+    @if (isModalOpen) {
+      <app-product-form
+        (save)="handleSaveProduct($event)"
+        (formCancel)="closeProductModal()">
+      </app-product-form>
+    }
 
   </app-modal>
 </div>

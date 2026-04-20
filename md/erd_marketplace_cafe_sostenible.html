@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ERD — Marketplace Café Sostenible</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0b0d12;
+  --surface: #111318;
+  --surface2: #161920;
+  --border: #1c2030;
+  --border-h: #283050;
+  --text: #b0b8cc;
+  --text-dim: #404860;
+  --text-bright: #dde2ef;
+  --pk: #f2c840;
+  --fk: #5b90f5;
+  --uq: #36c898;
+  --ck: #e07070;
+}
+
+body { background: var(--bg); font-family: 'JetBrains Mono', monospace; color: var(--text); overflow: hidden; height: 100vh; }
+
+/* ── TOP BAR ── */
+#topbar {
+  position: fixed; inset: 0 0 auto 0; height: 50px;
+  background: rgba(11,13,18,0.97); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px; padding: 0 14px;
+  z-index: 200; backdrop-filter: blur(12px);
+}
+.logo {
+  font-family: 'Syne', sans-serif; font-size: 12.5px; font-weight: 800;
+  color: var(--text-bright); letter-spacing: 0.05em; flex-shrink: 0; white-space: nowrap;
+}
+.vsep { width: 1px; height: 22px; background: var(--border); flex-shrink: 0; }
+.mod-legend { display: flex; gap: 6px; overflow: hidden; flex-wrap: nowrap; }
+.mod-pill {
+  display: flex; align-items: center; gap: 5px; font-size: 9px;
+  color: var(--text-dim); white-space: nowrap; padding: 3px 8px;
+  border-radius: 20px; border: 1px solid transparent; transition: all .15s; cursor: default;
+}
+.mod-pip { width: 7px; height: 7px; border-radius: 2px; flex-shrink: 0; }
+.right { margin-left: auto; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.badge-legend { display: flex; gap: 5px; }
+.bl { font-size: 8.5px; padding: 2px 5px; border-radius: 3px; font-weight: 700; }
+.bl-pk { background: rgba(242,200,64,.15); color: var(--pk); }
+.bl-fk { background: rgba(91,144,245,.15); color: var(--fk); }
+.bl-uq { background: rgba(54,200,152,.15); color: var(--uq); }
+.bl-ck { background: rgba(224,112,112,.15); color: var(--ck); }
+.bl-nn { background: rgba(180,190,210,.06); color: var(--text-dim); }
+.bl-df { background: rgba(180,190,210,.04); color: var(--text-dim); }
+.zgroup {
+  display: flex; align-items: center; gap: 2px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 8px; padding: 2px;
+}
+.zbtn {
+  width: 25px; height: 25px; background: none; border: none; color: var(--text);
+  cursor: pointer; border-radius: 5px; font-size: 14px;
+  display: flex; align-items: center; justify-content: center; transition: all .1s;
+}
+.zbtn:hover { background: var(--border); color: var(--text-bright); }
+.zlabel { font-size: 10px; color: var(--text-dim); min-width: 34px; text-align: center; }
+.cbtn {
+  font-size: 9px; padding: 4px 8px; background: none; border: 1px solid var(--border);
+  border-radius: 6px; color: var(--text-dim); cursor: pointer; font-family: inherit; transition: all .15s;
+}
+.cbtn:hover { border-color: var(--border-h); color: var(--text); }
+.tbl-count { font-size: 9px; color: var(--text-dim); }
+
+/* ── STAGE ── */
+#wrap { position: fixed; top: 50px; left: 0; right: 0; bottom: 0; overflow: hidden; cursor: grab; }
+#wrap.drag { cursor: grabbing; }
+#stage { position: absolute; transform-origin: 0 0; width: 4000px; height: 3200px; }
+.grid {
+  position: absolute; inset: 0;
+  background-image: linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 40px 40px; opacity: 0.45; pointer-events: none;
+}
+#svg-layer {
+  position: absolute; top: 0; left: 0; width: 4000px; height: 3200px;
+  pointer-events: none; overflow: visible;
+}
+
+/* ── TABLE CARDS ── */
+.tbl {
+  position: absolute; width: 318px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
+  transition: box-shadow .2s, border-color .2s; cursor: default;
+}
+.tbl:hover { border-color: var(--border-h); box-shadow: 0 6px 30px rgba(0,0,0,.65); }
+.tbl-bar { height: 3px; }
+.tbl-head { padding: 9px 12px 8px; border-bottom: 1px solid var(--border); }
+.tbl-mod { font-size: 8.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 2px; }
+.tbl-name { font-size: 13px; font-weight: 700; color: var(--text-bright); letter-spacing: .01em; }
+
+.col {
+  display: grid; grid-template-columns: 16px 1fr auto;
+  align-items: start; padding: 4px 12px; gap: 4px;
+  border-bottom: 1px solid rgba(28,32,48,.7); transition: background .1s;
+}
+.col:last-child { border-bottom: none; }
+.col:hover { background: rgba(255,255,255,.016); }
+.ci { font-size: 9px; padding-top: 2px; text-align: center; line-height: 1.4; }
+.cb { min-width: 0; }
+.cn { font-size: 11px; font-weight: 500; color: var(--text-bright); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.5; }
+.cn.pk { color: var(--pk); font-weight: 700; }
+.ct { font-size: 9px; color: var(--text-dim); line-height: 1.4; }
+.cbadges { display: flex; flex-direction: column; gap: 2px; align-items: flex-end; flex-shrink: 0; }
+
+.b { font-size: 8px; padding: 1px 4px; border-radius: 3px; font-weight: 700; white-space: nowrap; line-height: 1.5; }
+.b-pk { background: rgba(242,200,64,.14); color: var(--pk); }
+.b-fk { background: rgba(91,144,245,.14); color: var(--fk); }
+.b-uq { background: rgba(54,200,152,.14); color: var(--uq); }
+.b-ck { background: rgba(224,112,112,.14); color: var(--ck); }
+.b-nn { background: rgba(180,190,210,.06); color: #394055; }
+.b-df { background: rgba(180,190,210,.04); color: #333a52; font-style: italic; }
+
+.tbl-constraint {
+  padding: 4px 12px; font-size: 8.5px; color: var(--uq);
+  background: rgba(54,200,152,.04); border-top: 1px solid rgba(54,200,152,.1);
+}
+.tbl-note {
+  padding: 5px 12px; font-size: 8.5px; color: var(--text-dim);
+  background: rgba(0,0,0,.18); border-top: 1px solid var(--border);
+  font-style: italic; line-height: 1.5;
+}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <span class="logo">☕ ERD — Marketplace Café Sostenible &nbsp;<span style="opacity:.4;font-weight:300">|</span>&nbsp; UNAB</span>
+  <div class="vsep"></div>
+  <div class="mod-legend" id="modlegend"></div>
+  <div class="right">
+    <span class="tbl-count" id="tblcount"></span>
+    <div class="vsep"></div>
+    <div class="badge-legend">
+      <span class="bl bl-pk">PK</span>
+      <span class="bl bl-fk">FK</span>
+      <span class="bl bl-uq">UNIQUE</span>
+      <span class="bl bl-ck">CHECK</span>
+      <span class="bl bl-nn">NOT NULL</span>
+      <span class="bl bl-df">DEFAULT</span>
+    </div>
+    <div class="vsep"></div>
+    <div class="zgroup">
+      <button class="zbtn" id="zout">−</button>
+      <span class="zlabel" id="zlabel">100%</span>
+      <button class="zbtn" id="zin">+</button>
+    </div>
+    <button class="cbtn" id="center">Centrar vista</button>
+  </div>
+</div>
+
+<div id="wrap">
+  <div id="stage">
+    <div class="grid"></div>
+    <svg id="svg-layer"></svg>
+  </div>
+</div>
+
+<script>
+const MOD = {
+  auth:     { label: 'Usuarios e Identidad', color: '#8272d8' },
+  catalog:  { label: 'Finca y Catálogo',     color: '#38aa78' },
+  cart:     { label: 'Carrito y Dirección',  color: '#d49240' },
+  orders:   { label: 'Pedidos',              color: '#4892da' },
+  payments: { label: 'Pagos',                color: '#d85f5f' },
+  social:   { label: 'Social',               color: '#c06cb0' },
+  audit:    { label: 'Auditoría',            color: '#7a8499' },
+};
+
+// badges: PK FK UQ NN CK:val DF:val
+const TABLES = [
+
+  /* ════════════════ MÓDULO 1: USUARIOS E IDENTIDAD ════════════════ */
+  {
+    id:'users', name:'users', mod:'auth', x:30, y:30,
+    cols:[
+      {n:'id',              t:'UUID',         b:['PK']},
+      {n:'email',           t:'VARCHAR(255)', b:['NN','UQ']},
+      {n:'password_hash',   t:'VARCHAR(255)', b:['NN']},
+      {n:'full_name',       t:'VARCHAR(150)', b:['NN']},
+      {n:'phone',           t:'VARCHAR(20)',  b:[]},
+      {n:'status',          t:'VARCHAR(20)',  b:['NN','DF:active']},
+      {n:'privacy_consent', t:'BOOLEAN',      b:['NN','DF:FALSE']},
+      {n:'created_at',      t:'TIMESTAMP',    b:['NN','DF:NOW()']},
+      {n:'updated_at',      t:'TIMESTAMP',    b:['NN']},
+    ],
+    note:'HU-01 · HU-02 · HU-03 · HU-04 · HU-32'
+  },
+  {
+    id:'roles', name:'roles', mod:'auth', x:390, y:30,
+    cols:[
+      {n:'id',          t:'SERIAL',       b:['PK']},
+      {n:'name',        t:'VARCHAR(50)',   b:['NN','UQ']},
+      {n:'description', t:'VARCHAR(255)', b:[]},
+    ],
+    note:'HU-06'
+  },
+  {
+    id:'user_roles', name:'user_roles', mod:'auth', x:390, y:228,
+    cols:[
+      {n:'user_id',     t:'UUID',      b:['PK','FK']},
+      {n:'role_id',     t:'INTEGER',   b:['PK','FK']},
+      {n:'assigned_at', t:'TIMESTAMP', b:['NN','DF:NOW()']},
+    ],
+    note:'HU-06 · HU-13 · RF-06'
+  },
+  {
+    id:'producer_profiles', name:'producer_profiles', mod:'auth', x:750, y:30,
+    cols:[
+      {n:'id',               t:'UUID',        b:['PK']},
+      {n:'user_id',          t:'UUID',        b:['NN','UQ','FK']},
+      {n:'bio',              t:'TEXT',         b:[]},
+      {n:'status',           t:'VARCHAR(20)', b:['NN','DF:pending']},
+      {n:'rejection_reason', t:'TEXT',         b:[]},
+      {n:'approved_by',      t:'UUID',        b:['FK']},
+      {n:'approved_at',      t:'TIMESTAMP',   b:[]},
+    ],
+    note:'HU-05 · HU-13 · HU-33'
+  },
+  {
+    id:'verification_documents', name:'verification_documents', mod:'auth', x:750, y:372,
+    cols:[
+      {n:'id',            t:'UUID',         b:['PK']},
+      {n:'producer_id',   t:'UUID',         b:['NN','FK']},
+      {n:'document_type', t:'VARCHAR(80)',  b:['NN']},
+      {n:'file_url',      t:'VARCHAR(500)', b:['NN']},
+      {n:'status',        t:'VARCHAR(20)',  b:['NN','DF:pending']},
+      {n:'uploaded_at',   t:'TIMESTAMP',    b:['NN','DF:NOW()']},
+    ],
+    note:'HU-05 · RF-05'
+  },
+  {
+    id:'password_reset_tokens', name:'password_reset_tokens', mod:'auth', x:30, y:480,
+    cols:[
+      {n:'id',         t:'UUID',         b:['PK']},
+      {n:'user_id',    t:'UUID',         b:['NN','FK']},
+      {n:'token_hash', t:'VARCHAR(255)', b:['NN']},
+      {n:'expires_at', t:'TIMESTAMP',    b:['NN']},
+      {n:'used_at',    t:'TIMESTAMP',    b:[]},
+      {n:'created_at', t:'TIMESTAMP',    b:['NN','DF:NOW()']},
+    ],
+    note:'HU-03 · RF-03'
+  },
+  {
+    id:'privacy_consents', name:'privacy_consents', mod:'auth', x:390, y:440,
+    cols:[
+      {n:'id',             t:'UUID',        b:['PK']},
+      {n:'user_id',        t:'UUID',        b:['NN','FK']},
+      {n:'policy_version', t:'VARCHAR(20)', b:['NN']},
+      {n:'accepted_at',    t:'TIMESTAMP',   b:['NN','DF:NOW()']},
+      {n:'ip_address',     t:'VARCHAR(45)', b:['NN']},
+    ],
+    note:'RNF-PRI-01 · RNF-PRI-02'
+  },
+
+  /* ════════════════ MÓDULO 2: FINCA Y CATÁLOGO ════════════════ */
+  {
+    id:'farms', name:'farms', mod:'catalog', x:1110, y:30,
+    cols:[
+      {n:'id',            t:'UUID',         b:['PK']},
+      {n:'producer_id',   t:'UUID',         b:['NN','FK']},
+      {n:'name',          t:'VARCHAR(150)', b:['NN']},
+      {n:'municipality',  t:'VARCHAR(100)', b:['NN']},
+      {n:'department',    t:'VARCHAR(100)', b:['NN']},
+      {n:'altitude_masl', t:'DECIMAL(7,2)', b:[]},
+      {n:'area_hectares', t:'DECIMAL(8,2)', b:[]},
+      {n:'description',   t:'TEXT',          b:[]},
+      {n:'created_at',    t:'TIMESTAMP',    b:['NN','DF:NOW()']},
+    ],
+    note:'HU-07 · RF-07 · RF-08'
+  },
+  {
+    id:'categories', name:'categories', mod:'catalog', x:1470, y:30,
+    cols:[
+      {n:'id',         t:'SERIAL',       b:['PK']},
+      {n:'name',       t:'VARCHAR(100)', b:['NN','UQ']},
+      {n:'parent_id',  t:'INTEGER',      b:['FK']},
+      {n:'is_active',  t:'BOOLEAN',      b:['NN','DF:TRUE']},
+      {n:'created_at', t:'TIMESTAMP',    b:['NN','DF:NOW()']},
+    ],
+    note:'HU-16 · HU-30 · RF-32'
+  },
+  {
+    id:'products', name:'products', mod:'catalog', x:1110, y:480,
+    cols:[
+      {n:'id',          t:'UUID',           b:['PK']},
+      {n:'producer_id', t:'UUID',           b:['NN','FK']},
+      {n:'category_id', t:'INTEGER',        b:['NN','FK']},
+      {n:'name',        t:'VARCHAR(200)',   b:['NN']},
+      {n:'description', t:'TEXT',            b:[]},
+      {n:'price',       t:'DECIMAL(12,2)',  b:['NN','CK:≥0']},
+      {n:'status',      t:'VARCHAR(20)',    b:['NN','DF:draft']},
+      {n:'created_at',  t:'TIMESTAMP',      b:['NN','DF:NOW()']},
+      {n:'updated_at',  t:'TIMESTAMP',      b:['NN']},
+    ],
+    note:'HU-08 · HU-09 · HU-10 · HU-11 · HU-13 · HU-14 · HU-15 · HU-16 · HU-24'
+  },
+  {
+    id:'product_images', name:'product_images', mod:'catalog', x:1470, y:270,
+    cols:[
+      {n:'id',            t:'UUID',         b:['PK']},
+      {n:'product_id',    t:'UUID',         b:['NN','FK']},
+      {n:'image_url',     t:'VARCHAR(500)', b:['NN']},
+      {n:'display_order', t:'INTEGER',      b:['NN','DF:0']},
+      {n:'uploaded_at',   t:'TIMESTAMP',    b:['NN','DF:NOW()']},
+    ],
+    note:'HU-25 · RF-27'
+  },
+  {
+    id:'certifications', name:'certifications', mod:'catalog', x:1830, y:30,
+    cols:[
+      {n:'id',           t:'SERIAL',       b:['PK']},
+      {n:'name',         t:'VARCHAR(100)', b:['NN','UQ']},
+      {n:'issuing_body', t:'VARCHAR(150)', b:[]},
+      {n:'description',  t:'TEXT',          b:[]},
+    ],
+    note:'HU-26 · RF-28'
+  },
+  {
+    id:'product_certifications', name:'product_certifications', mod:'catalog', x:1830, y:272,
+    cols:[
+      {n:'id',               t:'UUID',         b:['PK']},
+      {n:'product_id',       t:'UUID',         b:['NN','FK']},
+      {n:'certification_id', t:'INTEGER',      b:['NN','FK']},
+      {n:'document_url',     t:'VARCHAR(500)', b:[]},
+      {n:'issued_at',        t:'DATE',          b:[]},
+    ],
+    note:'HU-26 · RF-28'
+  },
+  {
+    id:'inventory', name:'inventory', mod:'catalog', x:1830, y:550,
+    cols:[
+      {n:'id',         t:'UUID',      b:['PK']},
+      {n:'product_id', t:'UUID',      b:['NN','UQ','FK']},
+      {n:'quantity',   t:'INTEGER',   b:['NN','DF:0','CK:≥0']},
+      {n:'updated_at', t:'TIMESTAMP', b:['NN']},
+    ],
+    note:'HU-12 · HU-17 · HU-20 · HU-23 · RF-13 · RF-14'
+  },
+
+  /* ════════════════ MÓDULO 3: CARRITO Y DIRECCIÓN ════════════════ */
+  {
+    id:'addresses', name:'addresses', mod:'cart', x:30, y:870,
+    cols:[
+      {n:'id',          t:'UUID',         b:['PK']},
+      {n:'user_id',     t:'UUID',         b:['NN','FK']},
+      {n:'label',       t:'VARCHAR(80)',  b:[]},
+      {n:'street',      t:'VARCHAR(255)', b:['NN']},
+      {n:'city',        t:'VARCHAR(100)', b:['NN']},
+      {n:'department',  t:'VARCHAR(100)', b:['NN']},
+      {n:'postal_code', t:'VARCHAR(20)',  b:[]},
+      {n:'is_default',  t:'BOOLEAN',      b:['NN','DF:FALSE']},
+    ],
+    note:'HU-18 · RF-20'
+  },
+  {
+    id:'carts', name:'carts', mod:'cart', x:390, y:880,
+    cols:[
+      {n:'id',         t:'UUID',      b:['PK']},
+      {n:'user_id',    t:'UUID',      b:['NN','UQ','FK']},
+      {n:'created_at', t:'TIMESTAMP', b:['NN','DF:NOW()']},
+      {n:'updated_at', t:'TIMESTAMP', b:['NN']},
+    ],
+    note:'HU-17 · HU-31 · RF-19'
+  },
+  {
+    id:'cart_items', name:'cart_items', mod:'cart', x:390, y:1116,
+    cols:[
+      {n:'id',         t:'UUID',          b:['PK']},
+      {n:'cart_id',    t:'UUID',          b:['NN','FK']},
+      {n:'product_id', t:'UUID',          b:['NN','FK']},
+      {n:'quantity',   t:'INTEGER',       b:['NN','CK:≥1']},
+      {n:'unit_price', t:'DECIMAL(12,2)', b:['NN']},
+      {n:'added_at',   t:'TIMESTAMP',     b:['NN','DF:NOW()']},
+    ],
+    note:'HU-17 · HU-31 · RF-19 · RF-33'
+  },
+
+  /* ════════════════ MÓDULO 4: PEDIDOS ════════════════ */
+  {
+    id:'orders', name:'orders', mod:'orders', x:30, y:1330,
+    cols:[
+      {n:'id',             t:'UUID',          b:['PK']},
+      {n:'user_id',        t:'UUID',          b:['NN','FK']},
+      {n:'address_id',     t:'UUID',          b:['NN','FK']},
+      {n:'order_number',   t:'VARCHAR(30)',   b:['NN','UQ']},
+      {n:'total_amount',   t:'DECIMAL(14,2)', b:['NN']},
+      {n:'status',         t:'VARCHAR(30)',   b:['NN','DF:confirmed']},
+      {n:'payment_status', t:'VARCHAR(20)',   b:['NN','DF:pending']},
+      {n:'created_at',     t:'TIMESTAMP',     b:['NN','DF:NOW()']},
+      {n:'updated_at',     t:'TIMESTAMP',     b:['NN']},
+    ],
+    note:'HU-20 · HU-21 · HU-22 · HU-23 · HU-27 · RF-22 · RF-23 · RF-24 · RF-25'
+  },
+  {
+    id:'order_items', name:'order_items', mod:'orders', x:390, y:1496,
+    cols:[
+      {n:'id',         t:'UUID',          b:['PK']},
+      {n:'order_id',   t:'UUID',          b:['NN','FK']},
+      {n:'product_id', t:'UUID',          b:['NN','FK']},
+      {n:'quantity',   t:'INTEGER',       b:['NN','CK:≥1']},
+      {n:'unit_price', t:'DECIMAL(12,2)', b:['NN']},
+      {n:'subtotal',   t:'DECIMAL(14,2)', b:['NN']},
+    ],
+    note:'HU-22 · HU-27 · RF-24'
+  },
+  {
+    id:'order_status_history', name:'order_status_history', mod:'orders', x:750, y:1330,
+    cols:[
+      {n:'id',         t:'UUID',        b:['PK']},
+      {n:'order_id',   t:'UUID',        b:['NN','FK']},
+      {n:'status',     t:'VARCHAR(30)', b:['NN']},
+      {n:'changed_by', t:'UUID',        b:['NN','FK']},
+      {n:'changed_at', t:'TIMESTAMP',   b:['NN','DF:NOW()']},
+      {n:'notes',      t:'TEXT',         b:[]},
+    ],
+    note:'HU-28 · RF-30'
+  },
+
+  /* ════════════════ MÓDULO 5: PAGOS ════════════════ */
+  {
+    id:'payments', name:'payments', mod:'payments', x:30, y:1806,
+    cols:[
+      {n:'id',                t:'UUID',          b:['PK']},
+      {n:'order_id',          t:'UUID',          b:['NN','UQ','FK']},
+      {n:'payment_method',    t:'VARCHAR(50)',   b:['NN']},
+      {n:'gateway_reference', t:'VARCHAR(200)',  b:['NN']},
+      {n:'gateway_signature', t:'VARCHAR(500)',  b:[]},
+      {n:'status',            t:'VARCHAR(20)',   b:['NN','DF:pending']},
+      {n:'amount',            t:'DECIMAL(14,2)', b:['NN']},
+      {n:'verified_at',       t:'TIMESTAMP',     b:[]},
+      {n:'created_at',        t:'TIMESTAMP',     b:['NN','DF:NOW()']},
+    ],
+    note:'HU-19 · HU-20 · RNF-SEC-04 · RNF-SEC-06 · RF-21'
+  },
+
+  /* ════════════════ MÓDULO 6: SOCIAL ════════════════ */
+  {
+    id:'reviews', name:'reviews', mod:'social', x:390, y:1830,
+    cols:[
+      {n:'id',         t:'UUID',      b:['PK']},
+      {n:'product_id', t:'UUID',      b:['NN','FK']},
+      {n:'user_id',    t:'UUID',      b:['NN','FK']},
+      {n:'order_id',   t:'UUID',      b:['NN','FK']},
+      {n:'rating',     t:'SMALLINT',  b:['NN','CK:1-5']},
+      {n:'comment',    t:'TEXT',       b:[]},
+      {n:'created_at', t:'TIMESTAMP', b:['NN','DF:NOW()']},
+    ],
+    note:'HU-29 · RF-31',
+    constraint:'UNIQUE (user_id, product_id)'
+  },
+
+  /* ════════════════ MÓDULO 7: AUDITORÍA ════════════════ */
+  {
+    id:'notifications', name:'notifications', mod:'audit', x:750, y:1800,
+    cols:[
+      {n:'id',         t:'UUID',        b:['PK']},
+      {n:'user_id',    t:'UUID',        b:['NN','FK']},
+      {n:'type',       t:'VARCHAR(50)', b:['NN']},
+      {n:'message',    t:'TEXT',         b:['NN']},
+      {n:'is_read',    t:'BOOLEAN',     b:['NN','DF:FALSE']},
+      {n:'created_at', t:'TIMESTAMP',   b:['NN','DF:NOW()']},
+    ],
+    note:'HU-20 · HU-28 · RF-35'
+  },
+  {
+    id:'audit_logs', name:'audit_logs', mod:'audit', x:1110, y:1770,
+    cols:[
+      {n:'id',          t:'UUID',         b:['PK']},
+      {n:'user_id',     t:'UUID',         b:['FK']},
+      {n:'action',      t:'VARCHAR(100)', b:['NN']},
+      {n:'entity_type', t:'VARCHAR(80)',  b:['NN']},
+      {n:'entity_id',   t:'VARCHAR(100)', b:['NN']},
+      {n:'ip_address',  t:'VARCHAR(45)',  b:[]},
+      {n:'metadata',    t:'JSONB',         b:[]},
+      {n:'created_at',  t:'TIMESTAMP',    b:['NN','DF:NOW()']},
+    ],
+    note:'RNF-AUD-01 · RNF-AUD-02 · HU-06'
+  },
+];
+
+// [from, to, moduleColor]
+const RELS = [
+  // Auth
+  ['users','user_roles','#8272d8'],
+  ['roles','user_roles','#8272d8'],
+  ['users','producer_profiles','#8272d8'],
+  ['producer_profiles','verification_documents','#8272d8'],
+  ['users','password_reset_tokens','#8272d8'],
+  ['users','privacy_consents','#8272d8'],
+  // Catalog
+  ['producer_profiles','farms','#38aa78'],
+  ['categories','categories','#38aa78'],
+  ['producer_profiles','products','#38aa78'],
+  ['categories','products','#38aa78'],
+  ['products','product_images','#38aa78'],
+  ['products','product_certifications','#38aa78'],
+  ['certifications','product_certifications','#38aa78'],
+  ['products','inventory','#38aa78'],
+  // Cart
+  ['users','addresses','#d49240'],
+  ['users','carts','#d49240'],
+  ['carts','cart_items','#d49240'],
+  ['products','cart_items','#d49240'],
+  // Orders
+  ['users','orders','#4892da'],
+  ['addresses','orders','#4892da'],
+  ['orders','order_items','#4892da'],
+  ['products','order_items','#4892da'],
+  ['orders','order_status_history','#4892da'],
+  ['users','order_status_history','#4892da'],
+  // Payments
+  ['orders','payments','#d85f5f'],
+  // Social
+  ['products','reviews','#c06cb0'],
+  ['users','reviews','#c06cb0'],
+  ['orders','reviews','#c06cb0'],
+  // Audit
+  ['users','notifications','#7a8499'],
+  ['users','audit_logs','#7a8499'],
+];
+
+// ─── Render legend ───
+function renderLegend() {
+  document.getElementById('modlegend').innerHTML =
+    Object.entries(MOD).map(([,m]) =>
+      `<div class="mod-pill"><div class="mod-pip" style="background:${m.color}"></div>${m.label}</div>`
+    ).join('');
+  document.getElementById('tblcount').textContent = `${TABLES.length} tablas · ${RELS.length} relaciones`;
+}
+
+// ─── Render tables ───
+function badgeHTML(b) {
+  if (b.startsWith('DF:')) return `<span class="b b-df">DF: ${b.slice(3)}</span>`;
+  if (b.startsWith('CK:')) return `<span class="b b-ck">CK: ${b.slice(3)}</span>`;
+  const cls = {PK:'b-pk',FK:'b-fk',UQ:'b-uq',NN:'b-nn'}[b] || 'b-nn';
+  return `<span class="b ${cls}">${b}</span>`;
+}
+
+function renderTables() {
+  const stage = document.getElementById('stage');
+  TABLES.forEach(t => {
+    const m = MOD[t.mod];
+    const el = document.createElement('div');
+    el.className = 'tbl';
+    el.id = 'T_' + t.id;
+    el.style.left = t.x + 'px';
+    el.style.top  = t.y + 'px';
+
+    const colsHTML = t.cols.map(c => {
+      const isPK = c.b.includes('PK');
+      const isFK = c.b.includes('FK');
+      const icon = isPK ? `<span style="color:var(--pk)">◆</span>`
+                 : isFK ? `<span style="color:var(--fk)">↗</span>` : '';
+      return `<div class="col">
+        <div class="ci">${icon}</div>
+        <div class="cb">
+          <div class="cn${isPK?' pk':''}">${c.n}</div>
+          <div class="ct">${c.t}</div>
+        </div>
+        <div class="cbadges">${c.b.map(badgeHTML).join('')}</div>
+      </div>`;
+    }).join('');
+
+    el.innerHTML = `
+      <div class="tbl-bar" style="background:${m.color}"></div>
+      <div class="tbl-head">
+        <div class="tbl-mod" style="color:${m.color}">${m.label}</div>
+        <div class="tbl-name">${t.name}</div>
+      </div>
+      ${colsHTML}
+      ${t.constraint ? `<div class="tbl-constraint">⊕ ${t.constraint}</div>` : ''}
+      ${t.note ? `<div class="tbl-note">${t.note}</div>` : ''}`;
+    stage.appendChild(el);
+  });
+}
+
+// ─── Draw relations ───
+function drawRelations() {
+  const svg = document.getElementById('svg-layer');
+  svg.innerHTML = '';
+
+  const map = {};
+  TABLES.forEach(t => {
+    const el = document.getElementById('T_' + t.id);
+    map[t.id] = { x: t.x, y: t.y, w: el.offsetWidth, h: el.offsetHeight };
+  });
+
+  RELS.forEach(([fid, tid, color]) => {
+    const f = map[fid];
+    const t = map[tid];
+    if (!f || !t) return;
+
+    // Self-reference loop
+    if (fid === tid) {
+      const cx = f.x + f.w, cy = f.y + 90;
+      const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+      path.setAttribute('d',`M${cx},${cy} Q${cx+55},${cy-40} ${cx+55},${cy+40} Q${cx+55},${cy+80} ${cx},${cy+70}`);
+      path.setAttribute('fill','none');
+      path.setAttribute('stroke',color);
+      path.setAttribute('stroke-width','1.5');
+      path.setAttribute('stroke-dasharray','4 3');
+      path.setAttribute('opacity','0.4');
+      svg.appendChild(path);
+      // self arrow
+      const ax = cx, ay = cy + 70;
+      const arr = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+      arr.setAttribute('points',`${ax},${ay} ${ax+6},${ay-8} ${ax-6},${ay-8}`);
+      arr.setAttribute('fill',color); arr.setAttribute('opacity','0.5');
+      svg.appendChild(arr);
+      return;
+    }
+
+    const fcx = f.x + f.w/2, fcy = f.y + f.h/2;
+    const tcx = t.x + t.w/2, tcy = t.y + t.h/2;
+    const dx = tcx - fcx, dy = tcy - fcy;
+
+    let p1x, p1y, p2x, p2y;
+    if (Math.abs(dx) >= Math.abs(dy)) {
+      // horizontal
+      if (dx > 0) { p1x=f.x+f.w; p1y=fcy; p2x=t.x; p2y=tcy; }
+      else         { p1x=f.x;     p1y=fcy; p2x=t.x+t.w; p2y=tcy; }
+    } else {
+      // vertical
+      if (dy > 0) { p1x=fcx; p1y=f.y+f.h; p2x=tcx; p2y=t.y; }
+      else         { p1x=fcx; p1y=f.y;     p2x=tcx; p2y=t.y+t.h; }
+    }
+
+    const adx = Math.abs(p2x-p1x), ady = Math.abs(p2y-p1y);
+    let c1x, c1y, c2x, c2y;
+    if (adx >= ady) {
+      const off = Math.min(adx * 0.42, 130);
+      c1x = p1x + (p2x>p1x?off:-off); c1y = p1y;
+      c2x = p2x + (p2x>p1x?-off:off); c2y = p2y;
+    } else {
+      const off = Math.min(ady * 0.42, 130);
+      c1x = p1x; c1y = p1y + (p2y>p1y?off:-off);
+      c2x = p2x; c2y = p2y + (p2y>p1y?-off:off);
+    }
+
+    const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d',`M${p1x},${p1y} C${c1x},${c1y} ${c2x},${c2y} ${p2x},${p2y}`);
+    path.setAttribute('fill','none');
+    path.setAttribute('stroke',color);
+    path.setAttribute('stroke-width','1.5');
+    path.setAttribute('stroke-dasharray','5 4');
+    path.setAttribute('opacity','0.32');
+    svg.appendChild(path);
+
+    // Arrow head at p2
+    const lx = p2x - c2x, ly = p2y - c2y;
+    const len = Math.sqrt(lx*lx + ly*ly);
+    if (len > 0) {
+      const nx = lx/len, ny = ly/len, s = 7;
+      const arr = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+      const ax1 = p2x-nx*s-ny*s*0.5, ay1 = p2y-ny*s+nx*s*0.5;
+      const ax2 = p2x-nx*s+ny*s*0.5, ay2 = p2y-ny*s-nx*s*0.5;
+      arr.setAttribute('points',`${p2x},${p2y} ${ax1},${ay1} ${ax2},${ay2}`);
+      arr.setAttribute('fill',color);
+      arr.setAttribute('opacity','0.55');
+      svg.appendChild(arr);
+    }
+  });
+}
+
+// ─── Pan & Zoom ───
+const S = { x: 0, y: 0, sc: 0.6, drag: false, lx: 0, ly: 0 };
+
+function applyT() {
+  document.getElementById('stage').style.transform =
+    `translate(${S.x}px,${S.y}px) scale(${S.sc})`;
+  document.getElementById('zlabel').textContent = Math.round(S.sc*100)+'%';
+}
+
+function centerView() {
+  const w = document.getElementById('wrap');
+  const W = w.clientWidth, H = w.clientHeight;
+  const cW = 2185, cH = 2230;
+  S.sc = Math.min(W/cW, H/cH) * 0.92;
+  S.x = (W - cW*S.sc)/2;
+  S.y = (H - cH*S.sc)/2;
+  applyT();
+}
+
+document.getElementById('zin').onclick  = () => { S.sc = Math.min(2.5,S.sc+0.1); applyT(); };
+document.getElementById('zout').onclick = () => { S.sc = Math.max(0.15,S.sc-0.1); applyT(); };
+document.getElementById('center').onclick = centerView;
+
+const wrap = document.getElementById('wrap');
+wrap.addEventListener('mousedown', e => {
+  S.drag=true; S.lx=e.clientX; S.ly=e.clientY; wrap.classList.add('drag');
+});
+window.addEventListener('mousemove', e => {
+  if(!S.drag) return;
+  S.x+=e.clientX-S.lx; S.y+=e.clientY-S.ly;
+  S.lx=e.clientX; S.ly=e.clientY; applyT();
+});
+window.addEventListener('mouseup', () => { S.drag=false; wrap.classList.remove('drag'); });
+wrap.addEventListener('wheel', e => {
+  e.preventDefault();
+  const d = e.deltaY>0 ? -0.08 : 0.08;
+  const ns = Math.min(2.5, Math.max(0.15, S.sc+d));
+  const r = wrap.getBoundingClientRect();
+  const cx = e.clientX-r.left, cy = e.clientY-r.top;
+  S.x = cx - (cx-S.x)*(ns/S.sc);
+  S.y = cy - (cy-S.y)*(ns/S.sc);
+  S.sc = ns; applyT();
+}, {passive:false});
+
+// Touch
+let ltd = null;
+wrap.addEventListener('touchstart', e => {
+  if(e.touches.length===1){ S.drag=true; S.lx=e.touches[0].clientX; S.ly=e.touches[0].clientY; }
+},{passive:true});
+wrap.addEventListener('touchmove', e => {
+  if(e.touches.length===1 && S.drag){
+    S.x+=e.touches[0].clientX-S.lx; S.y+=e.touches[0].clientY-S.ly;
+    S.lx=e.touches[0].clientX; S.ly=e.touches[0].clientY; applyT();
+  } else if(e.touches.length===2){
+    const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,
+                       e.touches[0].clientY-e.touches[1].clientY);
+    if(ltd!==null){ S.sc=Math.min(2.5,Math.max(0.15,S.sc+(d-ltd)*0.01)); applyT(); }
+    ltd=d;
+  }
+},{passive:true});
+wrap.addEventListener('touchend', () => { S.drag=false; ltd=null; });
+
+// ─── Init ───
+renderLegend();
+renderTables();
+requestAnimationFrame(() => { drawRelations(); centerView(); });
+</script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+.select-wrapper {
+  position: relative;
+  width: 100%;
+
+  &--error .select-field { border-color: var(--error); }
+  &--disabled { opacity: 0.6; pointer-events: none; }
+}
+
+.select-field {
+  width: 100%;
+  padding: var(--sp-3) var(--sp-8) var(--sp-3) var(--sp-4);
+  border: 1.5px solid var(--neutral-300, #d1d5db);
+  border-radius: var(--r-md);
+  font-size: 0.9375rem;
+  font-family: var(--font-body);
+  color: var(--neutral-800);
+  background: var(--white, #fff);
+  appearance: none;
+  cursor: pointer;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+
+  &:focus {
+    outline: none;
+    border-color: var(--espresso);
+    box-shadow: 0 0 0 3px rgba(55,38,23,0.12);
+  }
+}
+
+.select-arrow {
+  position: absolute;
+  right: var(--sp-3);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--neutral-500);
+  pointer-events: none;
+  font-size: 0.75rem;
+}

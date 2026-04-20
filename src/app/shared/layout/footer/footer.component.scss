@@ -1,0 +1,117 @@
+.footer {
+  background: var(--neutral-900, #111827);
+  color: var(--neutral-300, #d1d5db);
+  padding: var(--sp-12) var(--sp-6);
+  margin-top: var(--sp-16);
+  border-top: 1px solid var(--neutral-800, #1f2937);
+}
+
+.footer__container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--sp-8);
+  max-width: 1200px;
+  margin: 0 auto var(--sp-8);
+}
+
+.footer__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.footer__heading {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--white, #fff);
+  margin: 0;
+}
+
+.footer__subheading {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--white, #fff);
+  margin: 0;
+}
+
+.footer__text {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.footer__links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.footer__link {
+  color: var(--neutral-400, #9ca3af);
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition: color var(--transition-fast);
+
+  &:hover {
+    color: var(--amber, #f59e0b);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--amber, #f59e0b);
+    border-radius: 2px;
+  }
+}
+
+.footer__socials {
+  display: flex;
+  gap: var(--sp-3);
+}
+
+.footer__social {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--neutral-400, #9ca3af);
+  text-decoration: none;
+  font-weight: 600;
+  transition: background var(--transition-fast), color var(--transition-fast);
+
+  &:hover {
+    background: var(--amber, #f59e0b);
+    color: var(--neutral-900, #111827);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--amber, #f59e0b);
+    outline-offset: 2px;
+  }
+}
+
+.footer__bottom {
+  border-top: 1px solid var(--neutral-800, #1f2937);
+  padding-top: var(--sp-6);
+  text-align: center;
+}
+
+.footer__copyright {
+  font-size: 0.75rem;
+  color: var(--neutral-500, #6b7280);
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .footer {
+    padding: var(--sp-8) var(--sp-4);
+  }
+
+  .footer__container {
+    grid-template-columns: 1fr;
+  }
+}
