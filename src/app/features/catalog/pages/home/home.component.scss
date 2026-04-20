@@ -1,0 +1,19 @@
+.home-page {
+  display: flex;
+  flex-direction: column;
+  gap: 64px;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 24px;
+
+  @media (max-width: 768px) {
+    padding: 0 16px;
+    gap: 48px;
+  }
+}
+
+.home-page__catalog {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}

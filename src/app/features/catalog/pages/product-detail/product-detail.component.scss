@@ -1,0 +1,145 @@
+.product-detail {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 24px;
+
+  @media (max-width: 768px) {
+    padding: 16px;
+  }
+}
+
+.product-detail__breadcrumb {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 32px;
+  font-size: 0.875rem;
+  color: #666;
+
+  .breadcrumb-link {
+    color: var(--verde-selva, #2d6a4f);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.product-detail__layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
+
+.product-detail__gallery {
+  display: flex;
+  flex-direction: column;
+}
+
+.product-detail__info {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.product-detail__header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.product-detail__title {
+  margin: 0;
+  font-size: 2rem;
+  font-family: 'Playfair Display', serif;
+  color: var(--espresso, #3d1c02);
+
+  @media (max-width: 768px) {
+    font-size: 1.5rem;
+  }
+}
+
+.product-detail__producer {
+  margin: 0;
+  font-size: 1.125rem;
+  color: #666;
+}
+
+.product-detail__region-badge {
+  display: inline-block;
+  width: fit-content;
+  padding: 4px 12px;
+  background: rgba(61, 28, 2, 0.1);
+  color: var(--espresso, #3d1c02);
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.product-detail__rating {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.product-detail__reviews {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.product-detail__certs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.product-detail__price {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--espresso, #3d1c02);
+}
+
+.product-detail__description {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #333;
+}
+
+.product-detail__stock {
+  padding: 12px;
+  background: #f5f5f5;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.product-detail__add-btn {
+  align-self: flex-start;
+}
+
+.product-detail__stars {
+  display: flex;
+  gap: 2px;
+}
+
+.product-detail__star {
+  font-size: 1.25rem;
+  color: #ddd;
+
+  &.product-detail__star--filled {
+    color: #ffc107;
+  }
+}
+
+.product-detail__loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}

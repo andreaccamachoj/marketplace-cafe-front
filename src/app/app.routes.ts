@@ -3,18 +3,14 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'productos',
-    pathMatch: 'full'
+    loadChildren: () => import('./features/catalog/catalog.routes').then(m => m.CATALOG_ROUTES),
   },
   {
-    path: 'productos',
-    // LAZY LOADING: Descarga el dashboard y el modal solo cuando el usuario entra aquí
-    loadComponent: () => import('./features/product-management/containers/product-dashboard/product-dashboard.component')
-      .then(m => m.ProductDashboardComponent),
-    title: 'Gestión de Productos' // Opcional: Angular actualiza la etiqueta <title> automáticamente
+    path: 'panel',
+    loadChildren: () => import('./features/product-management/product-management.routes').then(m => m.PRODUCT_MANAGEMENT_ROUTES),
   },
   {
     path: '**',
-    redirectTo: 'productos'
+    redirectTo: ''
   }
 ];

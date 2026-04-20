@@ -9,12 +9,12 @@ import {
   computed,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { NgClass } from '@angular/common';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-rating-stars',
   standalone: true,
-  imports: [NgClass],
+  imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     {
