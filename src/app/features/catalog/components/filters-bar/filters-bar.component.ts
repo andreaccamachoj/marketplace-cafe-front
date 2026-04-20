@@ -2,52 +2,65 @@ import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from 
 import { CommonModule } from '@angular/common';
 import { SortBy } from '../../models/product.model';
 
+interface CatChip { value: string; label: string; }
+interface CertChip { id: string; label: string; cssClass: string; }
+
 @Component({
   selector: 'app-filters-bar',
   standalone: true,
   imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="filters-bar">
-      <div class="filters-bar__section">
-        <h3 class="filters-bar__title">Categoría</h3>
-        <select class="filters-bar__select" [value]="selectedCategory || ''" (change)="onCategoryChange($event)">
-          <option value="">Todas</option>
-          <option value="Café de Origen">Café de Origen</option>
-          <option value="Blend">Blend</option>
-        </select>
-      </div>
+    <div class="filters-bar" role="region" aria-label="Filtros del catálogo" id="catalog">
+      <div class="filters-inner">
+        <span class="filter-label" aria-hidden="true">Filtrar por</span>
 
-      <div class="filters-bar__section">
-        <h3 class="filters-bar__title">Certificaciones</h3>
-        <div class="filters-bar__checkboxes">
-          @for (cert of certOptions; track cert) {
-            <label class="filters-bar__checkbox">
-              <input
-                type="checkbox"
-                [checked]="selectedCerts.includes(cert.id)"
-                (change)="onCertToggle(cert.id)"
-              />
-              {{ cert.label }}
-            </label>
+        <!-- Categorías — chips tipo pill -->
+        <div class="cat-chips" role="group" aria-label="Categorías de producto">
+          @for (cat of catChips; track cat.value) {
+            <button
+              class="chip"
+              [class.active]="(selectedCategory ?? 'todos') === cat.value"
+              [attr.aria-pressed]="(selectedCategory ?? 'todos') === cat.value"
+              (click)="onCatClick(cat.value)"
+            >{{ cat.label }}</button>
           }
         </div>
-      </div>
 
-      <div class="filters-bar__section">
-        <h3 class="filters-bar__title">Ordenar por</h3>
-        <select class="filters-bar__select" [value]="sortBy" (change)="onSortChange($event)">
-          @for (option of sortOptions; track option.value) {
-            <option [value]="option.value">{{ option.label }}</option>
+        <div class="filter-sep" aria-hidden="true"></div>
+
+        <!-- Certificaciones — chips coloreados -->
+        <div class="cert-chips" role="group" aria-label="Filtrar por certificación">
+          @for (cert of certChips; track cert.id) {
+            <button
+              class="cert-chip"
+              [ngClass]="cert.cssClass"
+              [class.active]="selectedCerts.includes(cert.id)"
+              [attr.aria-pressed]="selectedCerts.includes(cert.id)"
+              (click)="onCertClick(cert.id)"
+            >{{ cert.label }}</button>
           }
-        </select>
-      </div>
-
-      @if (resultCount > 0) {
-        <div class="filters-bar__results">
-          {{ resultCount }} producto{{ resultCount !== 1 ? 's' : '' }}
         </div>
-      }
+
+        <!-- Sort + contador -->
+        <div class="sort-wrap">
+          <span class="results-count" aria-live="polite">
+            {{ resultCount }} producto{{ resultCount !== 1 ? 's' : '' }}
+          </span>
+          <label for="sortSelect" class="sr-only">Ordenar por</label>
+          <select
+            class="sort-select"
+            id="sortSelect"
+            [value]="sortBy"
+            (change)="onSortChange($event)"
+            aria-label="Ordenar productos"
+          >
+            @for (opt of sortOptions; track opt.value) {
+              <option [value]="opt.value">{{ opt.label }}</option>
+            }
+          </select>
+        </div>
+      </div>
     </div>
   `,
   styleUrl: './filters-bar.component.scss',
@@ -58,35 +71,44 @@ export class FiltersBarComponent {
   @Input() sortBy: SortBy = 'relevance';
   @Input() resultCount = 0;
   @Output() categoryChange = new EventEmitter<string | null>();
-  @Output() certChange = new EventEmitter<string[]>();
-  @Output() sortChange = new EventEmitter<SortBy>();
+  @Output() certChange     = new EventEmitter<string[]>();
+  @Output() sortChange     = new EventEmitter<SortBy>();
 
-  protected readonly certOptions = [
-    { id: 'ORGANIC', label: 'Orgánico' },
-    { id: 'FAIRTRADE', label: 'Comercio Justo' },
-    { id: 'RAINFOREST', label: 'Rainforest' },
+  protected readonly catChips: CatChip[] = [
+    { value: 'todos',        label: 'Todos' },
+    { value: 'grano',        label: 'Grano entero' },
+    { value: 'molido',       label: 'Molido' },
+    { value: 'medio',        label: 'Tostado medio' },
+    { value: 'oscuro',       label: 'Tostado oscuro' },
+    { value: 'descafeinado', label: 'Descafeinado' },
+  ];
+
+  protected readonly certChips: CertChip[] = [
+    { id: 'ORGANIC',    label: '🌿 Orgánico',   cssClass: 'cert-chip-org'  },
+    { id: 'FAIRTRADE',  label: '⚖️ Fairtrade',  cssClass: 'cert-chip-fair' },
+    { id: 'RAINFOREST', label: '🌊 Rainforest', cssClass: 'cert-chip-rain' },
   ];
 
   protected readonly sortOptions = [
-    { value: 'relevance', label: 'Relevancia' },
-    { value: 'price-asc', label: 'Precio (menor a mayor)' },
-    { value: 'price-desc', label: 'Precio (mayor a menor)' },
-    { value: 'rating', label: 'Mejor calificados' },
-    { value: 'newest', label: 'Más nuevos' },
+    { value: 'relevance',  label: 'Destacados' },
+    { value: 'price-asc',  label: 'Precio: menor a mayor' },
+    { value: 'price-desc', label: 'Precio: mayor a menor' },
+    { value: 'rating',     label: 'Mejor valorados' },
+    { value: 'newest',     label: 'Más recientes' },
   ];
 
-  protected onCategoryChange(event: any): void {
-    this.categoryChange.emit(event.target.value || null);
+  protected onCatClick(value: string): void {
+    this.categoryChange.emit(value === 'todos' ? null : value);
   }
 
-  protected onCertToggle(certId: string): void {
+  protected onCertClick(certId: string): void {
     const updated = this.selectedCerts.includes(certId)
       ? this.selectedCerts.filter(c => c !== certId)
       : [...this.selectedCerts, certId];
     this.certChange.emit(updated);
   }
 
-  protected onSortChange(event: any): void {
-    this.sortChange.emit(event.target.value);
+  protected onSortChange(event: Event): void {
+    this.sortChange.emit((event.target as HTMLSelectElement).value as SortBy);
   }
 }

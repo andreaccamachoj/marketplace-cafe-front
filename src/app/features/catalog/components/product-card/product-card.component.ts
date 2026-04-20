@@ -1,84 +1,99 @@
 import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { IProduct } from '../../models/product.model';
-import { BadgeComponent } from '@shared/ui/badge/badge.component';
-import { ButtonComponent } from '@shared/ui/button/button.component';
-import { StockIndicatorComponent } from '@shared/ui/stock-indicator/stock-indicator.component';
-import { CertificationLabelPipe } from '@shared/pipes/certification-label.pipe';
 import { CurrencyCopPipe } from '@shared/pipes/currency-cop.pipe';
 
 @Component({
   selector: 'app-product-card',
   standalone: true,
-  imports: [
-    CommonModule,
-    BadgeComponent,
-    ButtonComponent,
-    StockIndicatorComponent,
-    CertificationLabelPipe,
-    CurrencyCopPipe,
-  ],
+  imports: [CommonModule, RouterLink, CurrencyCopPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <article class="product-card" role="article">
-      <div class="product-card__image-container">
-        <img
-          [src]="product.images[0] || 'https://via.placeholder.com/300x300?text=No+Image'"
-          [alt]="product.name"
-          class="product-card__image"
-          loading="lazy"
-        />
-        <span class="product-card__region-badge" [attr.aria-label]="'Región: ' + product.region">
-          {{ product.region }}
-        </span>
-        <button
-          type="button"
-          class="product-card__wishlist-btn"
-          [attr.aria-label]="'Agregar ' + product.name + ' a favoritos'"
-          (click)="onToggleFavorite()"
-          title="Agregar a favoritos"
-        >
-          ♡
-        </button>
-      </div>
+    <article
+      class="product-card"
+      [attr.aria-label]="product.name + ' — ' + product.producerName"
+    >
+      <!-- Área imagen / ilustración -->
+      <div class="card-img" [style.background]="product.bg || 'rgba(74,140,86,.08)'">
+        <div class="card-img-bg"></div>
+        <div class="card-img-illustration" aria-hidden="true">{{ product.emoji || '☕' }}</div>
+        <div class="card-img-region">📍 {{ product.region }}</div>
 
-      <div class="product-card__content">
-        <div class="product-card__certs">
+        <!-- Badges certificación — arriba izquierda -->
+        <div class="card-badges" aria-label="Certificaciones">
           @for (cert of product.certifications; track cert) {
-            <span class="product-card__cert-badge" [ngClass]="'cert--' + cert.toLowerCase()">
-              {{ cert | certificationLabel }}
-            </span>
+            <span class="badge" [ngClass]="certBadgeClass(cert)">{{ certLabel(cert) }}</span>
           }
         </div>
 
-        <h3 class="product-card__name">{{ product.name }}</h3>
-        <p class="product-card__producer">{{ product.producerName }}</p>
+        <!-- Wishlist — arriba derecha -->
+        <button
+          type="button"
+          class="card-wishlist"
+          [class.active]="isFav"
+          [attr.aria-label]="(isFav ? 'Quitar de' : 'Agregar a') + ' lista de deseos'"
+          [attr.aria-pressed]="isFav"
+          (click)="onToggleFavorite()"
+        >{{ isFav ? '♥' : '♡' }}</button>
+      </div>
 
-        <div class="product-card__rating">
-          <span class="product-card__stars" [attr.aria-label]="product.rating + ' de 5 estrellas'">
-            @for (i of [1, 2, 3, 4, 5]; track i) {
-              <span class="product-card__star" [class.product-card__star--filled]="i <= product.rating">★</span>
-            }
+      <!-- Cuerpo -->
+      <div class="card-body">
+        <div class="card-producer">{{ product.producerName }}</div>
+        <h2 class="card-name">
+          <a [routerLink]="['/productos', product.id]" class="card-name-link">{{ product.name }}</a>
+        </h2>
+        <p class="card-desc">{{ product.description }}</p>
+
+        <!-- Rating -->
+        <div class="card-rating">
+          <span class="stars" [attr.aria-label]="'Calificación ' + product.rating + ' de 5 estrellas'">
+            {{ starsHtml(product.rating) }}
           </span>
-          <span class="product-card__review-count">({{ product.reviewCount }})</span>
+          <span class="rating-count">{{ product.rating }} ({{ product.reviewCount }} reseñas)</span>
         </div>
 
-        <app-stock-indicator
-          [stock]="product.stock"
-          [maxStock]="product.maxStock || 100"
-        ></app-stock-indicator>
-
-        <div class="product-card__footer">
-          <span class="product-card__price">{{ product.price | currencyCop }}</span>
-          <app-button
-            variant="primary"
-            size="sm"
-            (click)="onAdd()"
-            [attr.aria-label]="'Agregar ' + product.name + ' al carrito'"
-          >
-            Agregar
-          </app-button>
+        <!-- Barra de stock -->
+        <div class="stock-bar-wrap">
+          <div class="stock-label">{{ stockLabel() }}</div>
+          <div class="stock-bar"
+               role="progressbar"
+               [attr.aria-valuenow]="stockPct()"
+               aria-valuemin="0"
+               aria-valuemax="100"
+               aria-label="Disponibilidad">
+            <div class="stock-fill" [ngClass]="stockClass()" [style.width.%]="stockPct()"></div>
+          </div>
         </div>
+      </div>
+
+      <!-- Footer tarjeta -->
+      <div class="card-footer">
+        <div class="card-price">
+          <span class="price-label">Precio</span>
+          <span class="price-value">{{ product.price | currencyCop }}</span>
+          <span class="price-unit">/ {{ product.unit || '500g' }}</span>
+        </div>
+        <button
+          type="button"
+          class="btn-add-cart"
+          [class.added]="inCart"
+          [attr.aria-label]="(inCart ? 'Ya en carrito' : 'Agregar al carrito') + ': ' + product.name"
+          (click)="onAdd()"
+        >
+          @if (inCart) {
+            <span>✓ En carrito</span>
+          } @else {
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <path d="M16 10a4 4 0 01-8 0"/>
+            </svg>
+            <span>Agregar</span>
+          }
+        </button>
       </div>
     </article>
   `,
@@ -86,9 +101,56 @@ import { CurrencyCopPipe } from '@shared/pipes/currency-cop.pipe';
 })
 export class ProductCardComponent {
   @Input({ required: true }) product!: IProduct;
-  @Output() add = new EventEmitter<IProduct>();
+  @Input() inCart = false;
+  @Input() isFav  = false;
+  @Output() add            = new EventEmitter<IProduct>();
   @Output() toggleFavorite = new EventEmitter<string>();
 
   protected onAdd(): void { this.add.emit(this.product); }
   protected onToggleFavorite(): void { this.toggleFavorite.emit(this.product.id); }
+
+  protected starsHtml(rating: number): string {
+    const full  = Math.floor(rating);
+    const half  = rating % 1 >= 0.5 ? 1 : 0;
+    const empty = 5 - full - half;
+    return '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(empty);
+  }
+
+  protected stockPct(): number {
+    return this.product.maxStock
+      ? Math.round((this.product.stock / this.product.maxStock) * 100)
+      : this.product.stock;
+  }
+
+  protected stockClass(): string {
+    const pct = this.stockPct();
+    if (pct > 60) return 'stock-high';
+    if (pct > 20) return 'stock-medium';
+    return 'stock-low';
+  }
+
+  protected stockLabel(): string {
+    const pct = this.stockPct();
+    if (pct > 60) return `Stock disponible (${pct}%)`;
+    if (pct > 20) return `Stock limitado (${pct}%)`;
+    return `Últimas unidades (${pct}%)`;
+  }
+
+  protected certBadgeClass(cert: string): string {
+    switch (cert) {
+      case 'ORGANIC':    return 'badge-org';
+      case 'FAIRTRADE':  return 'badge-fair';
+      case 'RAINFOREST': return 'badge-rain';
+      default: return '';
+    }
+  }
+
+  protected certLabel(cert: string): string {
+    switch (cert) {
+      case 'ORGANIC':    return 'Orgánico';
+      case 'FAIRTRADE':  return 'Fairtrade';
+      case 'RAINFOREST': return 'Rainforest';
+      default: return cert;
+    }
+  }
 }

@@ -1,19 +1,27 @@
-.home-page {
-  display: flex;
-  flex-direction: column;
-  gap: 64px;
-  max-width: 1440px;
-  margin: 0 auto;
-  padding: 0 24px;
+/* Skip link */
+.skip {
+  position: absolute;
+  top: -100%;
+  left: 16px;
+  background: var(--espresso, #372617);
+  color: var(--marfil, #e4dcd1);
+  padding: 8px 16px;
+  border-radius: 0 0 8px 8px;
+  z-index: 9999;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: none;
 
-  @media (max-width: 768px) {
-    padding: 0 16px;
-    gap: 48px;
-  }
+  &:focus { top: 0; }
 }
 
-.home-page__catalog {
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
+/* Área del catálogo entre filtros y secciones */
+.catalog-main {
+  max-width: var(--max-w, 1280px);
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+
+  @media (max-width: 700px) {
+    padding: 28px 16px 60px;
+  }
 }

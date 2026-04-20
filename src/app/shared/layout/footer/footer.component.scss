@@ -1,117 +1,104 @@
 .footer {
-  background: var(--neutral-900, #111827);
-  color: var(--neutral-300, #d1d5db);
-  padding: var(--sp-12) var(--sp-6);
-  margin-top: var(--sp-16);
-  border-top: 1px solid var(--neutral-800, #1f2937);
+  background: var(--cafe-oscuro, #3e2919);
+  color: rgba(205,196,181,.6);
+  padding: 60px 24px 32px;
 }
 
-.footer__container {
+.footer-inner {
+  max-width: var(--max-w, 1280px);
+  margin: 0 auto;
+}
+
+.footer-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--sp-8);
-  max-width: 1200px;
-  margin: 0 auto var(--sp-8);
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 48px;
+
+  @media (max-width: 1024px) { grid-template-columns: 1fr 1fr; gap: 32px; }
+  @media (max-width: 700px)  { grid-template-columns: 1fr; }
 }
 
-.footer__section {
+.footer-brand {}
+
+.footer-logo-row {
   display: flex;
-  flex-direction: column;
-  gap: var(--sp-3);
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
 }
 
-.footer__heading {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: var(--white, #fff);
-  margin: 0;
-}
-
-.footer__subheading {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: var(--white, #fff);
-  margin: 0;
-}
-
-.footer__text {
-  font-size: 0.875rem;
-  line-height: 1.6;
-  margin: 0;
-}
-
-.footer__links {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-2);
-}
-
-.footer__link {
-  color: var(--neutral-400, #9ca3af);
-  text-decoration: none;
-  font-size: 0.875rem;
-  transition: color var(--transition-fast);
-
-  &:hover {
-    color: var(--amber, #f59e0b);
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--amber, #f59e0b);
-    border-radius: 2px;
-  }
-}
-
-.footer__socials {
-  display: flex;
-  gap: var(--sp-3);
-}
-
-.footer__social {
+.footer-logo-icon {
   width: 36px;
   height: 36px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(205,196,181,.1);
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--neutral-400, #9ca3af);
-  text-decoration: none;
-  font-weight: 600;
-  transition: background var(--transition-fast), color var(--transition-fast);
-
-  &:hover {
-    background: var(--amber, #f59e0b);
-    color: var(--neutral-900, #111827);
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--amber, #f59e0b);
-    outline-offset: 2px;
-  }
+  font-size: 16px;
 }
 
-.footer__bottom {
-  border-top: 1px solid var(--neutral-800, #1f2937);
-  padding-top: var(--sp-6);
-  text-align: center;
+.footer-logo-name {
+  font-family: var(--font-display, 'Playfair Display', serif);
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--marfil, #e4dcd1);
 }
 
-.footer__copyright {
-  font-size: 0.75rem;
-  color: var(--neutral-500, #6b7280);
+.footer-brand-desc {
+  font-size: 0.8125rem;
+  line-height: 1.75;
+  color: rgba(205,196,181,.45);
+  max-width: 260px;
+  font-weight: 300;
   margin: 0;
 }
 
-@media (max-width: 640px) {
-  .footer {
-    padding: var(--sp-8) var(--sp-4);
-  }
+.footer-col-title {
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(205,196,181,.7);
+  margin-bottom: 16px;
+}
 
-  .footer__container {
-    grid-template-columns: 1fr;
-  }
+.footer-link {
+  display: block;
+  font-size: 0.875rem;
+  color: rgba(205,196,181,.45);
+  padding: 5px 0;
+  transition: color 0.15s;
+  font-weight: 400;
+  text-decoration: none;
+
+  &:hover { color: var(--marfil, #e4dcd1); }
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(205,196,181,.08);
+  padding-top: 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.footer-copy { font-size: 0.8125rem; }
+
+.footer-certs {
+  display: flex;
+  gap: 8px;
+}
+
+.footer-cert {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  background: rgba(205,196,181,.06);
+  border: 1px solid rgba(205,196,181,.12);
+  color: rgba(205,196,181,.5);
 }

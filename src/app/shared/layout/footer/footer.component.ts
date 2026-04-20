@@ -1,52 +1,63 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-footer',
   standalone: true,
+  imports: [RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <footer class="footer" role="contentinfo">
-      <div class="footer__container">
-        <div class="footer__section">
-          <h3 class="footer__heading">World Coffee Marketplace</h3>
-          <p class="footer__text">
-            Conectando productores de café colombianos con consumidores de toda Colombia.
-          </p>
-        </div>
+      <div class="footer-inner">
+        <div class="footer-grid">
+          <!-- Brand -->
+          <div class="footer-brand">
+            <div class="footer-logo-row">
+              <div class="footer-logo-icon" aria-hidden="true">☕</div>
+              <div class="footer-logo-name">World Coffee Marketplace</div>
+            </div>
+            <p class="footer-brand-desc">
+              Conectamos productores certificados de las mejores regiones cafeteras
+              de Colombia con el mundo.
+            </p>
+          </div>
 
-        <div class="footer__section">
-          <h4 class="footer__subheading">Enlaces</h4>
-          <ul class="footer__links">
-            <li><a href="#" class="footer__link">Inicio</a></li>
-            <li><a href="#" class="footer__link">Catálogo</a></li>
-            <li><a href="#" class="footer__link">Sobre nosotros</a></li>
-            <li><a href="#" class="footer__link">Contacto</a></li>
-          </ul>
-        </div>
+          <!-- Marketplace -->
+          <div>
+            <div class="footer-col-title">Marketplace</div>
+            <a routerLink="/"        class="footer-link">Catálogo</a>
+            <a href="#prod-sec"      class="footer-link">Productores</a>
+            <a href="#sus"           class="footer-link">Certificaciones</a>
+            <a href="#prod-sec"      class="footer-link">Regiones</a>
+          </div>
 
-        <div class="footer__section">
-          <h4 class="footer__subheading">Legal</h4>
-          <ul class="footer__links">
-            <li><a href="#" class="footer__link">Términos de servicio</a></li>
-            <li><a href="#" class="footer__link">Política de privacidad</a></li>
-            <li><a href="#" class="footer__link">Política de cookies</a></li>
-          </ul>
-        </div>
+          <!-- Cuenta -->
+          <div>
+            <div class="footer-col-title">Cuenta</div>
+            <a routerLink="/auth/login"    class="footer-link">Iniciar sesión</a>
+            <a routerLink="/auth/register" class="footer-link">Registrarse</a>
+            <a href="#"                    class="footer-link">Mis pedidos</a>
+            <a href="#"                    class="footer-link">Perfil</a>
+          </div>
 
-        <div class="footer__section">
-          <h4 class="footer__subheading">Síguenos</h4>
-          <div class="footer__socials">
-            <a href="#" class="footer__social" aria-label="Facebook">f</a>
-            <a href="#" class="footer__social" aria-label="Instagram">📷</a>
-            <a href="#" class="footer__social" aria-label="Twitter">𝕏</a>
+          <!-- Legal -->
+          <div>
+            <div class="footer-col-title">Legal</div>
+            <a href="#" class="footer-link">Términos de uso</a>
+            <a href="#" class="footer-link">Privacidad</a>
+            <a href="#" class="footer-link">Sostenibilidad</a>
+            <a href="#" class="footer-link">Contacto</a>
           </div>
         </div>
-      </div>
 
-      <div class="footer__bottom">
-        <p class="footer__copyright">
-          © {{ year }} World Coffee Marketplace. Todos los derechos reservados.
-        </p>
+        <div class="footer-bottom">
+          <span class="footer-copy">© {{ year }} World Coffee Marketplace · UNAB · Todos los derechos reservados</span>
+          <div class="footer-certs">
+            <span class="footer-cert">🌿 Orgánico</span>
+            <span class="footer-cert">⚖️ Fairtrade</span>
+            <span class="footer-cert">🌲 Rainforest</span>
+          </div>
+        </div>
       </div>
     </footer>
   `,

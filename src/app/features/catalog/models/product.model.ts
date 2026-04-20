@@ -5,6 +5,7 @@ export interface IProduct {
   category: string;
   description: string;
   price: number;
+  unit?: string;
   rating: number;
   reviewCount: number;
   stock: number;
@@ -12,6 +13,8 @@ export interface IProduct {
   images: string[];
   certifications: ('ORGANIC' | 'FAIRTRADE' | 'RAINFOREST')[];
   region: string;
+  emoji?: string;
+  bg?: string;
 }
 
 export interface ICategory {
