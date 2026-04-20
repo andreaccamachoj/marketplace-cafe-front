@@ -1,0 +1,40 @@
+<div class="enterprise-layout">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-logo">☕</div>
+      <h2>ERP Café</h2>
+    </div>
+
+    <nav class="nav-menu" aria-label="Navegación principal">
+      <a routerLink="/dashboard" routerLinkActive="active-link">
+        <span class="icon">📊</span> Resumen
+      </a>
+      <a routerLink="/productos" routerLinkActive="active-link">
+        <span class="icon">📦</span> Catálogo
+      </a>
+      <a routerLink="/ventas" routerLinkActive="active-link">
+        <span class="icon">💰</span> Ventas
+      </a>
+    </nav>
+  </aside>
+
+  <div class="main-wrapper">
+
+    <header class="topbar">
+      <div class="search-bar">
+        <input type="text" placeholder="Buscar en todo el sistema..." aria-label="Búsqueda global">
+      </div>
+
+      <div class="user-profile">
+        <img src="assets/avatar.png" alt="Perfil del usuario" class="avatar">
+        <span class="user-name">Administrador</span>
+      </div>
+    </header>
+
+    <main class="content">
+      <router-outlet></router-outlet>
+    </main>
+
+  </div>
+</div>
