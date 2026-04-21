@@ -15,8 +15,17 @@ export const routes: Routes = [
     path: 'panel',
     loadChildren: () => import('./features/product-management/product-management.routes').then(m => m.PRODUCT_MANAGEMENT_ROUTES),
   },
-  { path: 'buyer',    redirectTo: '' },
-  { path: 'producer', redirectTo: '' },
-  { path: 'admin',    redirectTo: '' },
+  {
+    path: 'buyer',
+    loadChildren: () => import('./features/buyer/buyer.routes').then(m => m.BUYER_ROUTES),
+  },
+  {
+    path: 'producer',
+    loadChildren: () => import('./features/producer/producer.routes').then(m => m.PRODUCER_ROUTES),
+  },
+  {
+    path: 'admin',
+    loadChildren: () => import('./features/admin/admin.routes').then(m => m.ADMIN_ROUTES),
+  },
   { path: '**',       redirectTo: '' },
 ];

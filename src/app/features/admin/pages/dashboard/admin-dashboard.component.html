@@ -1,0 +1,408 @@
+<div class="page-layout">
+
+  <!-- Sidebar overlay (mobile) -->
+  <div
+    class="sidebar-overlay"
+    [ngClass]="{ visible: sidebarOpen() }"
+    (click)="toggleSidebar()"
+  ></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" [ngClass]="{ open: sidebarOpen() }">
+
+    <!-- Principal -->
+    <div class="sidebar-section">
+      <span class="sidebar-label">Principal</span>
+      <nav class="sidebar-nav">
+        <button
+          [ngClass]="{ active: activeTab() === 'overview' }"
+          (click)="setTab('overview')"
+        >
+          <span>📊</span>
+          <span>Resumen</span>
+        </button>
+        <button
+          [ngClass]="{ active: activeTab() === 'users' }"
+          (click)="setTab('users')"
+        >
+          <span>👥</span>
+          <span>Usuarios</span>
+          <span class="nav-pill np-blue">{{ usersCount() }}</span>
+        </button>
+        <button
+          [ngClass]="{ active: activeTab() === 'products' }"
+          (click)="setTab('products')"
+        >
+          <span>📦</span>
+          <span>Productos</span>
+        </button>
+        <button
+          [ngClass]="{ active: activeTab() === 'producers' }"
+          (click)="setTab('producers')"
+        >
+          <span>🌿</span>
+          <span>Productores</span>
+          @if (pendingProducersCount() > 0) {
+            <span class="nav-pill np-amber">{{ pendingProducersCount() }}</span>
+          }
+        </button>
+        <button (click)="showToast('Pedidos disponible próximamente.', 'info')">
+          <span>📋</span>
+          <span>Pedidos</span>
+        </button>
+      </nav>
+    </div>
+
+    <hr class="sidebar-sep" />
+
+    <!-- Bottom actions -->
+    <div class="sidebar-bottom">
+      <nav class="sidebar-nav">
+        <a routerLink="/">
+          <span>🏪</span>
+          <span>Catálogo</span>
+        </a>
+        <button (click)="showToast('Configuración disponible próximamente.', 'info')">
+          <span>⚙️</span>
+          <span>Configuración</span>
+        </button>
+        <button class="danger" (click)="logout()">
+          <span>🚪</span>
+          <span>Cerrar sesión</span>
+        </button>
+      </nav>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="main-content">
+
+    <!-- Top nav -->
+    <app-dashboard-nav
+      pageTitle="Panel de Administración"
+      (onMenuToggle)="toggleSidebar()"
+    />
+
+    <!-- Page header -->
+    <div class="page-header">
+      <div>
+        <p class="page-eyebrow">Administrador WCM</p>
+        <h1 class="page-title">Panel de Control</h1>
+        <p class="page-subtitle">Gestiona usuarios, productos y productores del marketplace.</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn-secondary" (click)="showToast('Reportes disponibles próximamente.', 'info')">
+          📥 Exportar reporte
+        </button>
+        <button class="btn-primary" (click)="setTab('users')">
+          👥 Ver usuarios
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats row -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon" style="background: rgba(91,62,143,.1)">👥</div>
+        <p class="stat-label">Total usuarios</p>
+        <p class="stat-value">{{ totalUsers() }}</p>
+        <p class="stat-sub">+12 este mes</p>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background: rgba(55,38,23,.07)">📦</div>
+        <p class="stat-label">Productos activos</p>
+        <p class="stat-value">{{ activeProductsCount() }}</p>
+        <p class="stat-sub">En el catálogo</p>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background: rgba(192,120,32,.1)">📋</div>
+        <p class="stat-label">Pedidos activos</p>
+        <p class="stat-value">{{ activeOrdersCount() }}</p>
+        <p class="stat-sub">En proceso</p>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background: rgba(30,94,41,.1)">💰</div>
+        <p class="stat-label">Ingresos plataforma</p>
+        <p class="stat-value">$2.4M</p>
+        <p class="stat-sub">+8% este mes</p>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs-row">
+      <button
+        class="tab"
+        [ngClass]="{ active: activeTab() === 'overview' }"
+        (click)="setTab('overview')"
+      >
+        📊 Resumen
+      </button>
+      <button
+        class="tab"
+        [ngClass]="{ active: activeTab() === 'users' }"
+        (click)="setTab('users')"
+      >
+        👥 Usuarios
+        <span class="tab-count tc-espresso">{{ usersCount() }}</span>
+      </button>
+      <button
+        class="tab"
+        [ngClass]="{ active: activeTab() === 'products' }"
+        (click)="setTab('products')"
+      >
+        📦 Productos
+        <span class="tab-count tc-espresso">{{ products().length }}</span>
+      </button>
+      <button
+        class="tab"
+        [ngClass]="{ active: activeTab() === 'producers' }"
+        (click)="setTab('producers')"
+      >
+        🌿 Productores pendientes
+        @if (pendingProducersCount() > 0) {
+          <span class="tab-count tc-amber">{{ pendingProducersCount() }}</span>
+        }
+      </button>
+    </div>
+
+    <!-- ─── Overview Tab ─── -->
+    @if (activeTab() === 'overview') {
+      <div class="overview-grid">
+
+        <!-- Recent activity -->
+        <div class="overview-card">
+          <div class="overview-card-head">
+            <p class="overview-card-title">Actividad reciente</p>
+          </div>
+          <div class="activity-list">
+            @for (item of activity(); track item.id) {
+              <div class="activity-item">
+                <div class="activity-icon" [style.background]="item.iconBg">
+                  {{ item.icon }}
+                </div>
+                <div class="activity-text">
+                  <p class="activity-desc">{{ item.description }}</p>
+                  <p class="activity-time">{{ item.time }}</p>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Pending producers -->
+        <div class="overview-card">
+          <div class="overview-card-head">
+            <p class="overview-card-title">Productores pendientes de aprobación</p>
+          </div>
+          @if (producers().length === 0) {
+            <p style="padding:20px;color:var(--cafe-medio);font-size:.875rem;text-align:center">
+              No hay solicitudes pendientes.
+            </p>
+          } @else {
+            @for (producer of producers(); track producer.id) {
+              <div class="producer-request-card">
+                <div class="req-avatar">
+                  {{ producer.name.split(' ')[0][0] }}{{ producer.name.split(' ')[1]?.[0] ?? '' }}
+                </div>
+                <div class="req-info">
+                  <p class="req-name">{{ producer.name }}</p>
+                  <p class="req-detail">{{ producer.farmName }} · {{ producer.region }}</p>
+                  <p class="req-date">Solicitó el {{ producer.dateApplied }}</p>
+                </div>
+                <div class="req-actions">
+                  <button class="btn-success" (click)="approveProducer(producer.id)">✓</button>
+                  <button class="btn-danger" (click)="rejectProducer(producer.id)">✕</button>
+                </div>
+              </div>
+            }
+          }
+        </div>
+      </div>
+    }
+
+    <!-- ─── Users Tab ─── -->
+    @if (activeTab() === 'users') {
+      <div class="data-table-wrap">
+        <div class="users-table-header">
+          <span class="th">Nombre</span>
+          <span class="th">Email</span>
+          <span class="th">Rol</span>
+          <span class="th">Estado</span>
+          <span class="th">Miembro desde</span>
+          <span class="th">Acciones</span>
+        </div>
+        @for (user of users(); track user.id) {
+          <div class="users-data-row">
+            <!-- Nombre -->
+            <p class="user-name">{{ user.name }}</p>
+            <!-- Email -->
+            <p class="user-email">{{ user.email }}</p>
+            <!-- Rol -->
+            <span
+              class="role-badge"
+              [ngClass]="{
+                'rb-buyer':    user.role === Role.BUYER,
+                'rb-producer': user.role === Role.PRODUCER,
+                'rb-admin':    user.role === Role.ADMIN
+              }"
+            >
+              {{ user.role === Role.BUYER ? 'Comprador' : user.role === Role.PRODUCER ? 'Productor' : 'Admin' }}
+            </span>
+            <!-- Estado -->
+            <span
+              class="status-badge"
+              [ngClass]="{
+                'st-active':    user.status === 'active',
+                'st-suspended': user.status === 'suspended'
+              }"
+            >
+              {{ user.status === 'active' ? 'Activo' : 'Suspendido' }}
+            </span>
+            <!-- Miembro desde -->
+            <p class="member-since">{{ user.memberSince }}</p>
+            <!-- Acciones -->
+            <div class="row-actions">
+              <button
+                class="btn-action-sm ba-ghost"
+                (click)="showToast('Vista de usuario disponible próximamente.', 'info')"
+              >
+                Ver
+              </button>
+              <button
+                class="btn-action-sm"
+                [ngClass]="user.status === 'active' ? 'ba-danger' : 'ba-success'"
+                (click)="suspendUser(user.id)"
+              >
+                {{ user.status === 'active' ? 'Suspender' : 'Reactivar' }}
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- ─── Products Tab ─── -->
+    @if (activeTab() === 'products') {
+      <div class="data-table-wrap">
+        <div class="products-table-header">
+          <span class="th">Producto</span>
+          <span class="th">Productor</span>
+          <span class="th">Precio</span>
+          <span class="th">Stock</span>
+          <span class="th">Estado</span>
+          <span class="th">Acciones</span>
+        </div>
+        @for (product of products(); track product.id) {
+          <div class="products-data-row">
+            <!-- Producto -->
+            <div class="row-item-info">
+              <div class="row-emoji">{{ product.emoji }}</div>
+              <div>
+                <p class="row-item-name">{{ product.name }}</p>
+                <p class="row-item-category">{{ product.category }}</p>
+              </div>
+            </div>
+            <!-- Productor -->
+            <p class="user-email">{{ product.producer }}</p>
+            <!-- Precio -->
+            <p class="row-price">$ {{ product.price | number:'1.0-0' }}</p>
+            <!-- Stock -->
+            <p class="user-email">{{ product.stock }} uds</p>
+            <!-- Estado -->
+            <span
+              class="product-status"
+              [ngClass]="{
+                'ps-active':   product.status === 'active',
+                'ps-inactive': product.status === 'inactive',
+                'ps-pending':  product.status === 'pending'
+              }"
+            >
+              {{ product.status === 'active' ? 'Activo' : product.status === 'inactive' ? 'Inactivo' : 'Pendiente' }}
+            </span>
+            <!-- Acciones -->
+            <div class="row-actions">
+              <button
+                class="btn-action-sm ba-ghost"
+                (click)="showToast('Vista de producto disponible próximamente.', 'info')"
+              >
+                Ver
+              </button>
+              @if (product.status === 'pending') {
+                <button
+                  class="btn-action-sm ba-success"
+                  (click)="showToast('Producto aprobado.', 'success')"
+                >
+                  Aprobar
+                </button>
+                <button
+                  class="btn-action-sm ba-danger"
+                  (click)="showToast('Producto rechazado.', 'error')"
+                >
+                  Rechazar
+                </button>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- ─── Producers Tab ─── -->
+    @if (activeTab() === 'producers') {
+      @if (producers().length === 0) {
+        <div
+          style="background:#fff;border:1px solid rgba(55,38,23,.07);border-radius:var(--r-lg);padding:48px 24px;text-align:center"
+        >
+          <p style="font-size:2rem;margin-bottom:10px">✅</p>
+          <p style="font-family:var(--font-display);font-size:1.125rem;font-weight:700;color:var(--espresso);margin-bottom:6px">
+            Todo al día
+          </p>
+          <p style="font-size:.875rem;color:var(--cafe-medio)">
+            No hay solicitudes de productores pendientes de aprobación.
+          </p>
+        </div>
+      } @else {
+        <div class="data-table-wrap">
+          <div class="producers-table-header">
+            <span class="th">Nombre</span>
+            <span class="th">Email</span>
+            <span class="th">Finca / Región</span>
+            <span class="th">Solicitud</span>
+            <span class="th">Acciones</span>
+          </div>
+          @for (producer of producers(); track producer.id) {
+            <div class="producers-data-row">
+              <!-- Nombre -->
+              <p class="user-name">{{ producer.name }}</p>
+              <!-- Email -->
+              <p class="user-email">{{ producer.email }}</p>
+              <!-- Finca / Región -->
+              <div>
+                <p class="row-item-name" style="font-size:.875rem">{{ producer.farmName }}</p>
+                <p class="row-item-category">{{ producer.region }}</p>
+              </div>
+              <!-- Fecha -->
+              <p class="member-since">{{ producer.dateApplied }}</p>
+              <!-- Acciones -->
+              <div class="row-actions">
+                <button
+                  class="btn-action-sm ba-success"
+                  (click)="approveProducer(producer.id)"
+                >
+                  ✓ Aprobar
+                </button>
+                <button
+                  class="btn-action-sm ba-danger"
+                  (click)="rejectProducer(producer.id)"
+                >
+                  ✕ Rechazar
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
+
+  </main>
+</div>

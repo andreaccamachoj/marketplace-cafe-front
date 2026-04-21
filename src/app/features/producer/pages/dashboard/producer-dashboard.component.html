@@ -1,0 +1,291 @@
+<div class="page-layout">
+
+  <!-- Sidebar overlay (mobile) -->
+  <div
+    class="sidebar-overlay"
+    [ngClass]="{ visible: sidebarOpen() }"
+    (click)="toggleSidebar()"
+  ></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" [ngClass]="{ open: sidebarOpen() }">
+
+    <!-- Principal -->
+    <div class="sidebar-section">
+      <span class="sidebar-label">Principal</span>
+      <nav class="sidebar-nav">
+        <button
+          [ngClass]="{ active: activeTab() === 'overview' }"
+          (click)="setTab('overview')"
+        >
+          <span>🏠</span>
+          <span>Dashboard</span>
+        </button>
+        <button
+          [ngClass]="{ active: activeTab() === 'products' }"
+          (click)="setTab('products')"
+        >
+          <span>📦</span>
+          <span>Mis Productos</span>
+          <span class="nav-pill green">{{ products().length }}</span>
+        </button>
+        <button
+          [ngClass]="{ active: activeTab() === 'orders' }"
+          (click)="setTab('orders')"
+        >
+          <span>📋</span>
+          <span>Pedidos</span>
+          @if (pendingOrders() > 0) {
+            <span class="nav-pill">{{ pendingOrders() }}</span>
+          }
+        </button>
+        <button (click)="showToast('Analíticas disponible próximamente.', 'info')">
+          <span>📊</span>
+          <span>Analíticas</span>
+        </button>
+        <button (click)="showToast('Perfil disponible próximamente.', 'info')">
+          <span>👤</span>
+          <span>Mi Perfil</span>
+        </button>
+      </nav>
+    </div>
+
+    <hr class="sidebar-sep" />
+
+    <!-- Bottom actions -->
+    <div class="sidebar-bottom">
+      <nav class="sidebar-nav">
+        <a routerLink="/" class="sidebar-nav">
+          <span>🏪</span>
+          <span>Ir al catálogo</span>
+        </a>
+        <button (click)="showToast('Configuración disponible próximamente.', 'info')">
+          <span>⚙️</span>
+          <span>Configuración</span>
+        </button>
+        <button class="danger" (click)="logout()">
+          <span>🚪</span>
+          <span>Cerrar sesión</span>
+        </button>
+      </nav>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="main-content">
+
+    <!-- Top nav -->
+    <app-dashboard-nav
+      pageTitle="Panel del Productor"
+      (onMenuToggle)="toggleSidebar()"
+    />
+
+    <!-- Page header -->
+    <div class="page-header">
+      <div>
+        <p class="page-eyebrow">Panel del Productor</p>
+        <h1 class="page-title">Bienvenido, {{ firstName() }}</h1>
+        <p class="page-subtitle">Gestiona tus productos, pedidos y analíticas desde aquí.</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn-secondary" (click)="showToast('Exportar disponible próximamente.', 'info')">
+          📥 Exportar
+        </button>
+        <button class="btn-primary" (click)="showToast('Agregar producto disponible próximamente.', 'info')">
+          ＋ Nuevo Producto
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats row -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon" style="background: rgba(55,38,23,.07)">📦</div>
+        <p class="stat-label">Productos activos</p>
+        <p class="stat-value">{{ activeProducts() }}</p>
+        <p class="stat-sub stat-up">+2 este mes</p>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background: rgba(30,94,41,.1)">💰</div>
+        <p class="stat-label">Ventas del mes</p>
+        <p class="stat-value">$ {{ monthlySales() | number:'1.0-0' }}</p>
+        <p class="stat-sub stat-up">+18% vs anterior</p>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background: rgba(192,120,32,.1)">📋</div>
+        <p class="stat-label">Pedidos pendientes</p>
+        <p class="stat-value">{{ pendingOrders() }}</p>
+        <p class="stat-sub stat-warn">Requieren atención</p>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background: rgba(192,120,32,.1)">⭐</div>
+        <p class="stat-label">Calificación promedio</p>
+        <p class="stat-value">{{ avgRating() }}<span style="font-size:.9375rem;color:var(--cafe-medio)">/5</span></p>
+        <p class="stat-sub">Basado en 47 reseñas</p>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs-row">
+      <button
+        class="tab"
+        [ngClass]="{ active: activeTab() === 'overview' }"
+        (click)="setTab('overview')"
+      >
+        🏠 Dashboard
+      </button>
+      <button
+        class="tab"
+        [ngClass]="{ active: activeTab() === 'products' }"
+        (click)="setTab('products')"
+      >
+        📦 Mis Productos
+        <span class="tab-count tc-green">{{ products().length }}</span>
+      </button>
+      <button
+        class="tab"
+        [ngClass]="{ active: activeTab() === 'orders' }"
+        (click)="setTab('orders')"
+      >
+        📋 Pedidos
+        <span class="tab-count tc-amber">{{ orders().length }}</span>
+      </button>
+    </div>
+
+    <!-- ─── Overview Tab ─── -->
+    @if (activeTab() === 'overview') {
+      <div class="overview-grid">
+
+        <!-- Welcome card -->
+        <div class="info-card">
+          <p class="info-card-title">Estado de tu perfil</p>
+          @if (producerStatus() === 'approved') {
+            <span class="producer-status-badge ps-approved">✅ Perfil Aprobado</span>
+          } @else if (producerStatus() === 'pending') {
+            <span class="producer-status-badge ps-pending">⏳ En revisión</span>
+          } @else {
+            <span class="producer-status-badge ps-rejected">❌ Rechazado</span>
+          }
+          <p class="welcome-message" style="margin-top:14px">
+            Tu perfil de productor está activo en el marketplace. Los compradores pueden
+            descubrir tus productos y hacer pedidos directamente. Mantén tu inventario
+            actualizado para maximizar tus ventas.
+          </p>
+        </div>
+
+        <!-- Quick summary card -->
+        <div class="info-card">
+          <p class="info-card-title">Resumen rápido</p>
+          <p class="welcome-message">
+            Este mes has vendido
+            <strong style="color:var(--espresso)">$ {{ monthlySales() | number:'1.0-0' }} COP</strong>
+            en {{ orders().length }} pedidos. Tienes
+            <strong style="color:var(--amber)">{{ pendingOrders() }} pedido(s) pendiente(s)</strong>
+            esperando tu atención. Tu calificación promedio es de
+            <strong style="color:var(--espresso)">{{ avgRating() }}/5 ⭐</strong>.
+          </p>
+          <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn-primary" (click)="setTab('orders')">Ver pedidos pendientes</button>
+            <button class="btn-secondary" (click)="setTab('products')">Gestionar productos</button>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- ─── Products Tab ─── -->
+    @if (activeTab() === 'products') {
+      <div class="data-table-wrap">
+        <div class="data-table-header">
+          <span class="th">Producto</span>
+          <span class="th">Estado</span>
+          <span class="th">Precio</span>
+          <span class="th">Stock</span>
+          <span class="th">Acciones</span>
+        </div>
+        @for (product of products(); track product.id) {
+          <div class="data-row">
+            <!-- Producto -->
+            <div class="row-product">
+              <div class="row-emoji">{{ product.emoji }}</div>
+              <div>
+                <p class="row-name">{{ product.name }}</p>
+                <p class="row-category">{{ product.category }}</p>
+              </div>
+            </div>
+            <!-- Estado -->
+            <div>
+              <span
+                class="product-badge"
+                [ngClass]="{
+                  'pb-active': product.status === 'active',
+                  'pb-inactive': product.status === 'inactive'
+                }"
+              >
+                {{ product.status === 'active' ? 'Activo' : 'Inactivo' }}
+              </span>
+            </div>
+            <!-- Precio -->
+            <p class="row-price">$ {{ product.price | number:'1.0-0' }}</p>
+            <!-- Stock -->
+            <p class="row-stock">{{ product.stock }} uds</p>
+            <!-- Acciones -->
+            <div class="row-actions">
+              <button
+                class="btn-action"
+                (click)="showToast('Editar producto disponible próximamente.', 'info')"
+              >
+                ✏️ Editar
+              </button>
+              <button
+                class="btn-action"
+                (click)="toggleProductStatus(product.id)"
+              >
+                {{ product.status === 'active' ? '⏸ Pausar' : '▶ Activar' }}
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- ─── Orders Tab ─── -->
+    @if (activeTab() === 'orders') {
+      <div class="data-table-wrap">
+        <div class="orders-table-header">
+          <span class="th">Pedido</span>
+          <span class="th">Comprador</span>
+          <span class="th">Fecha</span>
+          <span class="th">Total</span>
+          <span class="th">Estado</span>
+        </div>
+        @for (order of orders(); track order.id) {
+          <div class="orders-data-row">
+            <!-- Número -->
+            <p class="order-num">{{ order.number }}</p>
+            <!-- Comprador -->
+            <p class="buyer-name">{{ order.buyer }}</p>
+            <!-- Fecha -->
+            <p class="order-date">{{ order.date }}</p>
+            <!-- Total -->
+            <p class="order-total">$ {{ order.total | number:'1.0-0' }}</p>
+            <!-- Estado -->
+            <span
+              class="status-badge"
+              [ngClass]="{
+                'status-pending':   order.status === 'pending',
+                'status-preparing': order.status === 'preparing',
+                'status-shipped':   order.status === 'shipped',
+                'status-delivered': order.status === 'delivered'
+              }"
+            >
+              {{ order.status === 'pending'   ? 'Pendiente'  :
+                 order.status === 'preparing' ? 'Preparando' :
+                 order.status === 'shipped'   ? 'En camino'  : 'Entregado' }}
+            </span>
+          </div>
+        }
+      </div>
+    }
+
+  </main>
+</div>

@@ -1,0 +1,323 @@
+<app-dashboard-nav [pageTitle]="'Panel del Comprador'" (onMenuToggle)="toggleSidebar()" />
+
+<div class="page-layout">
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar" [class.open]="sidebarOpen()" id="sidebar" aria-label="Navegación del panel">
+
+    <div class="sidebar-section">
+      <span class="sidebar-label">Principal</span>
+      <nav class="sidebar-nav">
+        <button
+          [class.active]="activeTab() === 'cart'"
+          (click)="setTab('cart')"
+          type="button"
+        >
+          🛒 Carrito
+          <span class="nav-pill">{{ cartCount() }}</span>
+        </button>
+        <button
+          [class.active]="activeTab() === 'orders'"
+          (click)="setTab('orders')"
+          type="button"
+        >
+          📋 Mis Pedidos
+          <span class="nav-pill amber">{{ activeOrders() }}</span>
+        </button>
+        <button type="button" (click)="showToast('Próximamente', 'info')">❤️ Favoritos</button>
+        <button type="button" (click)="showToast('Próximamente', 'info')">👤 Perfil</button>
+      </nav>
+    </div>
+
+    <hr class="sidebar-sep" />
+
+    <div class="sidebar-section">
+      <span class="sidebar-label">Historial</span>
+      <nav class="sidebar-nav">
+        <button type="button" (click)="setTabAndFilter('orders', 'delivered')">✓ Entregados</button>
+        <button type="button" (click)="showToast('Próximamente', 'info')">★ Mis reseñas</button>
+      </nav>
+    </div>
+
+    <hr class="sidebar-sep" />
+
+    <div class="sidebar-bottom">
+      <nav class="sidebar-nav">
+        <button type="button" (click)="showToast('Próximamente', 'info')">⚙ Configuración</button>
+        <button type="button" class="danger" (click)="logout()">↩ Cerrar sesión</button>
+      </nav>
+    </div>
+
+  </aside>
+
+  <!-- Overlay (mobile) -->
+  <div
+    class="sidebar-overlay"
+    [class.visible]="sidebarOpen()"
+    (click)="toggleSidebar()"
+    aria-hidden="true"
+  ></div>
+
+  <!-- ── Main content ── -->
+  <main class="main-content">
+
+    <!-- Page header -->
+    <div class="page-header">
+      <div>
+        <div class="page-eyebrow">Mi cuenta</div>
+        <h1 class="page-title">Bienvenida, {{ firstName() }}</h1>
+        <p class="page-subtitle">Gestiona tus pedidos y descubre nuevos cafés</p>
+      </div>
+      <a routerLink="/" class="btn-primary">☕ Ir al catálogo</a>
+    </div>
+
+    <!-- Stats row -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(55,38,23,.07)">🛒</div>
+        <div class="stat-card-label">En carrito</div>
+        <div class="stat-card-value">{{ cartCount() }}</div>
+        <div class="stat-card-sub">productos · <strong>${{ cartTotal() | number:'1.0-0' }}</strong></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(192,120,32,.1)">📦</div>
+        <div class="stat-card-label">Pedidos activos</div>
+        <div class="stat-card-value">{{ activeOrders() }}</div>
+        <div class="stat-card-sub">en camino</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(30,94,41,.1)">✅</div>
+        <div class="stat-card-label">Entregados</div>
+        <div class="stat-card-value">{{ deliveredOrders() }}</div>
+        <div class="stat-card-sub">pedidos completados</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(192,120,32,.1)">⭐</div>
+        <div class="stat-card-label">Favoritos</div>
+        <div class="stat-card-value">{{ favoritesCount() }}</div>
+        <div class="stat-card-sub">productos guardados</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs-row" role="tablist">
+      <button
+        role="tab"
+        class="tab"
+        [class.active]="activeTab() === 'cart'"
+        [attr.aria-selected]="activeTab() === 'cart'"
+        (click)="setTab('cart')"
+        type="button"
+      >
+        🛒 Carrito
+        <span class="tab-count espresso">{{ cartCount() }}</span>
+      </button>
+      <button
+        role="tab"
+        class="tab"
+        [class.active]="activeTab() === 'orders'"
+        [attr.aria-selected]="activeTab() === 'orders'"
+        (click)="setTab('orders')"
+        type="button"
+      >
+        📋 Mis Pedidos
+        <span class="tab-count amber">{{ activeOrders() }}</span>
+      </button>
+    </div>
+
+    <!-- ── Cart tab ── -->
+    @if (activeTab() === 'cart') {
+      <div class="cart-layout">
+
+        <!-- Cart table -->
+        <div class="cart-table-wrap">
+          <div class="cart-table-header" aria-hidden="true">
+            <span class="th">Producto</span>
+            <span class="th">Precio</span>
+            <span class="th">Cantidad</span>
+            <span class="th">Subtotal</span>
+            <span class="th"></span>
+          </div>
+
+          @for (item of cartItems(); track item.id) {
+            <div class="cart-item">
+              <div class="ci-product">
+                <div class="ci-img" aria-hidden="true">{{ item.emoji }}</div>
+                <div class="ci-info">
+                  <div class="ci-producer">{{ item.producer }}</div>
+                  <div class="ci-name">{{ item.name }}</div>
+                  <div class="ci-badges">
+                    @if (item.organic) {
+                      <span class="badge badge-org">Orgánico</span>
+                    }
+                    @if (item.fairTrade) {
+                      <span class="badge badge-fair">Fair Trade</span>
+                    }
+                  </div>
+                </div>
+              </div>
+
+              <div class="ci-price">${{ item.price | number:'1.0-0' }}</div>
+
+              <div class="qty-ctrl" role="group" [attr.aria-label]="'Cantidad de ' + item.name">
+                <button
+                  class="qty-btn"
+                  type="button"
+                  [disabled]="item.qty <= 1"
+                  (click)="decreaseQty(item.id)"
+                  aria-label="Reducir cantidad"
+                >−</button>
+                <span class="qty-val" aria-live="polite">{{ item.qty }}</span>
+                <button
+                  class="qty-btn"
+                  type="button"
+                  (click)="increaseQty(item.id)"
+                  aria-label="Aumentar cantidad"
+                >+</button>
+              </div>
+
+              <div class="ci-subtotal">${{ (item.price * item.qty) | number:'1.0-0' }}</div>
+
+              <button
+                class="btn-remove-item"
+                type="button"
+                (click)="removeItem(item.id)"
+                [attr.aria-label]="'Eliminar ' + item.name"
+              >✕</button>
+            </div>
+          }
+
+          @if (cartItems().length === 0) {
+            <div class="cart-empty">
+              <div class="cart-empty-icon" aria-hidden="true">🛒</div>
+              <div class="cart-empty-title">Tu carrito está vacío</div>
+              <div class="cart-empty-desc">Explora el catálogo y agrega tus cafés favoritos</div>
+              <a routerLink="/" class="btn-primary">Explorar cafés</a>
+            </div>
+          }
+        </div>
+
+        <!-- Summary panel -->
+        @if (cartItems().length > 0) {
+          <div class="cart-summary">
+            <div class="summary-card">
+              <div class="summary-head">
+                <div class="summary-head-title">Resumen de compra</div>
+              </div>
+              <div class="summary-body">
+                <div class="summary-row">
+                  <span class="summary-label">Subtotal ({{ cartCount() }} productos)</span>
+                  <span class="summary-value">${{ cartTotal() | number:'1.0-0' }}</span>
+                </div>
+                <div class="summary-sep"></div>
+                <div class="summary-row">
+                  <span class="summary-total-label">Total</span>
+                  <span class="summary-total-value">${{ cartTotal() | number:'1.0-0' }}</span>
+                </div>
+              </div>
+              <button
+                class="btn-checkout"
+                type="button"
+                (click)="showToast('Funcionalidad próximamente', 'info')"
+              >
+                <span>Proceder al pago</span>
+              </button>
+              <div class="secure-note">🔒 Pago 100% seguro · SSL · PCI DSS</div>
+            </div>
+          </div>
+        }
+
+      </div>
+    }
+
+    <!-- ── Orders tab ── -->
+    @if (activeTab() === 'orders') {
+      <div class="orders-section">
+
+        <!-- Filters -->
+        <div class="orders-filters" role="group" aria-label="Filtrar pedidos">
+          @for (f of orderFilters; track f.value) {
+            <button
+              class="filter-chip"
+              type="button"
+              [class.active]="orderFilter() === f.value"
+              (click)="orderFilter.set(f.value)"
+            >{{ f.label }}</button>
+          }
+        </div>
+
+        <!-- Order cards -->
+        @for (order of filteredOrders(); track order.id) {
+          <div class="order-card" [class.show-progress]="expandedOrder() === order.id">
+
+            <div class="order-card-header">
+              <div class="order-num">#{{ order.number }}</div>
+              <div class="order-date">{{ order.date }}</div>
+              <div class="order-spacer"></div>
+              <span class="status-badge" [ngClass]="'status-' + order.status">
+                {{ order.statusLabel }}
+              </span>
+              <div class="order-total">${{ order.total | number:'1.0-0' }}</div>
+            </div>
+
+            <div class="order-items-row">
+              @for (item of order.items; track item.name) {
+                <div class="order-mini-item">
+                  <span class="order-mini-emoji" aria-hidden="true">{{ item.emoji }}</span>
+                  <div>
+                    <div class="order-mini-name">{{ item.name }}</div>
+                    <div class="order-mini-qty">x{{ item.qty }}</div>
+                  </div>
+                </div>
+              }
+            </div>
+
+            <div class="order-card-footer">
+              <div class="order-meta">
+                <span class="order-meta-item">📍 {{ order.address }}</span>
+              </div>
+              <div class="order-actions">
+                <button
+                  class="btn-order-action btn-expand"
+                  type="button"
+                  (click)="toggleOrder(order.id)"
+                  [attr.aria-expanded]="expandedOrder() === order.id"
+                >
+                  Ver detalle <span class="expand-arrow" aria-hidden="true">▼</span>
+                </button>
+              </div>
+            </div>
+
+            @if (expandedOrder() === order.id) {
+              <div class="order-progress" role="region" aria-label="Progreso del pedido">
+                <div class="stepper">
+                  @for (step of order.steps; track step.label) {
+                    <div
+                      class="step"
+                      [class.done]="step.done"
+                      [class.active]="step.active"
+                    >
+                      <div class="step-circle">{{ step.done ? '✓' : '' }}</div>
+                      <div class="step-label">{{ step.label }}</div>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+
+          </div>
+        }
+
+        @if (filteredOrders().length === 0) {
+          <div class="cart-empty">
+            <div class="cart-empty-icon" aria-hidden="true">📋</div>
+            <div class="cart-empty-title">No hay pedidos</div>
+            <div class="cart-empty-desc">No encontramos pedidos con este filtro</div>
+          </div>
+        }
+
+      </div>
+    }
+
+  </main>
+</div>
