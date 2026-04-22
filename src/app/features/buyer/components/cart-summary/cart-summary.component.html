@@ -30,35 +30,11 @@
     <div class="summary-head-title">🚚 Método de envío</div>
   </div>
   <div class="summary-body">
-    <div class="shipping-opts">
-      @for (opt of shippingOptions; track opt.id) {
-        <div
-          class="shipping-opt"
-          [class.selected]="selectedShippingId() === opt.id"
-          (click)="shippingChange.emit(opt.id)"
-          role="radio"
-          [attr.aria-checked]="selectedShippingId() === opt.id"
-          tabindex="0"
-          (keydown.enter)="shippingChange.emit(opt.id)"
-          (keydown.space)="shippingChange.emit(opt.id)"
-        >
-          <div class="shipping-opt-radio">
-            <div class="radio-dot"></div>
-          </div>
-          <div class="shipping-opt-info">
-            <div class="shipping-opt-name">{{ opt.name }}</div>
-            <div class="shipping-opt-days">{{ opt.days }}</div>
-          </div>
-          <div class="shipping-opt-price">
-            @if (opt.price === 0) {
-              <span class="shipping-free">Gratis</span>
-            } @else {
-              <span>${{ opt.price | number:'1.0-0' }}</span>
-            }
-          </div>
-        </div>
-      }
-    </div>
+    <app-shipping-selector
+      [options]="shippingOptions"
+      [selected]="selectedShippingId()"
+      (selectedChange)="shippingChange.emit($event)"
+    />
   </div>
 </div>
 
@@ -68,27 +44,12 @@
     <div class="summary-head-title">🏷 Cupón de descuento</div>
   </div>
   <div class="summary-body">
-    @if (couponCode()) {
-      <div class="coupon-applied">
-        <span class="coupon-badge">✓ Cupón aplicado: {{ couponCode() }}</span>
-      </div>
-    } @else {
-      <div class="coupon-row">
-        <input
-          class="coupon-input"
-          type="text"
-          placeholder="Código de cupón"
-          [value]="couponInput()"
-          (input)="onCouponInput($event)"
-          aria-label="Código de cupón de descuento"
-        />
-        <button
-          class="btn-apply-coupon"
-          type="button"
-          (click)="onApplyCoupon()"
-        >Aplicar</button>
-      </div>
-    }
+    <app-coupon-input
+      [appliedCoupon]="couponCode()"
+      [discountAmount]="discount()"
+      (apply)="couponApply.emit($event)"
+      (remove)="couponRemove.emit()"
+    />
   </div>
 </div>
 

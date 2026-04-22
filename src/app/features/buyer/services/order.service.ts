@@ -1,6 +1,8 @@
 import { Injectable, signal } from '@angular/core';
 import { IOrder } from '../models/order.model';
 
+const BUYER_ID = 'u-buyer-1';
+
 const SEED_ORDERS: IOrder[] = [
   {
     id: 'o1',
@@ -9,9 +11,10 @@ const SEED_ORDERS: IOrder[] = [
     status: 'shipped',
     total: 134000,
     address: 'Calle 72 #10-45, Bogotá',
+    buyerId: BUYER_ID,
     items: [
-      { productId: 'p1', name: 'Geisha Washed', qty: 1, unitPrice: 58000, emoji: '☕' },
-      { productId: 'p2', name: 'Tabi Natural',  qty: 2, unitPrice: 42000, emoji: '🫘' },
+      { productId: 'p1', name: 'Geisha Washed',  productName: 'Geisha Washed',  qty: 1, unitPrice: 58000, emoji: '☕' },
+      { productId: 'p2', name: 'Tabi Natural',   productName: 'Tabi Natural',   qty: 2, unitPrice: 42000, emoji: '🫘' },
     ],
     steps: [
       { label: 'Confirmado', done: true,  active: false },
@@ -27,8 +30,9 @@ const SEED_ORDERS: IOrder[] = [
     status: 'preparing',
     total: 72000,
     address: 'Carrera 15 #88-20, Bogotá',
+    buyerId: BUYER_ID,
     items: [
-      { productId: 'p3', name: 'Caturra Honey', qty: 2, unitPrice: 36000, emoji: '🌿' },
+      { productId: 'p3', name: 'Caturra Honey',  productName: 'Caturra Honey',  qty: 2, unitPrice: 36000, emoji: '🌿' },
     ],
     steps: [
       { label: 'Confirmado', done: true,  active: false },
@@ -44,9 +48,30 @@ const SEED_ORDERS: IOrder[] = [
     status: 'delivered',
     total: 96000,
     address: 'Av. El Dorado #69-76, Bogotá',
+    buyerId: BUYER_ID,
     items: [
-      { productId: 'p1', name: 'Geisha Washed', qty: 1, unitPrice: 58000, emoji: '☕' },
-      { productId: 'p2', name: 'Tabi Natural',  qty: 1, unitPrice: 42000, emoji: '🫘' },
+      { productId: 'p1', name: 'Geisha Washed',  productName: 'Geisha Washed',  qty: 1, unitPrice: 58000, emoji: '☕' },
+      { productId: 'p2', name: 'Tabi Natural',   productName: 'Tabi Natural',   qty: 1, unitPrice: 42000, emoji: '🫘' },
+    ],
+    steps: [
+      { label: 'Confirmado', done: true, active: false },
+      { label: 'Preparando', done: true, active: false },
+      { label: 'En camino',  done: true, active: false },
+      { label: 'Entregado',  done: true, active: false },
+    ],
+    reviewSubmitted: false,
+  },
+  {
+    id: 'o4',
+    number: 'WCM-2025-004',
+    date: '20 mar 2025',
+    status: 'delivered',
+    total: 154000,
+    address: 'Cra. 15 #93-75, Apt 502, Bogotá',
+    buyerId: BUYER_ID,
+    items: [
+      { productId: '1', name: 'Café Especial Huila', productName: 'Café Especial Huila', qty: 2, unitPrice: 48000, emoji: '🫘' },
+      { productId: '7', name: 'Cauca Geisha',         productName: 'Cauca Geisha',         qty: 1, unitPrice: 98000, emoji: '✨' },
     ],
     steps: [
       { label: 'Confirmado', done: true, active: false },
@@ -62,6 +87,7 @@ const SEED_ORDERS: IOrder[] = [
 export class OrderService {
   private readonly _orders = signal<IOrder[]>(SEED_ORDERS);
   readonly orders = this._orders.asReadonly();
+  readonly all    = this._orders.asReadonly();
 
   list(): IOrder[] {
     return this._orders();

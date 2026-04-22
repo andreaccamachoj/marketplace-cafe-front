@@ -1,0 +1,58 @@
+<article class="fav-card" [attr.aria-label]="favorite().productName">
+
+  <!-- Image area -->
+  <div class="fav-card__image">
+    <div class="fav-card__emoji" aria-hidden="true">☕</div>
+    <span class="fav-card__category">{{ favorite().productCategory }}</span>
+  </div>
+
+  <!-- Body -->
+  <div class="fav-card__body">
+    <div class="fav-card__origin">📍 {{ favorite().productOrigin }}</div>
+    <h3 class="fav-card__name">{{ favorite().productName }}</h3>
+
+    <!-- Stars -->
+    <div class="fav-card__rating" [attr.aria-label]="'Calificación ' + favorite().productRating + ' de 5'">
+      @for (s of starValues; track s) {
+        <span
+          class="fav-card__star"
+          [class.fav-card__star--filled]="s <= favorite().productRating"
+          aria-hidden="true"
+        >★</span>
+      }
+      <span class="fav-card__rating-num">{{ favorite().productRating }}</span>
+    </div>
+
+    <div class="fav-card__price">${{ favorite().productPrice | number:'1.0-0' }} COP</div>
+    <div class="fav-card__added">{{ daysAgo() }}</div>
+  </div>
+
+  <!-- Footer -->
+  <div class="fav-card__footer">
+    <button
+      type="button"
+      class="fav-card__btn fav-card__btn--cart"
+      (click)="onAddToCart()"
+      [attr.aria-label]="'Agregar ' + favorite().productName + ' al carrito'"
+    >
+      🛒 Al carrito
+    </button>
+    <button
+      type="button"
+      class="fav-card__btn fav-card__btn--view"
+      (click)="onView()"
+      [attr.aria-label]="'Ver detalle de ' + favorite().productName"
+    >
+      Ver
+    </button>
+    <button
+      type="button"
+      class="fav-card__btn fav-card__btn--remove"
+      (click)="onRemove()"
+      [attr.aria-label]="'Eliminar ' + favorite().productName + ' de favoritos'"
+    >
+      ✕
+    </button>
+  </div>
+
+</article>

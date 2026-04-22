@@ -24,8 +24,29 @@
           📋 Mis Pedidos
           <span class="nav-pill amber">{{ activeOrdersCount() }}</span>
         </button>
-        <button type="button" (click)="showToast('Próximamente', 'info')">❤️ Favoritos</button>
-        <button type="button" (click)="showToast('Próximamente', 'info')">👤 Perfil</button>
+        <button
+          [class.active]="activeTab() === 'favorites'"
+          (click)="setTab('favorites')"
+          type="button"
+        >
+          ❤️ Favoritos
+          <span class="nav-pill green">{{ stats().favorites }}</span>
+        </button>
+        <button
+          [class.active]="activeTab() === 'reviews'"
+          (click)="setTab('reviews')"
+          type="button"
+        >
+          ★ Reseñas
+          <span class="nav-pill">{{ stats().reviews }}</span>
+        </button>
+        <button
+          [class.active]="activeTab() === 'profile'"
+          (click)="setTab('profile')"
+          type="button"
+        >
+          👤 Mi Perfil
+        </button>
       </nav>
     </div>
 
@@ -35,7 +56,6 @@
       <span class="sidebar-label">Historial</span>
       <nav class="sidebar-nav">
         <button type="button" (click)="setTabAndFilter('orders', 'delivered')">✓ Entregados</button>
-        <button type="button" (click)="showToast('Próximamente', 'info')">★ Mis reseñas</button>
       </nav>
     </div>
 
@@ -43,7 +63,6 @@
 
     <div class="sidebar-bottom">
       <nav class="sidebar-nav">
-        <button type="button" (click)="showToast('Próximamente', 'info')">⚙ Configuración</button>
         <button type="button" class="danger" (click)="logout()">↩ Cerrar sesión</button>
       </nav>
     </div>
@@ -65,7 +84,7 @@
     <div class="page-header">
       <div>
         <div class="page-eyebrow">Mi cuenta</div>
-        <h1 class="page-title">Bienvenida, {{ firstName() }}</h1>
+        <h1 class="page-title">Bienvenido, {{ firstName() }}</h1>
         <p class="page-subtitle">Gestiona tus pedidos y descubre nuevos cafés</p>
       </div>
       <a routerLink="/" class="btn-primary">☕ Ir al catálogo</a>
@@ -92,10 +111,10 @@
         <div class="stat-card-sub">pedidos completados</div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon" style="background:rgba(192,120,32,.1)">💰</div>
-        <div class="stat-card-label">Total comprado</div>
-        <div class="stat-card-value">${{ (cartSubtotal() + 682000) | number:'1.0-0' }}</div>
-        <div class="stat-card-sub">histórico acumulado</div>
+        <div class="stat-icon" style="background:rgba(192,120,32,.1)">❤️</div>
+        <div class="stat-card-label">Favoritos</div>
+        <div class="stat-card-value">{{ stats().favorites }}</div>
+        <div class="stat-card-sub">productos guardados</div>
       </div>
     </div>
 
@@ -120,12 +139,44 @@
         (click)="setTab('orders')"
         type="button"
       >
-        📋 Mis Pedidos
+        📋 Pedidos
         <span class="tab-count amber">{{ activeOrdersCount() }}</span>
+      </button>
+      <button
+        role="tab"
+        class="tab"
+        [class.active]="activeTab() === 'favorites'"
+        [attr.aria-selected]="activeTab() === 'favorites'"
+        (click)="setTab('favorites')"
+        type="button"
+      >
+        ❤️ Favoritos
+        <span class="tab-count green">{{ stats().favorites }}</span>
+      </button>
+      <button
+        role="tab"
+        class="tab"
+        [class.active]="activeTab() === 'reviews'"
+        [attr.aria-selected]="activeTab() === 'reviews'"
+        (click)="setTab('reviews')"
+        type="button"
+      >
+        ★ Reseñas
+        <span class="tab-count espresso">{{ stats().reviews }}</span>
+      </button>
+      <button
+        role="tab"
+        class="tab"
+        [class.active]="activeTab() === 'profile'"
+        [attr.aria-selected]="activeTab() === 'profile'"
+        (click)="setTab('profile')"
+        type="button"
+      >
+        👤 Perfil
       </button>
     </div>
 
-    <!-- ── Cart tab ── -->
+    <!-- ── CART TAB ── -->
     @if (activeTab() === 'cart') {
       <div class="cart-tab-header">
         <div class="page-eyebrow">Mi selección</div>
@@ -135,7 +186,6 @@
 
       <div class="cart-layout">
 
-        <!-- Cart table -->
         <div class="cart-table-wrap">
           <div class="cart-table-header" aria-hidden="true">
             <span class="th">Producto</span>
@@ -163,7 +213,6 @@
           }
         </div>
 
-        <!-- Summary panel -->
         @if (cartItems().length > 0) {
           <div class="cart-summary-col">
             <app-cart-summary
@@ -177,6 +226,7 @@
               [couponCode]="appliedCoupon()"
               (shippingChange)="onShippingChange($event)"
               (couponApply)="onCouponApply($event)"
+              (couponRemove)="onCouponRemove()"
               (checkoutClick)="onCheckout()"
             />
           </div>
@@ -185,11 +235,10 @@
       </div>
     }
 
-    <!-- ── Orders tab ── -->
+    <!-- ── ORDERS TAB ── -->
     @if (activeTab() === 'orders') {
       <div class="orders-section">
 
-        <!-- Filters -->
         <div class="orders-filters" role="group" aria-label="Filtrar pedidos">
           @for (f of orderFilters; track f.value) {
             <button
@@ -201,13 +250,12 @@
           }
         </div>
 
-        <!-- Order cards -->
         @for (order of filteredOrders(); track order.id) {
           <app-order-card
             [order]="order"
             [expanded]="expandedOrder() === order.id"
             (toggle)="toggleOrder($event)"
-            (reviewClick)="openReview($event)"
+            (reviewClick)="openCreateReview($event, '', $event)"
           />
         }
 
@@ -222,13 +270,172 @@
       </div>
     }
 
+    <!-- ── FAVORITES TAB ── -->
+    @if (activeTab() === 'favorites') {
+      <div class="section-header">
+        <div class="page-eyebrow">Mi lista</div>
+        <h2 class="section-title">Productos favoritos</h2>
+        <p class="page-subtitle">{{ stats().favorites }} productos guardados</p>
+      </div>
+
+      @if (myFavorites().length > 0) {
+        <div class="favorites-grid">
+          @for (fav of myFavorites(); track fav.id) {
+            <app-favorite-product-card
+              [favorite]="fav"
+              (remove)="handleRemoveFavorite($event)"
+              (addToCart)="handleAddFavoriteToCart($event)"
+              (viewProduct)="handleViewFavoriteProduct($event)"
+            />
+          }
+        </div>
+      } @else {
+        <div class="cart-empty">
+          <div class="cart-empty-icon" aria-hidden="true">❤️</div>
+          <div class="cart-empty-title">No tienes favoritos</div>
+          <div class="cart-empty-desc">Guarda tus cafés preferidos para encontrarlos fácilmente</div>
+          <button type="button" class="btn-primary" (click)="router.navigate(['/'])">
+            Explorar catálogo
+          </button>
+        </div>
+      }
+    }
+
+    <!-- ── REVIEWS TAB ── -->
+    @if (activeTab() === 'reviews') {
+      <div class="section-header">
+        <div class="page-eyebrow">Mis opiniones</div>
+        <h2 class="section-title">Mis reseñas</h2>
+      </div>
+
+      <!-- Stats -->
+      <div class="reviews-stats">
+        <div class="review-stat">
+          <span class="review-stat__value">{{ stats().reviews }}</span>
+          <span class="review-stat__label">Reseñas escritas</span>
+        </div>
+        <div class="review-stat">
+          <span class="review-stat__value">{{ avgRating() }}</span>
+          <span class="review-stat__label">Calificación promedio</span>
+        </div>
+        <div class="review-stat">
+          <span class="review-stat__value">{{ stats().reviews }}</span>
+          <span class="review-stat__label">Compras verificadas</span>
+        </div>
+      </div>
+
+      <!-- Pendientes de reseñar -->
+      @if (reviewableProducts().length > 0) {
+        <div class="reviewable-section">
+          <h3 class="reviewable-title">Pendientes de reseñar</h3>
+          <div class="reviewable-list">
+            @for (item of reviewableProducts(); track item.productId) {
+              <div class="reviewable-item">
+                <span class="reviewable-name">☕ {{ item.productName }}</span>
+                <button
+                  type="button"
+                  class="btn-review"
+                  (click)="openCreateReview(item.productId, item.productName, item.orderId)"
+                >
+                  ✏️ Escribir reseña
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Lista de reseñas -->
+      @if (myReviews().length > 0) {
+        <div class="reviews-list">
+          @for (review of myReviews(); track review.id) {
+            <app-review-card
+              [review]="review"
+              [isOwner]="true"
+              (edit)="openEditReview($event)"
+              (delete)="handleDeleteReview($event)"
+            />
+          }
+        </div>
+      } @else {
+        <div class="cart-empty">
+          <div class="cart-empty-icon" aria-hidden="true">★</div>
+          <div class="cart-empty-title">Aún no has escrito reseñas</div>
+          <div class="cart-empty-desc">Comparte tu experiencia con los cafés que has pedido</div>
+        </div>
+      }
+    }
+
+    <!-- ── PROFILE TAB ── -->
+    @if (activeTab() === 'profile') {
+      <div class="section-header">
+        <div class="page-eyebrow">Configuración</div>
+        <h2 class="section-title">Mi perfil</h2>
+      </div>
+
+      <div class="profile-layout">
+
+        <!-- Form -->
+        <div class="profile-main">
+          <div class="profile-card">
+            <app-buyer-profile-form
+              [profile]="profile()"
+              [loading]="profileSaving()"
+              (save)="handleSaveProfile($event)"
+            />
+          </div>
+        </div>
+
+        <!-- Sidebar stats + security -->
+        <div class="profile-sidebar">
+          <div class="profile-sidebar-card">
+            <h3 class="profile-sidebar-title">Resumen de actividad</h3>
+            <ul class="profile-sidebar-list">
+              <li class="profile-sidebar-item">
+                <span>Pedidos totales</span>
+                <strong>{{ stats().totalOrders }}</strong>
+              </li>
+              <li class="profile-sidebar-item">
+                <span>Entregados</span>
+                <strong>{{ stats().delivered }}</strong>
+              </li>
+              <li class="profile-sidebar-item">
+                <span>Favoritos</span>
+                <strong>{{ stats().favorites }}</strong>
+              </li>
+              <li class="profile-sidebar-item">
+                <span>Reseñas</span>
+                <strong>{{ stats().reviews }}</strong>
+              </li>
+            </ul>
+          </div>
+
+          <div class="profile-sidebar-card">
+            <h3 class="profile-sidebar-title">🔒 Seguridad</h3>
+            <p class="profile-sidebar-desc">
+              Mantén tu cuenta segura usando una contraseña robusta.
+            </p>
+            <button
+              type="button"
+              class="btn-secondary"
+              (click)="notify.info('Cambio de contraseña — próximamente')"
+            >
+              Cambiar contraseña
+            </button>
+          </div>
+        </div>
+
+      </div>
+    }
+
   </main>
 </div>
 
-<!-- Review modal -->
-<app-review-modal
+<!-- Review form modal -->
+<app-review-form-modal
   [open]="reviewModalOpen()"
-  [productName]="reviewProductName()"
-  (submitted)="onReviewSubmit($event)"
-  (closed)="closeReview()"
+  [review]="selectedReview()"
+  [productName]="reviewModalProduct()"
+  (closed)="closeReviewModal()"
+  (saved)="handleSaveReview($event)"
 />

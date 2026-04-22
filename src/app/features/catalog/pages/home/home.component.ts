@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { IProduct, SortBy, CatalogFilter } from '../../models/product.model';
 import { ProductService } from '../../services/product.service';
 import { CartService } from '@features/buyer/services/cart.service';
+import { FavoritesService } from '@features/buyer/services/favorites.service';
 import { LandingNavbarComponent } from '@shared/layout/landing-navbar/landing-navbar.component';
 import { HeroSectionComponent } from '../../components/hero-section/hero-section.component';
 import { FiltersBarComponent } from '../../components/filters-bar/filters-bar.component';
@@ -72,6 +73,7 @@ import { FooterComponent } from '@shared/layout/footer/footer.component';
 export class HomeComponent {
   private readonly productService = inject(ProductService);
   private readonly cartService    = inject(CartService);
+  private readonly favSvc         = inject(FavoritesService);
 
   protected readonly selectedCategory = signal<string | null>(null);
   protected readonly selectedCerts    = signal<string[]>([]);
@@ -107,8 +109,13 @@ export class HomeComponent {
     });
   }
 
-  protected onToggleFavorite(_id: string): void {
-    // TODO: conectar con FavoritesService en Fase 9
+  protected onToggleFavorite(productId: string): void {
+    const product = this.productService.getByIdSync(productId);
+    if (product) this.favSvc.toggle(product);
+  }
+
+  protected isFavorite(productId: string): boolean {
+    return this.favSvc.isFavorite(productId);
   }
 
   protected scrollToCatalog(): void {

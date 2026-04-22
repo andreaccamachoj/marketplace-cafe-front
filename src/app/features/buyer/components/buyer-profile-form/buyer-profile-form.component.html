@@ -1,0 +1,126 @@
+<form class="profile-form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+  <!-- Avatar + email read-only -->
+  <div class="profile-form__top">
+    <div class="profile-form__avatar" aria-hidden="true">
+      {{ profile().avatarInitials }}
+    </div>
+    <div class="profile-form__email-wrap">
+      <span class="profile-form__email-label">
+        <span class="lock-icon" aria-hidden="true">🔒</span> Correo electrónico
+      </span>
+      <span class="profile-form__email-value" aria-label="Correo electrónico (solo lectura)">
+        {{ profile().email }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Grid 2 columnas -->
+  <div class="profile-form__grid">
+
+    <!-- Nombre completo -->
+    <div class="field" [class.field--error]="fullName.invalid && fullName.touched">
+      <label class="field__label" for="pf-fullName">Nombre completo</label>
+      <input
+        id="pf-fullName"
+        class="field__input"
+        type="text"
+        formControlName="fullName"
+        autocomplete="name"
+        placeholder="Tu nombre completo"
+      />
+      @if (fullName.invalid && fullName.touched) {
+        <span class="field__error" role="alert">
+          @if (fullName.errors?.['required']) { El nombre es requerido }
+          @if (fullName.errors?.['minlength']) { Mínimo 3 caracteres }
+        </span>
+      }
+    </div>
+
+    <!-- Teléfono -->
+    <div class="field" [class.field--error]="phone.invalid && phone.touched">
+      <label class="field__label" for="pf-phone">Teléfono</label>
+      <input
+        id="pf-phone"
+        class="field__input"
+        type="tel"
+        formControlName="phone"
+        autocomplete="tel"
+        placeholder="310-555-0100"
+      />
+      @if (phone.invalid && phone.touched) {
+        <span class="field__error" role="alert">El teléfono es requerido</span>
+      }
+    </div>
+
+    <!-- Ciudad -->
+    <div class="field" [class.field--error]="city.invalid && city.touched">
+      <label class="field__label" for="pf-city">Ciudad</label>
+      <input
+        id="pf-city"
+        class="field__input"
+        type="text"
+        formControlName="city"
+        autocomplete="address-level2"
+        placeholder="Bogotá"
+      />
+      @if (city.invalid && city.touched) {
+        <span class="field__error" role="alert">La ciudad es requerida</span>
+      }
+    </div>
+
+    <!-- Departamento -->
+    <div class="field" [class.field--error]="department.invalid && department.touched">
+      <label class="field__label" for="pf-department">Departamento</label>
+      <input
+        id="pf-department"
+        class="field__input"
+        type="text"
+        formControlName="department"
+        autocomplete="address-level1"
+        placeholder="Cundinamarca"
+      />
+      @if (department.invalid && department.touched) {
+        <span class="field__error" role="alert">El departamento es requerido</span>
+      }
+    </div>
+
+  </div>
+
+  <!-- Método de pago preferido -->
+  <div class="field">
+    <label class="field__label" for="pf-payment">Método de pago preferido</label>
+    <select id="pf-payment" class="field__select" formControlName="preferredPayment">
+      <option value="card">Tarjeta de crédito / débito</option>
+      <option value="transfer">Transferencia bancaria</option>
+      <option value="cash_on_delivery">Contra entrega</option>
+    </select>
+  </div>
+
+  <!-- Newsletter -->
+  <label class="profile-form__checkbox">
+    <input
+      type="checkbox"
+      formControlName="newsletterOptIn"
+      aria-describedby="newsletter-desc"
+    />
+    <span id="newsletter-desc">Recibir novedades y ofertas especiales por correo</span>
+  </label>
+
+  <!-- Acciones -->
+  <div class="profile-form__actions">
+    <button
+      type="submit"
+      class="profile-form__btn-save"
+      [disabled]="form.invalid || form.pristine || loading()"
+      [attr.aria-busy]="loading()"
+    >
+      @if (loading()) {
+        <span class="spinner" aria-hidden="true"></span> Guardando...
+      } @else {
+        Guardar cambios
+      }
+    </button>
+  </div>
+
+</form>

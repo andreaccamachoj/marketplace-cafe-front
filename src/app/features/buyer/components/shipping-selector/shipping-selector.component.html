@@ -1,0 +1,29 @@
+<div class="shipping-opts" role="radiogroup" aria-label="Método de envío">
+  @for (opt of options(); track opt.id) {
+    <div
+      class="shipping-opt"
+      [class.selected]="selected() === opt.id"
+      (click)="selectedChange.emit(opt.id)"
+      role="radio"
+      [attr.aria-checked]="selected() === opt.id"
+      tabindex="0"
+      (keydown.enter)="selectedChange.emit(opt.id)"
+      (keydown.space)="selectedChange.emit(opt.id)"
+    >
+      <div class="shipping-opt-radio">
+        <div class="radio-dot"></div>
+      </div>
+      <div class="shipping-opt-info">
+        <div class="shipping-opt-name">{{ opt.name }}</div>
+        <div class="shipping-opt-days">{{ opt.days }}</div>
+      </div>
+      <div class="shipping-opt-price">
+        @if (opt.price === 0) {
+          <span class="shipping-free">Gratis</span>
+        } @else {
+          <span>${{ opt.price | number:'1.0-0' }}</span>
+        }
+      </div>
+    </div>
+  }
+</div>

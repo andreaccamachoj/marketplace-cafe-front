@@ -1,0 +1,34 @@
+@if (appliedCoupon()) {
+  <div class="coupon-applied">
+    <span class="coupon-badge">
+      <span aria-hidden="true">✓</span>
+      Cupón aplicado: <strong>{{ appliedCoupon() }}</strong>
+      @if (discountAmount() > 0) {
+        — ahorro ${{ discountAmount() | number:'1.0-0' }}
+      }
+    </span>
+    <button
+      class="btn-remove-coupon"
+      type="button"
+      aria-label="Eliminar cupón aplicado"
+      (click)="onRemove()"
+    >✕</button>
+  </div>
+} @else {
+  <div class="coupon-row">
+    <input
+      class="coupon-input-field"
+      type="text"
+      placeholder="Código de cupón"
+      [value]="couponInput()"
+      (input)="onInput($event)"
+      aria-label="Código de cupón de descuento"
+    />
+    <button
+      class="btn-apply-coupon"
+      type="button"
+      [disabled]="!couponInput().trim()"
+      (click)="onApply()"
+    >Aplicar</button>
+  </div>
+}

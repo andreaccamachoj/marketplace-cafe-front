@@ -1,0 +1,27 @@
+<div class="addr-card" [class.addr-card--default]="isDefault()">
+  <div class="addr-icon" aria-hidden="true">📍</div>
+  <div class="addr-body">
+    <div class="addr-label-row">
+      <span class="addr-label">{{ address().label }}</span>
+      @if (isDefault()) {
+        <span class="addr-badge">Principal</span>
+      }
+    </div>
+    <div class="addr-line">{{ address().line1 }}</div>
+    <div class="addr-city">{{ address().city }}</div>
+  </div>
+  <div class="addr-actions">
+    <button
+      class="btn-addr"
+      type="button"
+      (click)="select.emit(address())"
+      aria-label="Seleccionar esta dirección"
+    >Seleccionar</button>
+    <button
+      class="btn-addr btn-addr--ghost"
+      type="button"
+      (click)="edit.emit(address())"
+      aria-label="Editar esta dirección"
+    >Editar</button>
+  </div>
+</div>

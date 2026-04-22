@@ -1,0 +1,103 @@
+<app-modal [open]="open()" [title]="modalTitle()" size="md" (closed)="onClose()">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+    <!-- Producto -->
+    @if (productName()) {
+      <div class="rfm-product-name">
+        <span class="rfm-label">Producto</span>
+        <span class="rfm-value">{{ productName() }}</span>
+      </div>
+    }
+
+    <!-- Stars interactivas -->
+    <div class="rfm-field">
+      <label class="rfm-label" id="rating-label">Calificación <span class="rfm-required" aria-hidden="true">*</span></label>
+      <div
+        class="rfm-stars"
+        role="radiogroup"
+        aria-labelledby="rating-label"
+        aria-required="true"
+        (mouseleave)="onStarLeave()"
+      >
+        @for (n of starValues; track n) {
+          <button
+            type="button"
+            class="rfm-star"
+            [class.active]="n <= displayRating()"
+            [attr.aria-label]="n + ' estrella' + (n > 1 ? 's' : '')"
+            [attr.aria-pressed]="n === selectedRating()"
+            (mouseenter)="onStarHover(n)"
+            (click)="onStarClick(n)"
+          >★</button>
+        }
+      </div>
+      @if (form.get('rating')?.invalid && form.get('rating')?.touched) {
+        <span class="rfm-error" role="alert">Selecciona una calificación</span>
+      }
+    </div>
+
+    <!-- Título -->
+    <div class="rfm-field">
+      <label class="rfm-label" for="review-title">
+        Título <span class="rfm-required" aria-hidden="true">*</span>
+      </label>
+      <input
+        id="review-title"
+        type="text"
+        class="rfm-input"
+        formControlName="title"
+        placeholder="Resume tu experiencia en pocas palabras"
+        maxlength="80"
+        [attr.aria-invalid]="titleControl.invalid && titleControl.touched"
+        [attr.aria-describedby]="titleControl.invalid && titleControl.touched ? 'title-err' : null"
+      />
+      @if (titleControl.invalid && titleControl.touched) {
+        <span id="title-err" class="rfm-error" role="alert">
+          @if (titleControl.errors?.['required']) { El título es requerido. }
+          @else if (titleControl.errors?.['minlength']) { Mínimo 5 caracteres. }
+        </span>
+      }
+    </div>
+
+    <!-- Cuerpo -->
+    <div class="rfm-field">
+      <label class="rfm-label" for="review-body">
+        Tu reseña <span class="rfm-required" aria-hidden="true">*</span>
+      </label>
+      <textarea
+        id="review-body"
+        class="rfm-textarea"
+        formControlName="body"
+        placeholder="Cuéntanos sobre el sabor, aroma, empaque y tu experiencia general..."
+        rows="5"
+        maxlength="600"
+        [attr.aria-invalid]="bodyControl.invalid && bodyControl.touched"
+        [attr.aria-describedby]="bodyControl.invalid && bodyControl.touched ? 'body-err' : 'body-counter'"
+      ></textarea>
+      <div class="rfm-counter" id="body-counter" aria-live="polite">
+        {{ bodyLength() }}/600
+      </div>
+      @if (bodyControl.invalid && bodyControl.touched) {
+        <span id="body-err" class="rfm-error" role="alert">
+          @if (bodyControl.errors?.['required']) { La reseña es requerida. }
+          @else if (bodyControl.errors?.['minlength']) { Mínimo 30 caracteres. }
+        </span>
+      }
+    </div>
+
+    <!-- Footer -->
+    <div class="rfm-footer">
+      <button
+        type="button"
+        class="rfm-btn rfm-btn--cancel"
+        (click)="onClose()"
+      >Cancelar</button>
+      <button
+        type="submit"
+        class="rfm-btn rfm-btn--save"
+        [disabled]="form.invalid"
+      >Guardar reseña</button>
+    </div>
+
+  </form>
+</app-modal>

@@ -11,6 +11,7 @@ import { IReview } from '../../models/review.model';
 import { ProductService } from '../../services/product.service';
 import { ReviewService } from '../../services/review.service';
 import { CartService } from '@features/buyer/services/cart.service';
+import { FavoritesService } from '@features/buyer/services/favorites.service';
 
 import { ProductGalleryComponent } from '../../components/product-gallery/product-gallery.component';
 import { ProductOptionsComponent } from '../../components/product-options/product-options.component';
@@ -99,6 +100,17 @@ import { LoadingSpinnerComponent } from '@shared/ui/loading-spinner/loading-spin
                   }
                 </div>
               </div>
+
+              <!-- Favorite toggle -->
+              <button
+                type="button"
+                class="btn-favorite"
+                [class.btn-favorite--active]="isFav()"
+                [attr.aria-label]="isFav() ? 'Eliminar de favoritos' : 'Agregar a favoritos'"
+                (click)="toggleFavorite()"
+              >
+                {{ isFav() ? '❤️' : '🤍' }} {{ isFav() ? 'En favoritos' : 'Agregar a favoritos' }}
+              </button>
 
               <!-- Options: presentation + roast -->
               @if (prod.presentationTypes?.length || prod.roastLevels?.length) {
@@ -227,6 +239,7 @@ export class ProductDetailComponent {
   private readonly productService = inject(ProductService);
   private readonly reviewService  = inject(ReviewService);
   private readonly cartService    = inject(CartService);
+  private readonly favSvc         = inject(FavoritesService);
 
   protected readonly product = toSignal<IProduct | undefined>(
     this.route.data.pipe(map(d => d['product'] as IProduct | undefined)),
@@ -242,6 +255,16 @@ export class ProductDetailComponent {
     ),
     { initialValue: [] as IReview[] }
   );
+
+  protected readonly isFav = computed(() => {
+    const prod = this.product();
+    return prod ? this.favSvc.isFavorite(prod.id) : false;
+  });
+
+  protected toggleFavorite(): void {
+    const prod = this.product();
+    if (prod) this.favSvc.toggle(prod);
+  }
 
   protected readonly related = computed<IProduct[]>(() => {
     const prod = this.product();

@@ -1,8 +1,9 @@
-export type OrderStatus = 'confirmed' | 'preparing' | 'shipped' | 'delivered' | 'cancelled';
+export type OrderStatus = 'confirmed' | 'preparing' | 'shipped' | 'delivered' | 'completed' | 'cancelled';
 
 export interface IOrderItem {
   productId: string;
   name: string;
+  productName: string;
   qty: number;
   unitPrice: number;
   emoji: string;
@@ -21,15 +22,17 @@ export interface IOrder {
   status: OrderStatus;
   total: number;
   address: string;
+  buyerId: string;
   items: IOrderItem[];
   steps: IOrderStep[];
   reviewSubmitted?: boolean;
 }
 
 export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
-  confirmed: 'Confirmado',
-  preparing: 'Preparando',
-  shipped: 'En camino',
-  delivered: 'Entregado',
-  cancelled: 'Cancelado',
+  confirmed:  'Confirmado',
+  preparing:  'Preparando',
+  shipped:    'En camino',
+  delivered:  'Entregado',
+  completed:  'Completado',
+  cancelled:  'Cancelado',
 };
