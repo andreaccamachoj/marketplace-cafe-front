@@ -1,70 +1,126 @@
 .role-selector {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 0;
+}
 
-  &__title {
-    margin: 0;
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--espresso, #3d1c02);
-  }
+.role-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
 
-  &__subtitle {
-    margin: 0;
-    color: #666;
-    font-size: 0.9rem;
-  }
-
-  &__cards {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-
-    @media (max-width: 480px) {
-      grid-template-columns: 1fr;
-    }
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
   }
 }
 
+/* Base card */
 .role-card {
+  position: relative;
+  padding: 16px 10px 14px;
+  border-radius: 16px;
+  border: 2px solid rgba(55, 38, 23, 0.12);
+  background: var(--marfil, #e4dcd1);
+  cursor: pointer;
+  text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding: 24px 16px;
-  border: 2px solid #e0e0e0;
-  border-radius: 12px;
-  background: #fff;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-align: center;
+  gap: 5px;
+  transition: all 0.2s;
+  overflow: hidden;
 
-  &:hover {
-    border-color: var(--espresso, #3d1c02);
-    box-shadow: 0 4px 12px rgba(61, 28, 2, 0.1);
+  &:hover:not(:disabled) {
+    border-color: rgba(55, 38, 23, 0.35);
+    box-shadow: 0 4px 14px rgba(55, 38, 23, 0.1);
+    transform: translateY(-2px);
   }
 
-  &--active {
-    border-color: var(--espresso, #3d1c02);
-    background: rgba(61, 28, 2, 0.04);
-    box-shadow: 0 4px 12px rgba(61, 28, 2, 0.15);
+  &:focus-visible {
+    outline: 3px solid var(--espresso, #372617);
+    outline-offset: 2px;
+  }
+
+  /* Check circle */
+  &__check {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid rgba(55, 38, 23, 0.18);
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 800;
+    transition: all 0.2s;
+    flex-shrink: 0;
   }
 
   &__icon {
-    font-size: 2.5rem;
+    font-size: 1.75rem;
     line-height: 1;
+    margin-top: 4px;
   }
 
-  &__title {
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--espresso, #3d1c02);
+  &__name {
+    font-size: 0.8125rem;
+    font-weight: 800;
+    color: var(--espresso, #372617);
+    letter-spacing: 0.02em;
   }
 
   &__desc {
-    font-size: 0.8rem;
-    color: #666;
-    line-height: 1.4;
+    font-size: 0.625rem;
+    color: var(--cafe-medio, #7a5c42);
+    font-weight: 400;
+    line-height: 1.45;
+  }
+
+  &__badge {
+    margin-top: 2px;
+    padding: 2px 8px;
+    background: rgba(91, 62, 143, 0.1);
+    color: #5b3e8f;
+    border-radius: 10px;
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* Disabled (admin) */
+  &--disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+
+    &:hover { transform: none; box-shadow: none; }
+  }
+
+  /* Active: Comprador (azul) */
+  &--buyer.role-card--active {
+    border-color: var(--blue-info, #1a6b8a);
+    background: var(--blue-light, #e0f2f8);
+
+    .role-card__check {
+      border-color: var(--blue-info, #1a6b8a);
+      background: var(--blue-info, #1a6b8a);
+      color: #fff;
+    }
+  }
+
+  /* Active: Productor (verde) */
+  &--producer.role-card--active {
+    border-color: var(--verde-selva, #1e5e29);
+    background: var(--verde-light, #d4ead7);
+
+    .role-card__check {
+      border-color: var(--verde-selva, #1e5e29);
+      background: var(--verde-selva, #1e5e29);
+      color: #fff;
+    }
   }
 }

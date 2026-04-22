@@ -1,9 +1,11 @@
 export interface IReview {
   id: string;
   productId: string;
-  author: string;
+  userName: string;
+  userInitials: string;
   rating: number;
   comment: string;
   date: string;
-  verified?: boolean;
+  isVerifiedPurchase: boolean;
+  helpfulCount: number;
 }

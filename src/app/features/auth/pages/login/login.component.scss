@@ -1,29 +1,82 @@
-.auth-layout {
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: var(--sp-4, 16px);
+  background: var(--espresso, #372617);
+  color: var(--marfil, #e4dcd1);
+  padding: var(--sp-2, 8px) var(--sp-4, 16px);
+  border-radius: 0 0 var(--r-sm, 6px) var(--r-sm, 6px);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  z-index: 9999;
+  text-decoration: none;
+  transition: top .2s;
+
+  &:focus { top: 0; }
+}
+
+.layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
   min-height: 100vh;
+}
 
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
+.panel-form {
+  background: var(--marfil-light, #ede6dd);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-12, 48px) var(--sp-8, 32px);
+  position: relative;
+}
+
+.mobile-brand-bar {
+  display: none;
+  align-items: center;
+  gap: var(--sp-3, 12px);
+  padding: var(--sp-4, 16px) var(--sp-5, 20px);
+  background: var(--espresso, #372617);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+}
+
+.mob-logo { font-size: 20px; }
+
+.mob-name {
+  font-family: var(--font-display, 'Playfair Display', Georgia, serif);
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--marfil, #e4dcd1);
+}
+
+.mob-sub {
+  font-size: 0.625rem;
+  color: rgba(205, 196, 181, .5);
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+
+  app-brand-panel { display: none; }
+
+  .mobile-brand-bar { display: flex; }
+
+  .panel-form {
+    background: var(--crema, #cdc4b5);
+    padding: var(--sp-6, 24px) var(--sp-4, 16px);
+    align-items: flex-start;
+    padding-top: 80px;
   }
+}
 
-  &__brand {
-    @media (max-width: 768px) {
-      display: none;
-    }
-  }
-
-  &__form {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 48px 32px;
-    background: #fafaf8;
-
-    @media (max-width: 768px) {
-      padding: 32px 20px;
-      align-items: flex-start;
-      padding-top: 48px;
-    }
+@media (max-width: 500px) {
+  .panel-form {
+    padding: var(--sp-4, 16px) var(--sp-3, 12px);
+    padding-top: calc(60px + var(--sp-6, 24px));
   }
 }

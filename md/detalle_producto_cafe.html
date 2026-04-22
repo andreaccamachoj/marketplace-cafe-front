@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Café Especial Huila — Finca La Esperanza · World Coffee Marketplace">
+<title>Café Especial Huila — World Coffee Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=Mulish:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════
+   DESIGN TOKENS
+══════════════════════════════════════ */
+:root {
+  --espresso:      #372617;
+  --cafe-oscuro:   #3E2919;
+  --cafe-medio:    #7A5C42;
+  --cafe-claro:    #A8866A;
+  --crema:         #CDC4B5;
+  --marfil:        #E4DCD1;
+  --marfil-light:  #EDE6DD;
+  --blanco:        #F7F3EF;
+  --verde-selva:   #1E5E29;
+  --verde-fresco:  #4A8C56;
+  --verde-light:   #D4EAD7;
+  --amber:         #C07820;
+  --amber-light:   #FFF0D0;
+  --blue-info:     #1A6B8A;
+  --blue-light:    #E0F2F8;
+  --error:         #8B2020;
+  --error-light:   #FDEAEA;
+
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body:    'Mulish', 'Segoe UI', sans-serif;
+
+  --r-sm: 6px; --r-md: 10px; --r-lg: 16px; --r-xl: 24px;
+  --shadow-sm:  0 1px 4px rgba(55,38,23,.07);
+  --shadow-md:  0 4px 16px rgba(55,38,23,.1);
+  --shadow-lg:  0 8px 32px rgba(55,38,23,.13);
+  --nav-h:      64px;
+  --max-w:      1280px;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:var(--font-body);background:var(--blanco);color:var(--espresso);line-height:1.6}
+a{text-decoration:none;color:inherit}
+button{font-family:var(--font-body);cursor:pointer;border:none;background:none}
+ul,ol{list-style:none}
+img{display:block;max-width:100%}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+:focus-visible{outline:3px solid var(--espresso);outline-offset:2px;border-radius:var(--r-sm)}
+
+/* ══════════════════════════════════════
+   NAV
+══════════════════════════════════════ */
+.nav{position:sticky;top:0;z-index:500;height:var(--nav-h);background:var(--espresso);box-shadow:0 2px 12px rgba(0,0,0,.25)}
+.nav-inner{max-width:var(--max-w);margin:0 auto;padding:0 24px;height:100%;display:flex;align-items:center;gap:18px}
+.nav-logo{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.nav-logo-icon{width:36px;height:36px;background:rgba(205,196,181,.12);border:1px solid rgba(205,196,181,.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px}
+.nav-logo-name{font-family:var(--font-display);font-size:.875rem;font-weight:700;color:var(--marfil);line-height:1.2}
+.nav-logo-sub{font-size:.5625rem;color:rgba(205,196,181,.45);letter-spacing:.18em;text-transform:uppercase}
+.nav-spacer{flex:1}
+.nav-search{flex:1;max-width:380px;position:relative;display:flex;align-items:center}
+.nav-search-input{width:100%;padding:9px 16px 9px 40px;background:rgba(205,196,181,.1);border:1.5px solid rgba(205,196,181,.2);border-radius:40px;font-family:var(--font-body);font-size:.875rem;color:var(--marfil);outline:none;transition:all .2s}
+.nav-search-input::placeholder{color:rgba(205,196,181,.4)}
+.nav-search-input:focus{background:rgba(205,196,181,.16);border-color:rgba(205,196,181,.5)}
+.nav-search-icon{position:absolute;left:13px;color:rgba(205,196,181,.5);pointer-events:none;display:flex}
+.nav-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.btn-nav-ghost{padding:7px 16px;border-radius:var(--r-md);border:1.5px solid rgba(205,196,181,.3);color:var(--marfil);font-size:.8125rem;font-weight:700;transition:all .2s}
+.btn-nav-ghost:hover{background:rgba(205,196,181,.12)}
+.btn-nav-primary{padding:7px 18px;border-radius:var(--r-md);background:var(--marfil);color:var(--espresso);font-size:.8125rem;font-weight:700;transition:all .2s}
+.btn-nav-primary:hover{background:var(--crema);box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.btn-cart{position:relative;width:38px;height:38px;border-radius:var(--r-md);border:1.5px solid rgba(205,196,181,.25);display:flex;align-items:center;justify-content:center;color:rgba(205,196,181,.8);transition:all .2s}
+.btn-cart:hover{background:rgba(205,196,181,.1);color:var(--marfil)}
+.cart-badge{position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;background:var(--verde-fresco);color:#fff;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;border:2px solid var(--espresso);transition:all .2s;transform:scale(0)}
+.cart-badge.show{transform:scale(1)}
+
+/* ══════════════════════════════════════
+   BREADCRUMB
+══════════════════════════════════════ */
+.breadcrumb-bar{background:var(--marfil-light);border-bottom:1px solid rgba(55,38,23,.07);padding:10px 0}
+.breadcrumb-inner{max-width:var(--max-w);margin:0 auto;padding:0 24px;display:flex;align-items:center;gap:6px;font-size:.75rem;color:var(--cafe-medio);flex-wrap:wrap}
+.bc-link{color:var(--cafe-medio);font-weight:600;transition:color .15s}
+.bc-link:hover{color:var(--espresso)}
+.bc-sep{color:var(--crema);font-size:.625rem}
+.bc-current{color:var(--espresso);font-weight:700}
+
+/* ══════════════════════════════════════
+   PAGE WRAPPER
+══════════════════════════════════════ */
+.page-max{max-width:var(--max-w);margin:0 auto;padding:0 24px}
+
+/* ══════════════════════════════════════
+   PRODUCT MAIN SECTION
+══════════════════════════════════════ */
+.product-section{padding:36px 0 0}
+.product-grid{display:grid;grid-template-columns:1fr 480px;gap:56px;align-items:start}
+
+/* ─ Gallery ─ */
+.gallery{display:flex;flex-direction:column;gap:14px;position:sticky;top:calc(var(--nav-h) + 20px)}
+.gallery-main{position:relative;background:var(--marfil);border-radius:var(--r-xl);overflow:hidden;height:440px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(55,38,23,.07)}
+.gallery-main-bg{position:absolute;inset:0;background:linear-gradient(135deg,var(--marfil) 0%,var(--crema) 100%)}
+.gallery-main-pattern{position:absolute;inset:0;background-image:repeating-linear-gradient(-45deg,transparent,transparent 20px,rgba(55,38,23,.025) 20px,rgba(55,38,23,.025) 21px)}
+.gallery-emoji{font-size:clamp(100px,15vw,160px);position:relative;z-index:1;filter:drop-shadow(0 16px 32px rgba(55,38,23,.15));animation:floatProd 4s ease-in-out infinite}
+@keyframes floatProd{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.gallery-badge-overlay{position:absolute;top:14px;left:14px;display:flex;gap:6px;flex-wrap:wrap;z-index:2}
+.gallery-wishlist{position:absolute;top:14px;right:14px;z-index:2;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.9);border:none;display:flex;align-items:center;justify-content:center;font-size:17px;cursor:pointer;transition:all .2s;backdrop-filter:blur(4px)}
+.gallery-wishlist:hover{background:#fff;transform:scale(1.1)}
+.gallery-wishlist.active{color:var(--error)}
+.gallery-thumbs{display:flex;gap:10px}
+.thumb{width:72px;height:72px;border-radius:var(--r-md);background:var(--marfil);border:2px solid transparent;display:flex;align-items:center;justify-content:center;font-size:28px;cursor:pointer;transition:all .2s;flex-shrink:0}
+.thumb:hover{border-color:var(--cafe-medio)}
+.thumb.active{border-color:var(--espresso);box-shadow:0 0 0 3px rgba(55,38,23,.1)}
+
+/* ─ Badges ─ */
+.badge{font-size:.6rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:20px}
+.b-org{background:var(--verde-light);color:var(--verde-selva)}
+.b-fair{background:var(--amber-light);color:var(--amber)}
+.b-rain{background:var(--blue-light);color:var(--blue-info)}
+
+/* ─ Info panel ─ */
+.info-panel{display:flex;flex-direction:column;gap:22px;padding-bottom:40px}
+
+.info-top{}
+.prod-producer{font-size:.6875rem;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--cafe-claro);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.verified-badge{display:inline-flex;align-items:center;gap:4px;background:var(--verde-light);color:var(--verde-selva);padding:2px 8px;border-radius:20px;font-size:.625rem;font-weight:800}
+.prod-title{font-family:var(--font-display);font-size:clamp(1.6rem,3vw,2.375rem);font-weight:700;color:var(--espresso);line-height:1.15;letter-spacing:-.02em;margin-bottom:10px}
+.prod-rating-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.stars{color:var(--amber);font-size:15px;letter-spacing:2px}
+.rating-num{font-size:.9375rem;font-weight:800;color:var(--espresso)}
+.rating-count{font-size:.8125rem;color:var(--cafe-medio);border-bottom:1px solid var(--cafe-medio);padding-bottom:1px;cursor:pointer;transition:color .15s}
+.rating-count:hover{color:var(--espresso)}
+.sold-count{font-size:.8125rem;color:var(--cafe-medio)}
+
+/* ─ Price block ─ */
+.price-block{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
+.price-main{font-family:var(--font-display);font-size:2.25rem;font-weight:700;color:var(--espresso);line-height:1}
+.price-unit{font-size:.875rem;color:var(--cafe-medio);font-family:var(--font-body);font-weight:500;padding-bottom:4px}
+.price-original{font-size:1.125rem;color:var(--cafe-medio);text-decoration:line-through;padding-bottom:4px;font-weight:400}
+.price-discount-badge{padding:4px 10px;background:var(--error-light);color:var(--error);border-radius:40px;font-size:.75rem;font-weight:800}
+
+/* ─ Stock indicator ─ */
+.stock-row{display:flex;align-items:center;gap:10px}
+.stock-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.stock-dot.ok{background:var(--verde-selva)}
+.stock-dot.warn{background:var(--amber);animation:blink 1.2s infinite}
+.stock-dot.out{background:var(--error)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.stock-text{font-size:.8125rem;font-weight:700}
+.stock-ok{color:var(--verde-selva)}
+.stock-warn{color:var(--amber)}
+.stock-bar-wrap{flex:1;max-width:120px}
+.stock-bar{height:5px;background:rgba(55,38,23,.08);border-radius:3px;overflow:hidden}
+.stock-fill{height:100%;border-radius:3px;transition:width .4s}
+.sf-ok{background:var(--verde-fresco)}
+.sf-warn{background:var(--amber)}
+.sf-out{background:var(--error)}
+
+/* ─ Options: Presentación ─ */
+.options-section{display:flex;flex-direction:column;gap:14px}
+.opt-label{font-size:.75rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--cafe-medio);margin-bottom:6px}
+.opt-chips{display:flex;gap:8px;flex-wrap:wrap}
+.opt-chip{padding:9px 18px;border-radius:var(--r-md);border:1.5px solid rgba(55,38,23,.15);font-size:.875rem;font-weight:700;color:var(--cafe-medio);background:transparent;cursor:pointer;transition:all .18s}
+.opt-chip:hover{border-color:var(--espresso);color:var(--espresso)}
+.opt-chip.selected{border-color:var(--espresso);background:var(--espresso);color:var(--marfil)}
+.opt-chip.disabled{opacity:.35;cursor:not-allowed;text-decoration:line-through}
+
+/* Tostado */
+.roast-chips{display:flex;gap:8px;flex-wrap:wrap}
+.roast-chip{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 16px;border-radius:var(--r-md);border:1.5px solid rgba(55,38,23,.15);cursor:pointer;transition:all .18s;min-width:80px}
+.roast-chip:hover{border-color:var(--espresso)}
+.roast-chip.selected{border-color:var(--espresso);background:rgba(55,38,23,.05)}
+.roast-icon{font-size:18px}
+.roast-name{font-size:.75rem;font-weight:700;color:var(--espresso)}
+.roast-sub{font-size:.625rem;color:var(--cafe-medio)}
+
+/* ─ Qty ─ */
+.qty-row{display:flex;align-items:center;gap:14px}
+.qty-ctrl{display:flex;align-items:center;border:1.5px solid rgba(55,38,23,.18);border-radius:var(--r-md);overflow:hidden}
+.qty-btn{width:42px;height:42px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:var(--espresso);transition:background .15s}
+.qty-btn:hover:not(:disabled){background:var(--marfil-light)}
+.qty-btn:disabled{color:var(--cafe-medio);opacity:.4;cursor:not-allowed}
+.qty-val{width:48px;text-align:center;font-size:1rem;font-weight:800;color:var(--espresso);border-left:1.5px solid rgba(55,38,23,.12);border-right:1.5px solid rgba(55,38,23,.12);line-height:42px}
+.qty-max{font-size:.75rem;color:var(--cafe-medio)}
+
+/* ─ CTA buttons ─ */
+.cta-group{display:flex;flex-direction:column;gap:10px}
+.btn-buy-now{width:100%;padding:16px;border-radius:var(--r-lg);background:var(--espresso);color:var(--marfil);font-size:1rem;font-weight:800;letter-spacing:.02em;transition:all .2s;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-buy-now::before{content:'';position:absolute;inset:0;background:var(--cafe-oscuro);transform:scaleX(0);transform-origin:left;transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.btn-buy-now:hover{box-shadow:0 8px 28px rgba(55,38,23,.3);transform:translateY(-1px)}
+.btn-buy-now:hover::before{transform:scaleX(1)}
+.btn-buy-now:active{transform:none}
+.btn-buy-now span,.btn-buy-now svg{position:relative;z-index:1}
+.btn-add-cart{width:100%;padding:14px;border-radius:var(--r-lg);border:2px solid var(--espresso);color:var(--espresso);font-size:1rem;font-weight:800;letter-spacing:.02em;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-add-cart:hover{background:rgba(55,38,23,.05);box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.btn-add-cart:active{transform:none}
+.btn-add-cart.added{background:var(--verde-selva);border-color:var(--verde-selva);color:#fff}
+.btn-wishlist-full{width:100%;padding:11px;border-radius:var(--r-md);border:1.5px solid rgba(55,38,23,.18);color:var(--cafe-medio);font-size:.875rem;font-weight:700;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:7px}
+.btn-wishlist-full:hover{border-color:var(--error);color:var(--error);background:var(--error-light)}
+.btn-wishlist-full.active{border-color:var(--error);color:var(--error);background:var(--error-light)}
+
+/* ─ Guarantees ─ */
+.guarantees{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.guarantee{display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 8px;background:var(--marfil-light);border-radius:var(--r-md);text-align:center}
+.guarantee-icon{font-size:20px}
+.guarantee-text{font-size:.6875rem;font-weight:700;color:var(--espresso);line-height:1.3}
+.guarantee-sub{font-size:.625rem;color:var(--cafe-medio);font-weight:400}
+
+/* ─ Producer mini card ─ */
+.producer-mini{display:flex;align-items:center;gap:12px;padding:14px;background:var(--marfil-light);border-radius:var(--r-lg);border:1px solid rgba(55,38,23,.07);cursor:pointer;transition:all .18s}
+.producer-mini:hover{background:var(--marfil);box-shadow:var(--shadow-sm)}
+.producer-avatar{width:48px;height:48px;border-radius:12px;background:rgba(74,140,86,.15);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.producer-info{flex:1;min-width:0}
+.producer-name{font-family:var(--font-display);font-size:.9375rem;font-weight:700;color:var(--espresso)}
+.producer-region{font-size:.75rem;color:var(--cafe-medio);margin-top:1px}
+.producer-arrow{color:var(--cafe-medio);font-size:18px;transition:transform .2s}
+.producer-mini:hover .producer-arrow{transform:translateX(3px)}
+
+/* ══════════════════════════════════════
+   DETAIL TABS (descripción, notas, farm)
+══════════════════════════════════════ */
+.detail-section{padding:40px 0}
+.detail-tabs-row{display:flex;gap:4px;border-bottom:1.5px solid rgba(55,38,23,.08);margin-bottom:28px}
+.d-tab{padding:10px 20px;font-size:.875rem;font-weight:700;color:var(--cafe-medio);cursor:pointer;position:relative;border-radius:var(--r-md) var(--r-md) 0 0;transition:color .15s,background .15s}
+.d-tab:hover{color:var(--espresso);background:rgba(55,38,23,.04)}
+.d-tab.active{color:var(--espresso)}
+.d-tab.active::after{content:'';position:absolute;bottom:-1.5px;left:0;right:0;height:2.5px;background:var(--espresso);border-radius:2px 2px 0 0}
+.d-panel{display:none}
+.d-panel.active{display:block;animation:fadeUp .3s both}
+
+.desc-text{font-size:.9375rem;color:var(--cafe-medio);line-height:1.85;font-weight:400;max-width:680px}
+.desc-text strong{color:var(--espresso);font-weight:700}
+
+/* Notas de sabor */
+.flavor-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:28px}
+.flavor-card{padding:14px;background:#fff;border:1px solid rgba(55,38,23,.07);border-radius:var(--r-lg);display:flex;align-items:center;gap:12px;transition:box-shadow .18s}
+.flavor-card:hover{box-shadow:var(--shadow-sm)}
+.flavor-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.flavor-name{font-size:.9375rem;font-weight:700;color:var(--espresso)}
+.flavor-intensity{height:4px;background:rgba(55,38,23,.08);border-radius:2px;overflow:hidden;margin-top:4px}
+.flavor-fill{height:100%;border-radius:2px;background:var(--amber);transition:width .6s}
+
+/* Cupping wheel */
+.cupping-row{display:flex;gap:20px;align-items:center;flex-wrap:wrap;padding:20px;background:var(--marfil-light);border-radius:var(--r-lg);margin-bottom:20px}
+.cupping-score{display:flex;flex-direction:column;align-items:center;gap:2px}
+.cup-num{font-family:var(--font-display);font-size:3rem;font-weight:700;color:var(--espresso);line-height:1}
+.cup-label{font-size:.6875rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--cafe-medio)}
+.cupping-attrs{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:10px;min-width:200px}
+.cup-attr{display:flex;flex-direction:column;gap:4px}
+.cup-attr-label{font-size:.6875rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--cafe-medio)}
+.cup-attr-bar{height:6px;background:rgba(55,38,23,.08);border-radius:3px;overflow:hidden}
+.cup-attr-fill{height:100%;border-radius:3px;background:var(--espresso)}
+.cup-attr-val{font-size:.75rem;font-weight:700;color:var(--espresso)}
+
+/* Finca */
+.farm-detail-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.farm-detail-card{padding:16px;background:#fff;border:1px solid rgba(55,38,23,.07);border-radius:var(--r-lg);display:flex;flex-direction:column;gap:5px}
+.fd-label{font-size:.625rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--cafe-medio)}
+.fd-value{font-size:1.0625rem;font-weight:700;color:var(--espresso)}
+.fd-value.big{font-family:var(--font-display);font-size:1.25rem}
+
+/* ══════════════════════════════════════
+   REVIEWS
+══════════════════════════════════════ */
+.reviews-section{padding:0 0 48px}
+.section-header-row{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px}
+.section-eyebrow{font-size:.6875rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--verde-fresco);margin-bottom:4px}
+.section-title{font-family:var(--font-display);font-size:1.75rem;font-weight:700;color:var(--espresso);letter-spacing:-.02em}
+
+/* Resumen de calificaciones */
+.reviews-summary{display:grid;grid-template-columns:200px 1fr;gap:28px;background:#fff;border:1px solid rgba(55,38,23,.07);border-radius:var(--r-xl);padding:28px;margin-bottom:28px;align-items:center}
+.summary-score{text-align:center}
+.summary-big-num{font-family:var(--font-display);font-size:4rem;font-weight:700;color:var(--espresso);line-height:1}
+.summary-stars{font-size:22px;color:var(--amber);letter-spacing:2px;margin:6px 0}
+.summary-total{font-size:.875rem;color:var(--cafe-medio);font-weight:500}
+.summary-bars{display:flex;flex-direction:column;gap:8px}
+.bar-row{display:flex;align-items:center;gap:10px}
+.bar-lbl{font-size:.8125rem;font-weight:700;color:var(--espresso);min-width:14px;text-align:right}
+.bar-track{flex:1;height:8px;background:rgba(55,38,23,.08);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;background:var(--amber);transition:width .6s}
+.bar-count{font-size:.75rem;color:var(--cafe-medio);min-width:22px}
+
+/* Review card */
+.reviews-list{display:flex;flex-direction:column;gap:14px}
+.review-card{background:#fff;border:1px solid rgba(55,38,23,.07);border-radius:var(--r-lg);padding:20px;transition:box-shadow .18s}
+.review-card:hover{box-shadow:var(--shadow-sm)}
+.review-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px}
+.reviewer-avatar{width:40px;height:40px;border-radius:50%;background:var(--marfil-light);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:var(--cafe-medio);flex-shrink:0;border:1.5px solid rgba(55,38,23,.08)}
+.reviewer-info{flex:1}
+.reviewer-name{font-size:.9375rem;font-weight:700;color:var(--espresso)}
+.reviewer-date{font-size:.75rem;color:var(--cafe-medio)}
+.review-stars{font-size:13px;color:var(--amber);letter-spacing:1px}
+.review-badge{display:inline-flex;align-items:center;gap:4px;background:var(--verde-light);color:var(--verde-selva);padding:2px 8px;border-radius:20px;font-size:.625rem;font-weight:800;margin-left:6px}
+.review-text{font-size:.9375rem;color:var(--cafe-medio);line-height:1.7;font-weight:400}
+.review-helpful{margin-top:12px;display:flex;align-items:center;gap:10px}
+.btn-helpful{padding:5px 12px;border-radius:40px;border:1.5px solid rgba(55,38,23,.12);font-size:.75rem;font-weight:700;color:var(--cafe-medio);transition:all .18s;display:flex;align-items:center;gap:5px}
+.btn-helpful:hover{border-color:var(--espresso);color:var(--espresso);background:rgba(55,38,23,.04)}
+.btn-helpful.voted{border-color:var(--verde-selva);color:var(--verde-selva);background:var(--verde-light)}
+
+/* Write review CTA */
+.review-cta{background:var(--espresso);border-radius:var(--r-xl);padding:28px;text-align:center;margin-top:24px}
+.review-cta-title{font-family:var(--font-display);font-size:1.25rem;font-weight:700;color:var(--marfil);margin-bottom:6px}
+.review-cta-sub{font-size:.875rem;color:rgba(205,196,181,.6);margin-bottom:18px}
+.btn-write-review{padding:12px 28px;border-radius:var(--r-md);background:var(--marfil);color:var(--espresso);font-size:.9375rem;font-weight:800;transition:all .2s}
+.btn-write-review:hover{background:var(--crema);box-shadow:0 6px 20px rgba(0,0,0,.25);transform:translateY(-1px)}
+
+/* ══════════════════════════════════════
+   SUGGESTIONS
+══════════════════════════════════════ */
+.suggestions-section{padding:0 0 64px}
+.suggestions-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.sug-card{background:#fff;border:1px solid rgba(55,38,23,.07);border-radius:var(--r-lg);overflow:hidden;transition:box-shadow .22s,transform .22s;cursor:pointer}
+.sug-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-3px)}
+.sug-img{height:160px;display:flex;align-items:center;justify-content:center;position:relative}
+.sug-img-bg{position:absolute;inset:0}
+.sug-emoji{font-size:72px;position:relative;z-index:1}
+.sug-region{position:absolute;bottom:8px;left:10px;background:rgba(55,38,23,.7);color:var(--marfil);font-size:.6rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:3px 8px;border-radius:20px;z-index:2;backdrop-filter:blur(4px)}
+.sug-badges{position:absolute;top:8px;left:8px;display:flex;gap:4px;z-index:2}
+.sug-body{padding:14px 14px 10px}
+.sug-producer{font-size:.625rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--cafe-claro);margin-bottom:2px}
+.sug-name{font-family:var(--font-display);font-size:.9375rem;font-weight:700;color:var(--espresso);line-height:1.3;margin-bottom:4px}
+.sug-rating{display:flex;align-items:center;gap:5px;margin-bottom:8px}
+.sug-stars{font-size:11px;color:var(--amber)}
+.sug-rating-val{font-size:.75rem;font-weight:700;color:var(--espresso)}
+.sug-footer{padding:0 14px 14px;display:flex;align-items:center;justify-content:space-between}
+.sug-price{font-family:var(--font-display);font-size:1.0625rem;font-weight:700;color:var(--espresso)}
+.sug-price-unit{font-size:.6875rem;color:var(--cafe-medio);font-family:var(--font-body);font-weight:400}
+.btn-sug-add{width:34px;height:34px;border-radius:9px;background:var(--espresso);color:var(--marfil);display:flex;align-items:center;justify-content:center;font-size:18px;transition:all .2s}
+.btn-sug-add:hover{background:var(--cafe-oscuro);box-shadow:0 4px 12px rgba(55,38,23,.3);transform:scale(1.08)}
+.btn-sug-add.added{background:var(--verde-selva)}
+
+/* ══════════════════════════════════════
+   MODAL RESEÑA
+══════════════════════════════════════ */
+.modal-overlay{position:fixed;inset:0;background:rgba(55,38,23,.5);z-index:800;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .25s;backdrop-filter:blur(3px)}
+.modal-overlay.open{opacity:1;pointer-events:auto}
+.modal{background:#fff;border-radius:var(--r-xl);width:100%;max-width:480px;box-shadow:var(--shadow-lg);transform:translateY(16px);transition:transform .3s cubic-bezier(.22,.68,0,1.1);padding:28px}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px}
+.modal-title{font-family:var(--font-display);font-size:1.375rem;font-weight:700;color:var(--espresso)}
+.modal-sub{font-size:.875rem;color:var(--cafe-medio);margin-top:3px}
+.btn-close-modal{width:34px;height:34px;border-radius:50%;background:rgba(55,38,23,.06);display:flex;align-items:center;justify-content:center;color:var(--espresso);font-size:18px;transition:background .15s;flex-shrink:0}
+.btn-close-modal:hover{background:rgba(55,38,23,.12)}
+.stars-selector{display:flex;gap:8px;margin-bottom:20px}
+.star-btn{font-size:32px;color:rgba(55,38,23,.15);cursor:pointer;transition:color .1s,transform .1s;line-height:1}
+.star-btn.lit{color:var(--amber)}
+.star-btn:hover{transform:scale(1.15)}
+.review-textarea{width:100%;padding:12px 14px;border:1.5px solid rgba(55,38,23,.15);border-radius:var(--r-md);font-family:var(--font-body);font-size:.9375rem;color:var(--espresso);outline:none;resize:vertical;min-height:110px;background:var(--blanco);transition:border-color .2s;margin-bottom:6px}
+.review-textarea:focus{border-color:var(--espresso);background:#fff;box-shadow:0 0 0 3px rgba(55,38,23,.07)}
+.char-count{font-size:.75rem;color:var(--cafe-medio);text-align:right;margin-bottom:18px}
+.modal-footer{display:flex;gap:10px}
+.btn-modal-cancel{flex:1;padding:12px;border-radius:var(--r-md);border:1.5px solid rgba(55,38,23,.15);color:var(--cafe-medio);font-size:.875rem;font-weight:700;transition:all .15s}
+.btn-modal-cancel:hover{border-color:var(--espresso);color:var(--espresso)}
+.btn-modal-submit{flex:2;padding:12px;border-radius:var(--r-md);background:var(--espresso);color:var(--marfil);font-size:.9375rem;font-weight:800;transition:all .2s}
+.btn-modal-submit:hover{background:var(--cafe-oscuro);box-shadow:var(--shadow-md)}
+
+/* ══════════════════════════════════════
+   TOAST
+══════════════════════════════════════ */
+.toast-wrap{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast-item{display:flex;align-items:center;gap:10px;padding:12px 18px;border-radius:40px;font-size:.875rem;font-weight:600;box-shadow:0 8px 28px rgba(0,0,0,.2);transform:translateX(120%);opacity:0;transition:transform .3s cubic-bezier(.22,.68,0,1.2),opacity .3s;pointer-events:auto;max-width:340px}
+.toast-item.show{transform:translateX(0);opacity:1}
+.t-success{background:var(--verde-selva);color:#fff}
+.t-info{background:var(--espresso);color:var(--marfil)}
+.t-warning{background:var(--amber);color:#fff}
+
+/* ══════════════════════════════════════
+   FOOTER
+══════════════════════════════════════ */
+.footer{background:var(--cafe-oscuro);padding:40px 24px 24px}
+.footer-inner{max-width:var(--max-w);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.footer-logo{font-family:var(--font-display);font-size:.9375rem;font-weight:700;color:var(--marfil)}
+.footer-copy{font-size:.8125rem;color:rgba(205,196,181,.4)}
+
+/* ══════════════════════════════════════
+   ANIMATIONS
+══════════════════════════════════════ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── Sticky mobile CTA bar ── */
+.mobile-cta{display:none;position:fixed;bottom:0;left:0;right:0;z-index:400;background:var(--marfil);border-top:1px solid rgba(55,38,23,.1);padding:12px 16px;gap:10px;box-shadow:0 -4px 20px rgba(55,38,23,.12)}
+.mobile-price-show{font-family:var(--font-display);font-size:1.25rem;font-weight:700;color:var(--espresso)}
+
+/* ══════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════ */
+@media(max-width:1100px){
+  .product-grid{grid-template-columns:1fr;gap:32px}
+  .gallery{position:static}
+  .gallery-main{height:340px}
+  .suggestions-grid{grid-template-columns:repeat(2,1fr)}
+  .farm-detail-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:768px){
+  .reviews-summary{grid-template-columns:1fr;text-align:center}
+  .cupping-attrs{grid-template-columns:1fr}
+  .guarantees{grid-template-columns:repeat(3,1fr)}
+  .suggestions-grid{grid-template-columns:repeat(2,1fr)}
+  .nav-search{display:none}
+  .mobile-cta{display:flex}
+  body{padding-bottom:80px}
+  .product-section{padding:20px 0 0}
+  .page-max{padding:0 16px}
+}
+@media(max-width:500px){
+  .suggestions-grid{grid-template-columns:1fr}
+  .farm-detail-grid{grid-template-columns:1fr}
+  .gallery-main{height:280px}
+  .gallery-thumbs{gap:8px}
+  .thumb{width:60px;height:60px;font-size:24px}
+  .btn-nav-ghost,.btn-nav-primary{display:none}
+}
+</style>
+</head>
+<body>
+
+<a href="#product-info" class="sr-only" style="position:absolute;top:-100%;left:16px;background:var(--espresso);color:var(--marfil);padding:8px 16px;border-radius:0 0 8px 8px;z-index:9999;font-size:.8125rem;font-weight:600">Saltar al contenido</a>
+
+<!-- ══════ NAV ══════ -->
+<header>
+<nav class="nav" role="navigation" aria-label="Navegación principal">
+  <div class="nav-inner">
+    <a href="landing_marketplace_cafe.html" class="nav-logo" aria-label="World Coffee Marketplace">
+      <div class="nav-logo-icon" aria-hidden="true">☕</div>
+      <div><div class="nav-logo-name">World Coffee</div><div class="nav-logo-sub">Marketplace</div></div>
+    </a>
+    <div class="nav-search" role="search">
+      <span class="nav-search-icon" aria-hidden="true">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      </span>
+      <input type="search" class="nav-search-input" placeholder="Buscar café por nombre, región o productor..." aria-label="Buscar productos">
+    </div>
+    <div class="nav-actions">
+      <a href="login_ux_marketplace_cafe.html" class="btn-nav-ghost">Iniciar sesión</a>
+      <a href="#" class="btn-nav-primary">Registrarse</a>
+      <button class="btn-cart" id="navCartBtn" onclick="openCartPanel()" aria-label="Ver carrito">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 2h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+        <span class="cart-badge" id="cartBadge" aria-live="polite">0</span>
+      </button>
+    </div>
+  </div>
+</nav>
+</header>
+
+<!-- ══════ BREADCRUMB ══════ -->
+<div class="breadcrumb-bar" aria-label="Ruta de navegación">
+  <div class="breadcrumb-inner">
+    <a href="landing_marketplace_cafe.html" class="bc-link">Inicio</a>
+    <span class="bc-sep" aria-hidden="true">›</span>
+    <a href="landing_marketplace_cafe.html" class="bc-link">Catálogo</a>
+    <span class="bc-sep" aria-hidden="true">›</span>
+    <a href="#" class="bc-link">Grano entero</a>
+    <span class="bc-sep" aria-hidden="true">›</span>
+    <span class="bc-current" aria-current="page">Café Especial Huila</span>
+  </div>
+</div>
+
+<!-- ══════ MAIN PRODUCT ══════ -->
+<div class="page-max">
+<section class="product-section" aria-label="Detalle del producto">
+  <div class="product-grid">
+
+    <!-- ── GALLERY ── -->
+    <div class="gallery" aria-label="Imágenes del producto">
+      <div class="gallery-main" role="img" aria-label="Café Especial Huila — grano entero">
+        <div class="gallery-main-bg" aria-hidden="true"></div>
+        <div class="gallery-main-pattern" aria-hidden="true"></div>
+        <div class="gallery-emoji" id="mainEmoji" aria-hidden="true">🫘</div>
+        <div class="gallery-badge-overlay" aria-label="Certificaciones">
+          <span class="badge b-org">Orgánico</span>
+          <span class="badge b-fair">Fairtrade</span>
+        </div>
+        <button class="gallery-wishlist" id="mainWishlist" onclick="toggleWishlist()" aria-label="Agregar a favoritos" aria-pressed="false">♡</button>
+      </div>
+      <div class="gallery-thumbs" role="list" aria-label="Variantes de imagen">
+        <div class="thumb active" role="listitem" onclick="changeThumb(this,'🫘')" tabindex="0" aria-label="Vista principal — grano" aria-pressed="true">🫘</div>
+        <div class="thumb" role="listitem" onclick="changeThumb(this,'☕')" tabindex="0" aria-label="Vista — taza preparada" aria-pressed="false">☕</div>
+        <div class="thumb" role="listitem" onclick="changeThumb(this,'🌿')" tabindex="0" aria-label="Vista — planta de café" aria-pressed="false">🌿</div>
+        <div class="thumb" role="listitem" onclick="changeThumb(this,'🏔️')" tabindex="0" aria-label="Vista — finca de origen" aria-pressed="false">🏔️</div>
+      </div>
+    </div>
+
+    <!-- ── INFO PANEL ── -->
+    <div class="info-panel" id="product-info">
+
+      <!-- Header -->
+      <div class="info-top">
+        <div class="prod-producer">
+          Finca La Esperanza
+          <span class="verified-badge">✓ Verificado</span>
+        </div>
+        <h1 class="prod-title">Café Especial Huila</h1>
+        <div class="prod-rating-row">
+          <div class="stars" aria-label="4.9 estrellas de 5">★★★★★</div>
+          <span class="rating-num">4.9</span>
+          <button class="rating-count" onclick="document.getElementById('reviews-section').scrollIntoView({behavior:'smooth'})" aria-label="Ver 128 reseñas">128 reseñas</button>
+          <span class="sold-count">· +340 vendidos</span>
+        </div>
+      </div>
+
+      <!-- Precio -->
+      <div class="price-block" aria-label="Precio del producto">
+        <div class="price-main" id="priceDisplay">$48.000</div>
+        <div class="price-unit" id="priceUnit">/ 500g</div>
+        <div class="price-original">$56.000</div>
+        <div class="price-discount-badge">−14%</div>
+      </div>
+
+      <!-- Stock -->
+      <div class="stock-row" role="status" aria-live="polite">
+        <div class="stock-dot warn" id="stockDot" aria-hidden="true"></div>
+        <div class="stock-text stock-warn" id="stockText">Quedan 18 unidades</div>
+        <div class="stock-bar-wrap">
+          <div class="stock-bar"><div class="stock-fill sf-warn" id="stockFill" style="width:18%"></div></div>
+        </div>
+      </div>
+
+      <!-- Presentación -->
+      <div class="options-section">
+        <div>
+          <div class="opt-label" id="sizeLabel">Presentación</div>
+          <div class="opt-chips" role="radiogroup" aria-label="Seleccionar presentación">
+            <button class="opt-chip" onclick="selectSize(this,'250g','$26.000','250g')" aria-pressed="false">250g · $26.000</button>
+            <button class="opt-chip selected" onclick="selectSize(this,'500g','$48.000','500g')" aria-pressed="true">500g · $48.000</button>
+            <button class="opt-chip" onclick="selectSize(this,'1kg','$90.000','1kg')" aria-pressed="false">1kg · $90.000</button>
+            <button class="opt-chip disabled" disabled aria-disabled="true" title="No disponible">2kg · Agotado</button>
+          </div>
+        </div>
+
+        <!-- Tostado -->
+        <div>
+          <div class="opt-label">Nivel de tostado</div>
+          <div class="roast-chips" role="radiogroup" aria-label="Seleccionar nivel de tostado">
+            <div class="roast-chip selected" onclick="selectRoast(this)" role="radio" aria-checked="true" tabindex="0">
+              <div class="roast-icon">🌟</div>
+              <div class="roast-name">Medio</div>
+              <div class="roast-sub">Equilibrado</div>
+            </div>
+            <div class="roast-chip" onclick="selectRoast(this)" role="radio" aria-checked="false" tabindex="0">
+              <div class="roast-icon">☀️</div>
+              <div class="roast-name">Claro</div>
+              <div class="roast-sub">Ácido y floral</div>
+            </div>
+            <div class="roast-chip" onclick="selectRoast(this)" role="radio" aria-checked="false" tabindex="0">
+              <div class="roast-icon">🖤</div>
+              <div class="roast-name">Oscuro</div>
+              <div class="roast-sub">Intenso y robusto</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cantidad -->
+      <div class="qty-row" aria-label="Seleccionar cantidad">
+        <div class="qty-ctrl" role="group" aria-label="Control de cantidad">
+          <button class="qty-btn" id="qtyMinus" onclick="changeQty(-1)" aria-label="Quitar uno" disabled>−</button>
+          <div class="qty-val" id="qtyVal" aria-live="polite" aria-label="Cantidad: 1">1</div>
+          <button class="qty-btn" id="qtyPlus" onclick="changeQty(1)" aria-label="Agregar uno">+</button>
+        </div>
+        <span class="qty-max" id="qtyMax">Máx. 18 disponibles</span>
+      </div>
+
+      <!-- CTAs -->
+      <div class="cta-group">
+        <button class="btn-buy-now" onclick="handleBuyNow()" aria-label="Comprar ahora Café Especial Huila">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+          <span id="buyNowLabel">Comprar ahora</span>
+        </button>
+        <button class="btn-add-cart" id="addCartBtn" onclick="handleAddCart()" aria-label="Agregar al carrito">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 2h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+          <span id="addCartLabel">Agregar al carrito</span>
+        </button>
+        <button class="btn-wishlist-full" id="wishlistFullBtn" onclick="toggleWishlist()" aria-label="Guardar en favoritos" aria-pressed="false">
+          <span id="wishlistFullIcon">♡</span> Guardar en favoritos
+        </button>
+      </div>
+
+      <!-- Garantías -->
+      <div class="guarantees" role="list" aria-label="Garantías del producto">
+        <div class="guarantee" role="listitem">
+          <div class="guarantee-icon" aria-hidden="true">🚚</div>
+          <div class="guarantee-text">Envío gratis</div>
+          <div class="guarantee-sub">En pedidos +$80.000</div>
+        </div>
+        <div class="guarantee" role="listitem">
+          <div class="guarantee-icon" aria-hidden="true">🔄</div>
+          <div class="guarantee-text">Devolución</div>
+          <div class="guarantee-sub">30 días sin costo</div>
+        </div>
+        <div class="guarantee" role="listitem">
+          <div class="guarantee-icon" aria-hidden="true">🔒</div>
+          <div class="guarantee-text">Pago seguro</div>
+          <div class="guarantee-sub">SSL · PCI DSS</div>
+        </div>
+      </div>
+
+      <!-- Productor -->
+      <a href="#" class="producer-mini" aria-label="Ver perfil del productor Finca La Esperanza">
+        <div class="producer-avatar" aria-hidden="true">👨‍🌾</div>
+        <div class="producer-info">
+          <div class="producer-name">Finca La Esperanza</div>
+          <div class="producer-region">📍 Pitalito, Huila · 1.780 msnm · 12,5 ha</div>
+        </div>
+        <div class="producer-arrow" aria-hidden="true">›</div>
+      </a>
+
+    </div><!-- /info-panel -->
+  </div><!-- /product-grid -->
+</section>
+
+<!-- ══════ DETAIL TABS ══════ -->
+<section class="detail-section" aria-label="Información detallada del producto">
+  <div class="detail-tabs-row" role="tablist" aria-label="Secciones de detalle">
+    <button class="d-tab active" role="tab" id="dtab-desc" aria-selected="true" aria-controls="dpanel-desc" onclick="switchDTab('desc')">Descripción</button>
+    <button class="d-tab" role="tab" id="dtab-notas" aria-selected="false" aria-controls="dpanel-notas" onclick="switchDTab('notas')">Notas de sabor</button>
+    <button class="d-tab" role="tab" id="dtab-finca" aria-selected="false" aria-controls="dpanel-finca" onclick="switchDTab('finca')">Origen y finca</button>
+    <button class="d-tab" role="tab" id="dtab-prep" aria-selected="false" aria-controls="dpanel-prep" onclick="switchDTab('prep')">Preparación</button>
+  </div>
+
+  <!-- Descripción -->
+  <div class="d-panel active" id="dpanel-desc" role="tabpanel" aria-labelledby="dtab-desc">
+    <p class="desc-text">
+      Nuestro <strong>Café Especial Huila</strong> proviene de las laderas del macizo colombiano a 1.780 metros sobre el nivel del mar, donde el clima frío y las lluvias regulares crean las condiciones perfectas para un café de altísima calidad. Cultivado bajo sombra de guamos y plátanos en <strong>Finca La Esperanza</strong>, con más de 30 años de tradición familiar.
+    </p>
+    <p class="desc-text" style="margin-top:14px">
+      El proceso de beneficio húmedo garantiza una fermentación controlada que resalta la <strong>acidez brillante</strong>, el cuerpo medio-alto y el dulzor natural de la panela. El secado en cama africana durante 18–21 días aporta una taza limpia y compleja, con notas que evolucionan de frutos rojos frescos a chocolate negro y miel mientras enfría.
+    </p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:20px">
+      <div style="padding:10px 16px;background:var(--marfil-light);border-radius:var(--r-md);font-size:.8125rem;font-weight:600;color:var(--espresso)">🌿 Proceso: Lavado</div>
+      <div style="padding:10px 16px;background:var(--marfil-light);border-radius:var(--r-md);font-size:.8125rem;font-weight:600;color:var(--espresso)">🌱 Variedad: Caturra · Castillo</div>
+      <div style="padding:10px 16px;background:var(--marfil-light);border-radius:var(--r-md);font-size:.8125rem;font-weight:600;color:var(--espresso)">📅 Cosecha: Sep – Dic 2024</div>
+      <div style="padding:10px 16px;background:var(--marfil-light);border-radius:var(--r-md);font-size:.8125rem;font-weight:600;color:var(--espresso)">🏔️ Altitud: 1.780 msnm</div>
+    </div>
+  </div>
+
+  <!-- Notas de sabor -->
+  <div class="d-panel" id="dpanel-notas" role="tabpanel" aria-labelledby="dtab-notas">
+    <div class="cupping-row" aria-label="Puntuación de catación">
+      <div class="cupping-score">
+        <div class="cup-num">87</div>
+        <div class="stars" style="font-size:16px">★★★★★</div>
+        <div class="cup-label">Puntos SCA</div>
+      </div>
+      <div class="cupping-attrs" role="list" aria-label="Atributos de catación">
+        <div class="cup-attr" role="listitem">
+          <div class="cup-attr-label">Acidez</div>
+          <div class="cup-attr-bar"><div class="cup-attr-fill" style="width:78%"></div></div>
+          <div class="cup-attr-val">7.8 / 10</div>
+        </div>
+        <div class="cup-attr" role="listitem">
+          <div class="cup-attr-label">Cuerpo</div>
+          <div class="cup-attr-bar"><div class="cup-attr-fill" style="width:72%"></div></div>
+          <div class="cup-attr-val">7.2 / 10</div>
+        </div>
+        <div class="cup-attr" role="listitem">
+          <div class="cup-attr-label">Dulzor</div>
+          <div class="cup-attr-bar"><div class="cup-attr-fill" style="width:85%"></div></div>
+          <div class="cup-attr-val">8.5 / 10</div>
+        </div>
+        <div class="cup-attr" role="listitem">
+          <div class="cup-attr-label">Limpieza</div>
+          <div class="cup-attr-bar"><div class="cup-attr-fill" style="width:90%"></div></div>
+          <div class="cup-attr-val">9.0 / 10</div>
+        </div>
+      </div>
+    </div>
+    <div class="flavor-grid" role="list" aria-label="Notas de sabor detectadas">
+      <div class="flavor-card" role="listitem"><div class="flavor-icon" style="background:rgba(192,120,32,.12)" aria-hidden="true">🍫</div><div><div class="flavor-name">Chocolate negro</div><div class="flavor-intensity"><div class="flavor-fill" style="width:82%"></div></div></div></div>
+      <div class="flavor-card" role="listitem"><div class="flavor-icon" style="background:rgba(220,60,60,.08)" aria-hidden="true">🍒</div><div><div class="flavor-name">Frutos rojos</div><div class="flavor-intensity"><div class="flavor-fill" style="width:70%"></div></div></div></div>
+      <div class="flavor-card" role="listitem"><div class="flavor-icon" style="background:rgba(55,38,23,.08)" aria-hidden="true">🍯</div><div><div class="flavor-name">Panela</div><div class="flavor-intensity"><div class="flavor-fill" style="width:65%"></div></div></div></div>
+      <div class="flavor-card" role="listitem"><div class="flavor-icon" style="background:rgba(192,120,32,.08)" aria-hidden="true">🌸</div><div><div class="flavor-name">Floral</div><div class="flavor-intensity"><div class="flavor-fill" style="width:45%"></div></div></div></div>
+      <div class="flavor-card" role="listitem"><div class="flavor-icon" style="background:rgba(74,140,86,.1)" aria-hidden="true">🍋</div><div><div class="flavor-name">Cítrico suave</div><div class="flavor-intensity"><div class="flavor-fill" style="width:38%"></div></div></div></div>
+      <div class="flavor-card" role="listitem"><div class="flavor-icon" style="background:rgba(55,38,23,.05)" aria-hidden="true">🌰</div><div><div class="flavor-name">Almendra</div><div class="flavor-intensity"><div class="flavor-fill" style="width:30%"></div></div></div></div>
+    </div>
+  </div>
+
+  <!-- Finca -->
+  <div class="d-panel" id="dpanel-finca" role="tabpanel" aria-labelledby="dtab-finca">
+    <div class="farm-detail-grid" role="list" aria-label="Datos de la finca de origen">
+      <div class="farm-detail-card" role="listitem"><div class="fd-label">Finca</div><div class="fd-value big">La Esperanza</div></div>
+      <div class="farm-detail-card" role="listitem"><div class="fd-label">Municipio</div><div class="fd-value big">Pitalito</div></div>
+      <div class="farm-detail-card" role="listitem"><div class="fd-label">Departamento</div><div class="fd-value">Huila, Colombia</div></div>
+      <div class="farm-detail-card" role="listitem"><div class="fd-label">Altitud</div><div class="fd-value">1.780 msnm</div></div>
+      <div class="farm-detail-card" role="listitem"><div class="fd-label">Extensión</div><div class="fd-value">12,5 hectáreas</div></div>
+      <div class="farm-detail-card" role="listitem"><div class="fd-label">Variedad</div><div class="fd-value">Caturra · Castillo</div></div>
+      <div class="farm-detail-card" role="listitem"><div class="fd-label">Proceso</div><div class="fd-value">Lavado húmedo</div></div>
+      <div class="farm-detail-card" role="listitem"><div class="fd-label">Secado</div><div class="fd-value">Cama africana 18–21 días</div></div>
+      <div class="farm-detail-card" role="listitem"><div class="fd-label">Cosecha</div><div class="fd-value">Sep – Dic 2024</div></div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
+      <span class="badge b-org" style="font-size:.75rem;padding:5px 12px">🌿 Orgánico certificado</span>
+      <span class="badge b-fair" style="font-size:.75rem;padding:5px 12px">⚖️ Fairtrade certificado</span>
+    </div>
+  </div>
+
+  <!-- Preparación -->
+  <div class="d-panel" id="dpanel-prep" role="tabpanel" aria-labelledby="dtab-prep">
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px">
+      <div style="padding:18px;background:#fff;border:1px solid rgba(55,38,23,.07);border-radius:var(--r-lg)">
+        <div style="font-size:28px;margin-bottom:10px">☕</div>
+        <div style="font-family:var(--font-display);font-size:1rem;font-weight:700;color:var(--espresso);margin-bottom:4px">Espresso</div>
+        <div style="font-size:.8125rem;color:var(--cafe-medio);line-height:1.6">18g · 36ml · 26–28s<br>Presión: 9 bar</div>
+      </div>
+      <div style="padding:18px;background:#fff;border:1px solid rgba(55,38,23,.07);border-radius:var(--r-lg)">
+        <div style="font-size:28px;margin-bottom:10px">🫖</div>
+        <div style="font-family:var(--font-display);font-size:1rem;font-weight:700;color:var(--espresso);margin-bottom:4px">Prensa francesa</div>
+        <div style="font-size:.8125rem;color:var(--cafe-medio);line-height:1.6">30g · 500ml agua 94°C<br>Infusión: 4 minutos</div>
+      </div>
+      <div style="padding:18px;background:#fff;border:1px solid rgba(55,38,23,.07);border-radius:var(--r-lg)">
+        <div style="font-size:28px;margin-bottom:10px">🌊</div>
+        <div style="font-family:var(--font-display);font-size:1rem;font-weight:700;color:var(--espresso);margin-bottom:4px">Pour over V60</div>
+        <div style="font-size:.8125rem;color:var(--cafe-medio);line-height:1.6">15g · 250ml · 2:30–3:00<br>Agua: 92°C</div>
+      </div>
+      <div style="padding:18px;background:#fff;border:1px solid rgba(55,38,23,.07);border-radius:var(--r-lg)">
+        <div style="font-size:28px;margin-bottom:10px">❄️</div>
+        <div style="font-family:var(--font-display);font-size:1rem;font-weight:700;color:var(--espresso);margin-bottom:4px">Cold brew</div>
+        <div style="font-size:.8125rem;color:var(--cafe-medio);line-height:1.6">80g · 1L agua fría<br>Infusión: 12–16 horas</div>
+      </div>
+    </div>
+    <p class="desc-text" style="margin-top:20px">💡 <strong>Recomendación:</strong> Este café brilla en preparaciones de filtro como V60 o Chemex, donde la acidez brillante y las notas frutales se aprecian con mayor claridad. Para espresso, reduce ligeramente la temperatura a 91°C.</p>
+  </div>
+</section>
+
+<!-- ══════ REVIEWS ══════ -->
+<section class="reviews-section" id="reviews-section" aria-label="Reseñas del producto">
+  <div class="section-header-row">
+    <div>
+      <div class="section-eyebrow">Opiniones verificadas</div>
+      <h2 class="section-title">Reseñas de compradores</h2>
+    </div>
+    <button class="btn-add-cart" style="padding:10px 20px;font-size:.875rem" onclick="openReviewModal()" aria-label="Escribir mi reseña">
+      ★ Escribir reseña
+    </button>
+  </div>
+
+  <!-- Resumen -->
+  <div class="reviews-summary" aria-label="Resumen de calificaciones">
+    <div class="summary-score">
+      <div class="summary-big-num" aria-label="Calificación promedio 4.9">4.9</div>
+      <div class="summary-stars" aria-label="4.9 de 5 estrellas">★★★★★</div>
+      <div class="summary-total">Basado en 128 reseñas</div>
+    </div>
+    <div class="summary-bars" role="list" aria-label="Distribución de calificaciones">
+      <div class="bar-row" role="listitem" aria-label="5 estrellas: 98 reseñas">
+        <span class="bar-lbl">5</span>
+        <div class="bar-track"><div class="bar-fill" style="width:76%"></div></div>
+        <span class="bar-count">98</span>
+      </div>
+      <div class="bar-row" role="listitem" aria-label="4 estrellas: 21 reseñas">
+        <span class="bar-lbl">4</span>
+        <div class="bar-track"><div class="bar-fill" style="width:16%"></div></div>
+        <span class="bar-count">21</span>
+      </div>
+      <div class="bar-row" role="listitem" aria-label="3 estrellas: 6 reseñas">
+        <span class="bar-lbl">3</span>
+        <div class="bar-track"><div class="bar-fill" style="width:5%"></div></div>
+        <span class="bar-count">6</span>
+      </div>
+      <div class="bar-row" role="listitem" aria-label="2 estrellas: 2 reseñas">
+        <span class="bar-lbl">2</span>
+        <div class="bar-track"><div class="bar-fill" style="width:2%"></div></div>
+        <span class="bar-count">2</span>
+      </div>
+      <div class="bar-row" role="listitem" aria-label="1 estrella: 1 reseña">
+        <span class="bar-lbl">1</span>
+        <div class="bar-track"><div class="bar-fill" style="width:1%"></div></div>
+        <span class="bar-count">1</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista de reseñas -->
+  <div class="reviews-list" id="reviewsList" aria-label="Lista de reseñas" role="list"></div>
+
+  <!-- CTA reseña -->
+  <div class="review-cta" role="complementary" aria-label="Invitación a escribir reseña">
+    <div class="review-cta-title">¿Ya probaste este café?</div>
+    <div class="review-cta-sub">Tu opinión ayuda a otros compradores a elegir mejor</div>
+    <button class="btn-write-review" onclick="openReviewModal()" aria-label="Compartir mi opinión">Compartir mi opinión</button>
+  </div>
+</section>
+
+<!-- ══════ SUGGESTIONS ══════ -->
+<section class="suggestions-section" aria-label="Otros cafés que te podrían gustar">
+  <div class="section-header-row">
+    <div>
+      <div class="section-eyebrow">También te puede gustar</div>
+      <h2 class="section-title">Más cafés de origen</h2>
+    </div>
+    <a href="landing_marketplace_cafe.html" class="btn-nav-ghost" style="padding:9px 20px;border-color:rgba(55,38,23,.25);color:var(--espresso);">Ver todo el catálogo</a>
+  </div>
+  <div class="suggestions-grid" id="suggestionsGrid" role="list" aria-label="Productos sugeridos"></div>
+</section>
+
+</div><!-- /page-max -->
+
+<!-- ── Mobile sticky CTA ── -->
+<div class="mobile-cta" aria-label="Acciones rápidas" id="mobileCta">
+  <div class="mobile-price-show">$48.000</div>
+  <button class="btn-add-cart" style="flex:1;padding:12px" onclick="handleAddCart()" aria-label="Agregar al carrito desde acceso rápido">+ Carrito</button>
+  <button class="btn-buy-now" style="flex:2;padding:12px" onclick="handleBuyNow()" aria-label="Comprar ahora desde acceso rápido"><span>Comprar ahora</span></button>
+</div>
+
+<!-- Footer -->
+<footer class="footer" role="contentinfo">
+  <div class="footer-inner">
+    <div class="footer-logo">☕ World Coffee Marketplace</div>
+    <div class="footer-copy">© 2025 WCMP · UNAB · Todos los derechos reservados</div>
+  </div>
+</footer>
+
+<!-- Modal reseña -->
+<div class="modal-overlay" id="reviewModal" role="dialog" aria-modal="true" aria-labelledby="reviewModalTitle" aria-hidden="true">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="reviewModalTitle">Calificar producto</div>
+        <div class="modal-sub">Café Especial Huila — Finca La Esperanza</div>
+      </div>
+      <button class="btn-close-modal" onclick="closeReviewModal()" aria-label="Cerrar formulario">✕</button>
+    </div>
+    <div class="stars-selector" role="group" aria-label="Selecciona tu calificación de 1 a 5 estrellas">
+      <button class="star-btn" onclick="setRating(1)" aria-label="1 estrella">★</button>
+      <button class="star-btn" onclick="setRating(2)" aria-label="2 estrellas">★</button>
+      <button class="star-btn" onclick="setRating(3)" aria-label="3 estrellas">★</button>
+      <button class="star-btn" onclick="setRating(4)" aria-label="4 estrellas">★</button>
+      <button class="star-btn" onclick="setRating(5)" aria-label="5 estrellas">★</button>
+    </div>
+    <label for="reviewTextarea" class="sr-only">Tu comentario (opcional)</label>
+    <textarea class="review-textarea" id="reviewTextarea" placeholder="Cuéntanos sobre el sabor, el aroma, la preparación..." maxlength="500" oninput="updateCharCount()"></textarea>
+    <div class="char-count"><span id="charCount">0</span>/500 caracteres</div>
+    <div class="modal-footer">
+      <button class="btn-modal-cancel" onclick="closeReviewModal()">Cancelar</button>
+      <button class="btn-modal-submit" onclick="submitReview()">Publicar reseña</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap" aria-live="polite" aria-atomic="false"></div>
+
+<script>
+/* ════════════════════════════
+   ESTADO
+════════════════════════════ */
+let qty=1, maxQty=18, wishlistActive=false, reviewRating=0;
+let cartCount=0;
+const PRICES={'250g':26000,'500g':48000,'1kg':90000};
+let selectedSize='500g';
+
+/* ════════════════════════════
+   GALERÍA
+════════════════════════════ */
+function changeThumb(el,emoji){
+  document.querySelectorAll('.thumb').forEach(t=>{t.classList.remove('active');t.setAttribute('aria-pressed','false')});
+  el.classList.add('active');el.setAttribute('aria-pressed','true');
+  const main=document.getElementById('mainEmoji');
+  main.style.transform='scale(.8)';main.style.opacity='0';main.style.transition='all .2s';
+  setTimeout(()=>{main.textContent=emoji;main.style.transform='scale(1)';main.style.opacity='1'},200);
+}
+
+/* ════════════════════════════
+   OPCIONES
+════════════════════════════ */
+function selectSize(btn,size,price,unit){
+  document.querySelectorAll('.opt-chip:not(.disabled)').forEach(b=>{b.classList.remove('selected');b.setAttribute('aria-pressed','false')});
+  btn.classList.add('selected');btn.setAttribute('aria-pressed','true');
+  selectedSize=size;
+  const p=PRICES[size]||parseInt(price.replace(/\D/g,''));
+  document.getElementById('priceDisplay').textContent='$'+p.toLocaleString('es-CO');
+  document.getElementById('priceUnit').textContent='/ '+unit;
+  document.querySelector('.mobile-cta .mobile-price-show').textContent='$'+p.toLocaleString('es-CO');
+  updateQtyTotal();
+}
+
+function selectRoast(el){
+  document.querySelectorAll('.roast-chip').forEach(c=>{c.classList.remove('selected');c.setAttribute('aria-checked','false')});
+  el.classList.add('selected');el.setAttribute('aria-checked','true');
+  showToast(`Tostado "${el.querySelector('.roast-name').textContent}" seleccionado`,'info');
+}
+
+/* ════════════════════════════
+   CANTIDAD
+════════════════════════════ */
+function changeQty(d){
+  qty=Math.max(1,Math.min(maxQty,qty+d));
+  document.getElementById('qtyVal').textContent=qty;
+  document.getElementById('qtyVal').setAttribute('aria-label','Cantidad: '+qty);
+  document.getElementById('qtyMinus').disabled=qty<=1;
+  document.getElementById('qtyPlus').disabled=qty>=maxQty;
+  updateQtyTotal();
+}
+function updateQtyTotal(){/* Could show subtotal */}
+
+/* ════════════════════════════
+   WISHLIST
+════════════════════════════ */
+function toggleWishlist(){
+  wishlistActive=!wishlistActive;
+  const w=document.getElementById('mainWishlist');
+  const wf=document.getElementById('wishlistFullBtn');
+  const wi=document.getElementById('wishlistFullIcon');
+  w.textContent=wishlistActive?'♥':'♡';
+  w.classList.toggle('active',wishlistActive);
+  w.setAttribute('aria-pressed',wishlistActive);
+  wi.textContent=wishlistActive?'♥':'♡';
+  wf.classList.toggle('active',wishlistActive);
+  wf.setAttribute('aria-pressed',wishlistActive);
+  showToast(wishlistActive?'♥ Agregado a favoritos':'Eliminado de favoritos',wishlistActive?'success':'info');
+}
+
+/* ════════════════════════════
+   CARRITO
+════════════════════════════ */
+function handleAddCart(){
+  const btn=document.getElementById('addCartBtn');
+  const lbl=document.getElementById('addCartLabel');
+  btn.disabled=true; lbl.textContent='Agregando...';
+  setTimeout(()=>{
+    cartCount+=qty;
+    updateCartBadge();
+    btn.classList.add('added'); lbl.textContent='✓ Agregado al carrito';
+    btn.disabled=false;
+    showToast(`☕ ${qty} × Café Especial Huila (${selectedSize}) agregado al carrito`,'success');
+    setTimeout(()=>{btn.classList.remove('added');lbl.textContent='Agregar al carrito'},3500);
+  },900);
+}
+
+function handleBuyNow(){
+  const btn=document.querySelector('.btn-buy-now');
+  const lbl=document.getElementById('buyNowLabel');
+  btn.disabled=true; lbl.textContent='Procesando...';
+  setTimeout(()=>{
+    btn.disabled=false; lbl.textContent='Comprar ahora';
+    showToast('Redirigiendo al pago seguro...','info');
+  },1200);
+}
+
+function updateCartBadge(){
+  const b=document.getElementById('cartBadge');
+  b.textContent=cartCount;
+  b.classList.toggle('show',cartCount>0);
+}
+
+function openCartPanel(){showToast('Abriendo carrito de compras...','info')}
+
+/* ════════════════════════════
+   DETAIL TABS
+════════════════════════════ */
+function switchDTab(name){
+  document.querySelectorAll('.d-tab').forEach(t=>{t.classList.remove('active');t.setAttribute('aria-selected','false')});
+  document.querySelectorAll('.d-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('dtab-'+name).classList.add('active');
+  document.getElementById('dtab-'+name).setAttribute('aria-selected','true');
+  document.getElementById('dpanel-'+name).classList.add('active');
+}
+
+/* ════════════════════════════
+   RESEÑAS — DATOS
+════════════════════════════ */
+const REVIEWS=[
+  {initials:'MG',name:'María García',date:'10 jun 2025',rating:5,text:'Increíble café. Las notas de chocolate y frutos rojos son muy pronunciadas. Lo preparo en V60 cada mañana y cada taza es una experiencia diferente. El envío llegó en 3 días bien empacado.',helpful:24,voted:false,verified:true},
+  {initials:'LT',name:'Luis Torres',date:'28 may 2025',rating:5,text:'Compré el de 1kg porque ya había probado el de 500g antes. La calidad es consistente, el nivel de tostado medio es perfecto para espresso. Sin duda el mejor café colombiano que he probado en un marketplace.',helpful:18,voted:false,verified:true},
+  {initials:'AR',name:'Ana Rodríguez',date:'15 may 2025',rating:4,text:'Muy buen café, la acidez es notable pero no agresiva. Lo tomé en prensa francesa y quedé muy satisfecha. Le quito una estrella porque el empaque no incluía válvula desgasificadora, pero el café en sí es excelente.',helpful:11,voted:false,verified:true},
+  {initials:'JM',name:'Jorge Mora',date:'3 may 2025',rating:5,text:'Trabajo en barismo y suelo ser muy exigente. Este café me sorprendió: la limpieza en taza es excepcional, el dulzor natural del Caturra es notorio y la acidez recuerda a maracuyá. Altamente recomendado para filtro.',helpful:31,voted:false,verified:true},
+  {initials:'SC',name:'Sofía Castro',date:'20 abr 2025',rating:5,text:'Mi tercer compra. El café de Finca La Esperanza tiene una consistencia admirable lote a lote. Esta vez lo preparé con cold brew y las notas frutales se acentúan muchísimo. Definitivamente fiel a esta marca.',helpful:9,voted:false,verified:true},
+];
+
+function renderReviews(){
+  document.getElementById('reviewsList').innerHTML=REVIEWS.map((r,i)=>`
+  <div class="review-card" id="rv-${i}" role="listitem" aria-label="Reseña de ${r.name}">
+    <div class="review-header">
+      <div class="reviewer-avatar" aria-hidden="true">${r.initials}</div>
+      <div class="reviewer-info">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+          <span class="reviewer-name">${r.name}</span>
+          ${r.verified?'<span class="review-badge">✓ Compra verificada</span>':''}
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:2px">
+          <div class="review-stars" aria-label="${r.rating} estrellas">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
+          <span class="reviewer-date">${r.date}</span>
+        </div>
+      </div>
+    </div>
+    <p class="review-text">${r.text}</p>
+    <div class="review-helpful">
+      <span style="font-size:.75rem;color:var(--cafe-medio)">¿Fue útil?</span>
+      <button class="btn-helpful ${r.voted?'voted':''}" onclick="voteHelpful(${i})" aria-label="Marcar como útil. ${r.helpful} personas la encontraron útil" aria-pressed="${r.voted}">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3H14z"/><path d="M7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3"/></svg>
+        Útil (<span id="helpful-${i}">${r.helpful}</span>)
+      </button>
+    </div>
+  </div>`).join('');
+}
+
+function voteHelpful(i){
+  const r=REVIEWS[i];
+  r.voted=!r.voted;
+  r.helpful+=r.voted?1:-1;
+  const btn=document.getElementById('rv-'+i).querySelector('.btn-helpful');
+  btn.classList.toggle('voted',r.voted);
+  btn.setAttribute('aria-pressed',r.voted);
+  document.getElementById('helpful-'+i).textContent=r.helpful;
+  if(r.voted) showToast('¡Gracias por tu valoración!','success');
+}
+
+/* ════════════════════════════
+   MODAL RESEÑA
+════════════════════════════ */
+function openReviewModal(){
+  document.getElementById('reviewModal').classList.add('open');
+  document.getElementById('reviewModal').setAttribute('aria-hidden','false');
+  setTimeout(()=>document.querySelector('.star-btn').focus(),100);
+}
+function closeReviewModal(){
+  document.getElementById('reviewModal').classList.remove('open');
+  document.getElementById('reviewModal').setAttribute('aria-hidden','true');
+  reviewRating=0;
+  document.querySelectorAll('.star-btn').forEach(b=>b.classList.remove('lit'));
+  document.getElementById('reviewTextarea').value='';
+  document.getElementById('charCount').textContent='0';
+}
+function setRating(val){
+  reviewRating=val;
+  document.querySelectorAll('.star-btn').forEach((b,i)=>b.classList.toggle('lit',i<val));
+}
+function updateCharCount(){document.getElementById('charCount').textContent=document.getElementById('reviewTextarea').value.length}
+function submitReview(){
+  if(!reviewRating){showToast('Selecciona una calificación','warning');return}
+  const text=document.getElementById('reviewTextarea').value.trim();
+  closeReviewModal();
+  REVIEWS.unshift({initials:'TÚ',name:'Tu reseña',date:'Hoy',rating:reviewRating,text:text||'¡Excelente producto!',helpful:0,voted:false,verified:true});
+  renderReviews();
+  showToast('✓ Tu reseña fue publicada. ¡Gracias!','success');
+}
+
+/* ════════════════════════════
+   SUGERENCIAS
+════════════════════════════ */
+const SUGGESTIONS=[
+  {emoji:'🌸',name:'San Agustín Washed',producer:'Finca El Paraíso',region:'Huila',price:64000,unit:'500g',rating:5.0,reviews:42,certs:['b-org','b-fair'],bg:'rgba(220,60,60,.05)',added:false},
+  {emoji:'🌿',name:'Nariño Supremo',producer:'Coop. Nariño Verde',region:'Nariño',price:52000,unit:'500g',rating:4.8,reviews:96,certs:['b-org','b-rain'],bg:'rgba(74,140,86,.07)',added:false},
+  {emoji:'✨',name:'Cauca Geisha',producer:'Hacienda La Divisa',region:'Cauca',price:98000,unit:'250g',rating:4.9,reviews:31,certs:['b-org'],bg:'rgba(192,120,32,.06)',added:false},
+  {emoji:'🏔️',name:'Blend Sierra Nevada',producer:'Sierra Nevada Farms',region:'Magdalena',price:38000,unit:'500g',rating:4.7,reviews:74,certs:['b-rain'],bg:'rgba(26,107,138,.06)',added:false},
+];
+const CERT_LABELS={'b-org':'Orgánico','b-fair':'Fairtrade','b-rain':'Rainforest'};
+
+function renderSuggestions(){
+  document.getElementById('suggestionsGrid').innerHTML=SUGGESTIONS.map((s,i)=>`
+  <div class="sug-card" role="listitem" aria-label="${s.name} — ${s.producer}" onclick="openProduct('${s.name}')">
+    <div class="sug-img" style="background:${s.bg}">
+      <div class="sug-img-bg"></div>
+      <div class="sug-emoji" aria-hidden="true">${s.emoji}</div>
+      <div class="sug-region" aria-hidden="true">📍 ${s.region}</div>
+      <div class="sug-badges" aria-label="Certificaciones">${s.certs.map(c=>`<span class="badge ${c}">${CERT_LABELS[c]}</span>`).join('')}</div>
+    </div>
+    <div class="sug-body">
+      <div class="sug-producer">${s.producer}</div>
+      <div class="sug-name">${s.name}</div>
+      <div class="sug-rating">
+        <div class="sug-stars" aria-label="${s.rating} estrellas">${'★'.repeat(Math.floor(s.rating))}</div>
+        <span class="sug-rating-val">${s.rating} (${s.reviews})</span>
+      </div>
+    </div>
+    <div class="sug-footer">
+      <div>
+        <div class="sug-price">$${s.price.toLocaleString('es-CO')}</div>
+        <div class="sug-price-unit">/${s.unit}</div>
+      </div>
+      <button class="btn-sug-add ${s.added?'added':''}" onclick="event.stopPropagation();addSugToCart(${i})" aria-label="Agregar ${s.name} al carrito">
+        ${s.added?'✓':'+'}
+      </button>
+    </div>
+  </div>`).join('');
+}
+
+function addSugToCart(i){
+  SUGGESTIONS[i].added=!SUGGESTIONS[i].added;
+  if(SUGGESTIONS[i].added){cartCount++;updateCartBadge();showToast(`☕ ${SUGGESTIONS[i].name} agregado al carrito`,'success')}
+  renderSuggestions();
+}
+function openProduct(name){showToast(`Abriendo: ${name}...`,'info')}
+
+/* ════════════════════════════
+   TOAST
+════════════════════════════ */
+function showToast(msg,type='info'){
+  const wrap=document.getElementById('toastWrap');
+  const el=document.createElement('div');
+  el.className=`toast-item t-${type}`;el.textContent=msg;el.setAttribute('role','status');
+  wrap.appendChild(el);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('show')));
+  setTimeout(()=>{el.classList.remove('show');setTimeout(()=>el.remove(),350)},3200);
+}
+
+/* ════════════════════════════
+   KEYBOARD / ESC
+════════════════════════════ */
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeReviewModal()});
+document.getElementById('reviewModal').addEventListener('click',function(e){if(e.target===this)closeReviewModal()});
+
+/* ════════════════════════════
+   INIT
+════════════════════════════ */
+renderReviews();
+renderSuggestions();
+// Animar barras de ratings al hacer scroll
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      entry.target.querySelectorAll('.bar-fill,.flavor-fill,.cup-attr-fill').forEach(el=>{
+        const w=el.style.width;el.style.width='0';
+        setTimeout(()=>{el.style.transition='width .8s cubic-bezier(.22,.68,0,1.1)';el.style.width=w},50);
+      });
+      observer.unobserve(entry.target);
+    }
+  });
+},{threshold:.2});
+document.querySelectorAll('.reviews-summary,.flavor-grid,.cupping-row').forEach(el=>observer.observe(el));
+</script>
+</body>
+</html>

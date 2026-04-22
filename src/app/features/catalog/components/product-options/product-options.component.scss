@@ -1,0 +1,96 @@
+.opts-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  & + .opts-section {
+    margin-top: 20px;
+  }
+}
+
+.opts-label {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--espresso, #372617);
+}
+
+/* Presentation chips */
+.chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 1.5px solid rgba(55, 38, 23, 0.2);
+  background: transparent;
+  font-size: 0.875rem;
+  color: var(--espresso, #372617);
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: var(--espresso, #372617);
+    background: rgba(55, 38, 23, 0.04);
+  }
+
+  &--active {
+    background: var(--espresso, #372617);
+    border-color: var(--espresso, #372617);
+    color: #fff;
+  }
+}
+
+/* Roast cards */
+.roast-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.roast-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 8px;
+  border-radius: 14px;
+  border: 2px solid rgba(55, 38, 23, 0.12);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: rgba(55, 38, 23, 0.35);
+    background: rgba(55, 38, 23, 0.03);
+    transform: translateY(-2px);
+  }
+
+  &--active {
+    border-color: var(--espresso, #372617);
+    background: rgba(55, 38, 23, 0.06);
+    box-shadow: 0 0 0 3px rgba(55, 38, 23, 0.12);
+  }
+}
+
+.roast-card__icon {
+  font-size: 1.5rem;
+}
+
+.roast-card__name {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--espresso, #372617);
+}
+
+.roast-card__sub {
+  font-size: 0.68rem;
+  color: #888;
+  text-align: center;
+  line-height: 1.3;
+}

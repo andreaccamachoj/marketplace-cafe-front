@@ -1,3 +1,32 @@
+export type Certification = 'ORGANIC' | 'FAIRTRADE' | 'RAINFOREST';
+
+export interface IRoastLevel {
+  id: string;
+  name: string;
+  icon: string;
+  sub: string;
+}
+
+export interface IFlavorNote {
+  icon: string;
+  name: string;
+  intensity: number; // 0–100
+}
+
+export interface ICuppingAttribute {
+  label: string;
+  value: number; // 0–10
+}
+
+export interface IFarmInfo {
+  name: string;
+  municipality: string;
+  department: string;
+  altitude: number; // msnm
+  area: number;     // hectáreas
+  process: string;  // lavado / natural / honey
+}
+
 export interface IProduct {
   id: string;
   name: string;
@@ -11,24 +40,25 @@ export interface IProduct {
   stock: number;
   maxStock?: number;
   images: string[];
-  certifications: ('ORGANIC' | 'FAIRTRADE' | 'RAINFOREST')[];
+  certifications: Certification[];
   region: string;
   emoji?: string;
   bg?: string;
+  // Detail-page fields (optional for backwards compat with card)
+  originalPrice?: number;
+  discountPercent?: number;
+  soldCount?: number;
+  presentationTypes?: string[];
+  roastLevels?: IRoastLevel[];
+  flavorNotes?: IFlavorNote[];
+  cuppingScore?: number;
+  cuppingAttributes?: ICuppingAttribute[];
+  farmInfo?: IFarmInfo;
 }
 
 export interface ICategory {
   id: string;
   name: string;
-}
-
-export interface IReview {
-  id: string;
-  productId: string;
-  author: string;
-  rating: number;
-  comment: string;
-  date: string;
 }
 
 export type SortBy = 'relevance' | 'price-asc' | 'price-desc' | 'rating' | 'newest';

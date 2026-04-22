@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { RouterModule } from '@angular/router';
 import { AuthService } from '@core/auth/services/auth.service';
 import { NotificationService } from '@core/services/notification.service';
 import { ILoginCredentials } from '@core/auth/models/auth-response.model';
@@ -9,18 +8,26 @@ import { LoginFormComponent } from '../../components/login-form/login-form.compo
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [RouterModule, BrandPanelComponent, LoginFormComponent],
+  imports: [BrandPanelComponent, LoginFormComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="auth-layout">
-      <div class="auth-layout__brand">
-        <app-brand-panel
-          title="World Coffee Marketplace"
-          subtitle="Conectando productores de café sostenible con compradores conscientes"
-        ></app-brand-panel>
-      </div>
+    <a href="#main-form" class="skip-link">Saltar al formulario de inicio de sesión</a>
 
-      <main class="auth-layout__form" id="main-content">
+    <!-- Barra de marca para móvil -->
+    <div class="mobile-brand-bar" role="banner">
+      <span class="mob-logo" aria-hidden="true">☕</span>
+      <div>
+        <div class="mob-name">World Coffee Marketplace</div>
+        <div class="mob-sub">Café sostenible · Colombia</div>
+      </div>
+    </div>
+
+    <div class="layout">
+      <!-- Panel de marca izquierdo -->
+      <app-brand-panel></app-brand-panel>
+
+      <!-- Panel formulario derecho -->
+      <main class="panel-form" id="main-form">
         <app-login-form
           [loading]="loading()"
           (submitted)="onSubmit($event)"
@@ -40,7 +47,6 @@ export class LoginComponent {
     this.loading.set(true);
     try {
       await this.auth.login(credentials);
-      this.notify.success('¡Bienvenido de vuelta!');
     } catch (err) {
       this.notify.error(err instanceof Error ? err.message : 'Error al iniciar sesión');
     } finally {

@@ -5,12 +5,12 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { AuthService } from '@core/auth/services/auth.service';
 import { NotificationService } from '@core/services/notification.service';
 import { IRegisterPayload } from '@core/auth/models/auth-response.model';
 import { BrandPanelComponent } from '@shared/layout/brand-panel/brand-panel.component';
+import { StepIndicatorComponent, IStep } from '@shared/ui/step-indicator/step-indicator.component';
 import { RoleSelectorComponent } from '../../components/role-selector/role-selector.component';
 import { PersonalDataStepComponent } from '../../components/personal-data-step/personal-data-step.component';
 import { RoleSpecificStepComponent } from '../../components/role-specific-step/role-specific-step.component';
@@ -20,9 +20,9 @@ import { RegisterFlowState, IPersonalData } from '../../services/register-flow.s
   selector: 'app-register',
   standalone: true,
   imports: [
-    CommonModule,
-    RouterModule,
+    RouterLink,
     BrandPanelComponent,
+    StepIndicatorComponent,
     RoleSelectorComponent,
     PersonalDataStepComponent,
     RoleSpecificStepComponent,
@@ -30,56 +30,96 @@ import { RegisterFlowState, IPersonalData } from '../../services/register-flow.s
   providers: [RegisterFlowState],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="auth-layout">
-      <div class="auth-layout__brand">
+    <!-- Skip link -->
+    <a href="#main-content" class="skip-link">Ir al formulario</a>
+
+    <!-- Mobile brand bar -->
+    <div class="mobile-brand-bar" aria-hidden="true">
+      <div class="mobile-brand-bar__logo">☕</div>
+      <span class="mobile-brand-bar__name">World Coffee Marketplace</span>
+    </div>
+
+    <div class="layout">
+
+      <!-- Left: brand panel -->
+      <div class="panel-brand" aria-hidden="true">
         <app-brand-panel
-          title="Únete a World Coffee"
-          subtitle="Crea tu cuenta y sé parte del cambio en el café colombiano"
-        ></app-brand-panel>
+          headlineHtml="Únete a la<br>comunidad <em>cafetera.</em>"
+          description="Crea tu cuenta y conecta con productores de café sostenible colombiano."
+        />
       </div>
 
-      <main class="auth-layout__form" id="main-content">
+      <!-- Right: form panel -->
+      <main class="panel-form" id="main-content">
         <div class="register-wrap">
-          <div class="register-steps">
-            <span class="register-steps__label">Paso {{ state.step() }} de 2</span>
-            <div class="register-steps__bar">
-              <div
-                class="register-steps__fill"
-                [style.width.%]="state.step() * 50"
-              ></div>
-            </div>
-          </div>
 
-          @if (state.step() === 1) {
-            <app-role-selector
-              [selected]="state.selectedRole()"
-              (roleSelected)="onRoleSelected($event)"
-            ></app-role-selector>
-            <div class="register-next">
-              <button type="button" class="btn-primary" (click)="state.next()">
-                Continuar →
-              </button>
+          <!-- Eyebrow + title -->
+          <header class="register-header">
+            <p class="register-eyebrow">Crear cuenta</p>
+            <h1 class="register-title">{{ stepTitle() }}</h1>
+            <p class="register-subtitle">{{ stepSubtitle() }}</p>
+          </header>
+
+          <!-- Step indicator -->
+          <app-step-indicator
+            [steps]="STEPS"
+            [currentStep]="currentStepIndex()"
+          />
+
+          <!-- Step 1: Role selector -->
+          @if (currentStepIndex() === 0) {
+            <div class="step-pane">
+              <app-role-selector
+                [selected]="state.selectedRole()"
+                (roleSelected)="onRoleSelected($event)"
+              />
+              <div class="register-nav register-nav--end">
+                <button
+                  type="button"
+                  class="btn-next"
+                  (click)="state.next()"
+                >
+                  <span>Continuar</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                  </svg>
+                </button>
+              </div>
             </div>
           }
 
-          @if (state.step() === 2) {
-            @if (!personalDataSaved()) {
+          <!-- Step 2: Personal data -->
+          @if (currentStepIndex() === 1) {
+            <div class="step-pane">
               <app-personal-data-step
                 (submitted)="onPersonalData($event)"
-              ></app-personal-data-step>
-            } @else {
+              />
+              <div class="register-nav register-nav--back">
+                <button type="button" class="btn-back" (click)="state.prev()">
+                  ← Atrás
+                </button>
+              </div>
+            </div>
+          }
+
+          <!-- Step 3: Role-specific data -->
+          @if (currentStepIndex() === 2) {
+            <div class="step-pane">
               <app-role-specific-step
                 [role]="state.selectedRole()"
                 (submitted)="onRoleData($event)"
                 (back)="personalDataSaved.set(false)"
-              ></app-role-specific-step>
-            }
+              />
+            </div>
           }
 
-          <p class="register-wrap__login">
+          <!-- Footer link -->
+          <p class="register-footer">
             ¿Ya tienes cuenta?
-            <a routerLink="/auth/login" class="register-wrap__login-link">Inicia sesión</a>
+            <a routerLink="/auth/login" class="register-footer__link">Inicia sesión</a>
           </p>
+
         </div>
       </main>
     </div>
@@ -88,11 +128,42 @@ import { RegisterFlowState, IPersonalData } from '../../services/register-flow.s
 })
 export class RegisterComponent {
   protected readonly state   = inject(RegisterFlowState);
-  private readonly auth      = inject(AuthService);
-  private readonly notify    = inject(NotificationService);
+  private  readonly auth     = inject(AuthService);
+  private  readonly notify   = inject(NotificationService);
 
-  protected readonly loading         = signal(false);
+  protected readonly loading           = signal(false);
   protected readonly personalDataSaved = signal(false);
+
+  /** 0 = role, 1 = personal data, 2 = role-specific */
+  protected readonly currentStepIndex = computed<number>(() => {
+    if (this.state.step() === 1) return 0;
+    if (this.state.step() === 2 && !this.personalDataSaved()) return 1;
+    return 2;
+  });
+
+  protected readonly STEPS: IStep[] = [
+    { label: 'Elige tu rol',      description: 'Tipo de cuenta' },
+    { label: 'Datos personales',  description: 'Tu información' },
+    { label: 'Perfil específico', description: 'Últimos detalles' },
+  ];
+
+  protected stepTitle(): string {
+    const titles = [
+      '¿Cómo deseas participar?',
+      'Tus datos personales',
+      this.state.selectedRole() === 'producer' ? 'Datos de tu finca' : 'Datos adicionales',
+    ];
+    return titles[this.currentStepIndex()] ?? '';
+  }
+
+  protected stepSubtitle(): string {
+    const subs = [
+      'Selecciona el tipo de cuenta que mejor describe tu actividad.',
+      'Completa tu perfil básico para continuar.',
+      'Casi listo — solo unos datos más para terminar.',
+    ];
+    return subs[this.currentStepIndex()] ?? '';
+  }
 
   protected onRoleSelected(role: 'buyer' | 'producer'): void {
     this.state.selectRole(role);
@@ -118,6 +189,7 @@ export class RegisterComponent {
       await this.auth.register(payload);
       this.notify.success('¡Cuenta creada exitosamente!');
       this.state.reset();
+      this.personalDataSaved.set(false);
     } catch (err) {
       this.notify.error(err instanceof Error ? err.message : 'Error al registrarse');
     } finally {
