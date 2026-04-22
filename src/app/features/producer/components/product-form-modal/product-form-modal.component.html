@@ -1,0 +1,211 @@
+<app-modal
+  [open]="open()"
+  [title]="modalTitle()"
+  size="lg"
+  (closed)="onClose()"
+>
+  <form
+    [formGroup]="form"
+    (ngSubmit)="onSubmit()"
+    [class.form--readonly]="isReadonly()"
+    novalidate
+  >
+    <div class="form-grid">
+
+      <!-- Nombre -->
+      <div class="form-field">
+        <label class="field-label" for="pf-name">Nombre del producto</label>
+        <input
+          id="pf-name"
+          class="field-input"
+          type="text"
+          formControlName="name"
+          placeholder="Ej. Café Especial Huila"
+          [class.field-input--error]="hasError(nameCtrl)"
+        />
+        @if (hasError(nameCtrl)) {
+          <span class="field-error" role="alert">{{ getError(nameCtrl) }}</span>
+        }
+      </div>
+
+      <!-- Origen -->
+      <div class="form-field">
+        <label class="field-label" for="pf-origin">Origen / Región</label>
+        <input
+          id="pf-origin"
+          class="field-input"
+          type="text"
+          formControlName="origin"
+          placeholder="Ej. Huila, Colombia"
+          [class.field-input--error]="hasError(originCtrl)"
+        />
+        @if (hasError(originCtrl)) {
+          <span class="field-error" role="alert">{{ getError(originCtrl) }}</span>
+        }
+      </div>
+
+      <!-- Categoría -->
+      <div class="form-field">
+        <label class="field-label" for="pf-category">Categoría</label>
+        <select
+          id="pf-category"
+          class="field-select"
+          formControlName="category"
+          [class.field-input--error]="hasError(categoryCtrl)"
+        >
+          <option value="" disabled>Seleccionar categoría</option>
+          <option value="Grano entero">Grano entero</option>
+          <option value="Molido">Molido</option>
+          <option value="Tostado oscuro">Tostado oscuro</option>
+          <option value="Tostado medio">Tostado medio</option>
+          <option value="Tostado claro">Tostado claro</option>
+          <option value="Descafeinado">Descafeinado</option>
+          <option value="Instantáneo">Instantáneo</option>
+        </select>
+        @if (hasError(categoryCtrl)) {
+          <span class="field-error" role="alert">{{ getError(categoryCtrl) }}</span>
+        }
+      </div>
+
+      <!-- Unidad -->
+      <div class="form-field">
+        <label class="field-label" for="pf-unit">Presentación</label>
+        <select
+          id="pf-unit"
+          class="field-select"
+          formControlName="unit"
+          [class.field-input--error]="hasError(unitCtrl)"
+        >
+          <option value="250g">250g</option>
+          <option value="500g">500g</option>
+          <option value="1kg">1 kg</option>
+          <option value="5kg">5 kg</option>
+          <option value="10kg">10 kg</option>
+          <option value="bolsa">Bolsa</option>
+        </select>
+        @if (hasError(unitCtrl)) {
+          <span class="field-error" role="alert">{{ getError(unitCtrl) }}</span>
+        }
+      </div>
+
+      <!-- Precio -->
+      <div class="form-field">
+        <label class="field-label" for="pf-price">Precio (COP)</label>
+        <input
+          id="pf-price"
+          class="field-input"
+          type="number"
+          formControlName="price"
+          placeholder="Ej. 48000"
+          min="1000"
+          max="10000000"
+          [class.field-input--error]="hasError(priceCtrl)"
+        />
+        @if (hasError(priceCtrl)) {
+          <span class="field-error" role="alert">{{ getError(priceCtrl) }}</span>
+        }
+      </div>
+
+      <!-- Stock -->
+      <div class="form-field">
+        <label class="field-label" for="pf-stock">Stock disponible</label>
+        <input
+          id="pf-stock"
+          class="field-input"
+          type="number"
+          formControlName="stock"
+          placeholder="Ej. 100"
+          min="0"
+          max="9999"
+          [class.field-input--error]="hasError(stockCtrl)"
+        />
+        @if (hasError(stockCtrl)) {
+          <span class="field-error" role="alert">{{ getError(stockCtrl) }}</span>
+        }
+      </div>
+
+      <!-- Estado -->
+      <div class="form-field">
+        <label class="field-label" for="pf-status">Estado</label>
+        <select
+          id="pf-status"
+          class="field-select"
+          formControlName="status"
+          [class.field-input--error]="hasError(statusCtrl)"
+        >
+          <option value="active">Activo</option>
+          <option value="inactive">Inactivo</option>
+          <option value="draft">Borrador</option>
+        </select>
+        @if (hasError(statusCtrl)) {
+          <span class="field-error" role="alert">{{ getError(statusCtrl) }}</span>
+        }
+      </div>
+
+      <!-- Certificaciones -->
+      <div class="form-field">
+        <span class="field-label">Certificaciones</span>
+        <div class="cert-checks">
+          <label class="check-label">
+            <input type="checkbox" formControlName="certOrganico" />
+            <span>Orgánico</span>
+          </label>
+          <label class="check-label">
+            <input type="checkbox" formControlName="certFairtrade" />
+            <span>Fair Trade</span>
+          </label>
+          <label class="check-label">
+            <input type="checkbox" formControlName="certRainforest" />
+            <span>Rainforest</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Descripción — full width -->
+      <div class="form-field form-field--full">
+        <label class="field-label" for="pf-desc">Descripción (opcional)</label>
+        <textarea
+          id="pf-desc"
+          class="field-textarea"
+          formControlName="description"
+          placeholder="Describe las características del producto, notas de sabor, proceso de tostión..."
+          rows="4"
+          [class.field-input--error]="hasError(descriptionCtrl)"
+        ></textarea>
+        @if (hasError(descriptionCtrl)) {
+          <span class="field-error" role="alert">{{ getError(descriptionCtrl) }}</span>
+        }
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="form-footer">
+      @if (!isViewMode()) {
+        <button
+          type="button"
+          class="btn-cancel"
+          (click)="onClose()"
+        >
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          class="btn-save"
+          [disabled]="form.invalid"
+        >
+          {{ submitLabel() }}
+        </button>
+      } @else {
+        <button
+          type="button"
+          class="btn-cancel"
+          (click)="onClose()"
+        >
+          Cerrar
+        </button>
+      }
+    </div>
+
+  </form>
+</app-modal>

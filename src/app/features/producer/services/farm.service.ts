@@ -1,5 +1,6 @@
-import { Injectable, signal } from '@angular/core';
-import { IFarm } from '../models/farm.model';
+import { Injectable, computed, signal } from '@angular/core';
+import { IFarm, IFarmCertification } from '../models/farm.model';
+import { ICertification } from '../models/certification.model';
 
 const SEED_FARM: IFarm = {
   id: 'f1',
@@ -62,4 +63,68 @@ export class FarmService {
   private readonly _farm = signal<IFarm>(SEED_FARM);
 
   readonly farm = this._farm.asReadonly();
+
+  readonly certifications = computed(() => this._farm().certifications ?? []);
+
+  updateFarm(data: Partial<IFarm>): void {
+    this._farm.update(f => ({ ...f, ...data }));
+  }
+
+  addCertification(cert: Omit<ICertification, 'id'>): void {
+    const id = 'cert-' + Date.now();
+    const farmCert: IFarmCertification = {
+      id,
+      icon:       this.certTypeToIcon(cert.type),
+      iconBg:     this.certTypeToIconBg(cert.type),
+      name:       cert.name,
+      body:       `${cert.issuer} · Vence ${this.formatDate(cert.expiryDate)}`,
+      validUntil: this.formatDate(cert.expiryDate),
+      status:     cert.status === 'vigente' ? 'valid' : 'expiring',
+    };
+    this._farm.update(f => ({
+      ...f,
+      certifications: [...(f.certifications ?? []), farmCert],
+    }));
+  }
+
+  removeCertification(id: string): void {
+    this._farm.update(f => ({
+      ...f,
+      certifications: (f.certifications ?? []).filter(c => c.id !== id),
+    }));
+  }
+
+  private certTypeToIcon(type: ICertification['type']): string {
+    const map: Record<ICertification['type'], string> = {
+      'organic':       '🌿',
+      'utz':           '✅',
+      'fair-trade':    '⚖️',
+      'rainforest':    '🌊',
+      'bird-friendly': '🐦',
+      'direct-trade':  '🤝',
+      'shade-grown':   '🌳',
+      'other':         '🏅',
+    };
+    return map[type];
+  }
+
+  private certTypeToIconBg(type: ICertification['type']): string {
+    const map: Record<ICertification['type'], string> = {
+      'organic':       'var(--verde-light)',
+      'utz':           'var(--verde-light)',
+      'fair-trade':    'var(--amber-light)',
+      'rainforest':    'var(--blue-light, #E0F2F8)',
+      'bird-friendly': 'var(--verde-light)',
+      'direct-trade':  'var(--marfil-light)',
+      'shade-grown':   'var(--verde-light)',
+      'other':         'var(--marfil-light)',
+    };
+    return map[type];
+  }
+
+  private formatDate(isoDate: string): string {
+    if (!isoDate) return '';
+    const d = new Date(isoDate);
+    return d.toLocaleDateString('es-CO', { month: 'short', year: 'numeric' });
+  }
 }

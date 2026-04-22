@@ -23,8 +23,9 @@ export class ProductTableRowComponent {
   readonly product = input.required<IManagedProduct>();
 
   readonly toggleStatus = output<string>();
-  readonly edit = output<string>();
-  readonly remove = output<string>();
+  readonly edit         = output<string>();
+  readonly view         = output<string>();
+  readonly remove       = output<string>();
 
   protected readonly statusLabel = computed(() => {
     const map: Record<ManagedProductStatus, string> = {
@@ -71,6 +72,10 @@ export class ProductTableRowComponent {
 
   protected onEdit(): void {
     this.edit.emit(this.product().id);
+  }
+
+  protected onView(): void {
+    this.view.emit(this.product().id);
   }
 
   protected onRemove(): void {

@@ -5,37 +5,40 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { AuthService } from '@core/auth/services/auth.service';
 import { NotificationService } from '@core/services/notification.service';
 import { DashboardNavComponent } from '@shared/layout/dashboard-nav/dashboard-nav.component';
-import { ModalComponent } from '@shared/ui/modal/modal.component';
-import { ProductFormComponent } from '@features/product-management/components/product-form/product-form.component';
 
 import { ProducerProductService } from '../../services/producer-product.service';
 import { ProducerOrderService } from '../../services/producer-order.service';
 import { FarmService } from '../../services/farm.service';
 import { ReceivedOrderStatus } from '../../models/received-order.model';
+import { IManagedProduct } from '../../models/managed-product.model';
+import { IFarm } from '../../models/farm.model';
+import { ICertification } from '../../models/certification.model';
 import { ProductTableRowComponent } from '../../components/product-table-row/product-table-row.component';
 import { ReceivedOrderRowComponent } from '../../components/received-order-row/received-order-row.component';
 import { FarmInfoCardComponent } from '../../components/farm-info-card/farm-info-card.component';
 import { CertificationListComponent } from '../../components/certification-list/certification-list.component';
 import { SalesMiniChartComponent } from '../../components/sales-mini-chart/sales-mini-chart.component';
+import { ProductFormModalComponent } from '../../components/product-form-modal/product-form-modal.component';
+import { FarmEditModalComponent } from '../../components/farm-edit-modal/farm-edit-modal.component';
+import { CertificationFormModalComponent } from '../../components/certification-form-modal/certification-form-modal.component';
 
 @Component({
   selector: 'app-producer-dashboard',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    RouterLink,
     DashboardNavComponent,
-    ModalComponent,
-    ProductFormComponent,
     ProductTableRowComponent,
     ReceivedOrderRowComponent,
     FarmInfoCardComponent,
     CertificationListComponent,
     SalesMiniChartComponent,
+    ProductFormModalComponent,
+    FarmEditModalComponent,
+    CertificationFormModalComponent,
   ],
   templateUrl: './producer-dashboard.component.html',
   styleUrl: './producer-dashboard.component.scss',
@@ -48,11 +51,21 @@ export class ProducerDashboardComponent {
   protected readonly farmSvc    = inject(FarmService);
 
   /* ── UI state ── */
-  readonly sidebarOpen    = signal(false);
-  readonly activeTab      = signal<'products' | 'orders' | 'farm'>('products');
-  readonly productFilter  = signal<'all' | 'active' | 'draft' | 'inactive'>('all');
-  readonly productSearch  = signal('');
-  readonly newProductOpen = signal(false);
+  readonly sidebarOpen   = signal(false);
+  readonly activeTab     = signal<'products' | 'orders' | 'farm'>('products');
+  readonly productFilter = signal<'all' | 'active' | 'draft' | 'inactive'>('all');
+  readonly productSearch = signal('');
+
+  /* ── Product modal state ── */
+  readonly productModalOpen = signal(false);
+  readonly productModalMode = signal<'create' | 'edit' | 'view'>('create');
+  readonly selectedProduct  = signal<IManagedProduct | null>(null);
+
+  /* ── Farm edit modal state ── */
+  readonly farmEditOpen = signal(false);
+
+  /* ── Certification modal state ── */
+  readonly certModalOpen = signal(false);
 
   /* ── User ── */
   protected readonly firstName = computed(() =>
@@ -96,20 +109,20 @@ export class ProducerDashboardComponent {
   readonly farm = this.farmSvc.farm;
 
   /* ── Stats (mock) ── */
-  readonly monthlySales        = signal(912000);
-  readonly avgRating           = signal(4.8);
-  readonly reviewCount         = signal(127);
+  readonly monthlySales  = signal(912000);
+  readonly avgRating     = signal(4.8);
+  readonly reviewCount   = signal(127);
 
   readonly monthlySalesFormatted = computed(() => {
     const v = this.monthlySales();
     if (v >= 1000000) return (v / 1000000).toFixed(1).replace('.', ',') + 'M';
-    if (v >= 1000) return (v / 1000).toFixed(0) + 'K';
+    if (v >= 1000)    return (v / 1000).toFixed(0) + 'K';
     return v.toLocaleString('es-CO');
   });
 
   readonly semesterSales = computed(() => '$5,4M');
 
-  /* ── Actions ── */
+  /* ── Actions: sidebar / tabs ── */
   toggleSidebar(): void {
     this.sidebarOpen.update(v => !v);
   }
@@ -118,13 +131,65 @@ export class ProducerDashboardComponent {
     this.activeTab.set(tab);
   }
 
+  onSearchInput(event: Event): void {
+    this.productSearch.set((event.target as HTMLInputElement).value);
+  }
+
+  logout(): void {
+    this.auth.logout();
+  }
+
+  /* ── Actions: product modal ── */
+  openCreateProduct(): void {
+    this.selectedProduct.set(null);
+    this.productModalMode.set('create');
+    this.productModalOpen.set(true);
+  }
+
+  openEditProduct(p: IManagedProduct): void {
+    this.selectedProduct.set(p);
+    this.productModalMode.set('edit');
+    this.productModalOpen.set(true);
+  }
+
+  openViewProduct(p: IManagedProduct): void {
+    this.selectedProduct.set(p);
+    this.productModalMode.set('view');
+    this.productModalOpen.set(true);
+  }
+
+  closeProductModal(): void {
+    this.productModalOpen.set(false);
+  }
+
+  handleSaveProduct(data: Partial<IManagedProduct>): void {
+    if (this.productModalMode() === 'create') {
+      this.productSvc.add(data);
+      this.notify.success('Producto creado correctamente.');
+    } else {
+      const current = this.selectedProduct();
+      if (current) {
+        this.productSvc.update(current.id, data);
+        this.notify.success('Producto actualizado correctamente.');
+      }
+    }
+    this.closeProductModal();
+  }
+
+  /* ── Actions: product table row ── */
   onToggleStatus(id: string): void {
     this.productSvc.toggleStatus(id);
     this.notify.success('Estado del producto actualizado.');
   }
 
-  onEditProduct(_id: string): void {
-    this.notify.info('Edición de producto — próximamente.');
+  onEditProduct(id: string): void {
+    const p = this.products().find(x => x.id === id);
+    if (p) this.openEditProduct(p);
+  }
+
+  onViewProduct(id: string): void {
+    const p = this.products().find(x => x.id === id);
+    if (p) this.openViewProduct(p);
   }
 
   onRemoveProduct(id: string): void {
@@ -132,21 +197,39 @@ export class ProducerDashboardComponent {
     this.notify.success('Producto eliminado.');
   }
 
+  /* ── Actions: orders ── */
   onOrderStatusChange(event: { id: string; status: ReceivedOrderStatus }): void {
     this.orderSvc.updateStatus(event.id, event.status);
     this.notify.success('Estado del pedido actualizado.');
   }
 
-  onNewProduct(_payload: unknown): void {
-    this.notify.success('Producto guardado (mock).');
-    this.newProductOpen.set(false);
+  /* ── Actions: farm modal ── */
+  openFarmEdit(): void {
+    this.farmEditOpen.set(true);
   }
 
-  onSearchInput(event: Event): void {
-    this.productSearch.set((event.target as HTMLInputElement).value);
+  closeFarmEdit(): void {
+    this.farmEditOpen.set(false);
   }
 
-  logout(): void {
-    this.auth.logout();
+  handleSaveFarm(data: Partial<IFarm>): void {
+    this.farmSvc.updateFarm(data);
+    this.notify.success('Información de la finca actualizada.');
+    this.closeFarmEdit();
+  }
+
+  /* ── Actions: certification modal ── */
+  openCertModal(): void {
+    this.certModalOpen.set(true);
+  }
+
+  closeCertModal(): void {
+    this.certModalOpen.set(false);
+  }
+
+  handleSaveCert(cert: Omit<ICertification, 'id'>): void {
+    this.farmSvc.addCertification(cert);
+    this.notify.success('Certificación agregada correctamente.');
+    this.closeCertModal();
   }
 }

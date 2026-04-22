@@ -102,6 +102,30 @@ export class ProducerProductService {
     () => this._products().filter(p => p.status === 'draft').length,
   );
 
+  add(data: Partial<IManagedProduct>): void {
+    const newProduct: IManagedProduct = {
+      id:             'pp-' + Date.now(),
+      emoji:          '🫘',
+      name:           data.name ?? 'Nuevo producto',
+      category:       data.category ?? '',
+      unit:           data.unit ?? '500g',
+      status:         data.status ?? 'draft',
+      price:          data.price ?? 0,
+      stock:          data.stock ?? 0,
+      certifications: data.certifications ?? [],
+      rating:         0,
+      reviewCount:    0,
+      salesCount:     0,
+    };
+    this._products.update(list => [...list, newProduct]);
+  }
+
+  update(id: string, data: Partial<IManagedProduct>): void {
+    this._products.update(list =>
+      list.map(p => (p.id === id ? { ...p, ...data } : p)),
+    );
+  }
+
   toggleStatus(id: string): void {
     this._products.update(list =>
       list.map(p => {
