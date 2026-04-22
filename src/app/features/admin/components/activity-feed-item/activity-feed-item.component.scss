@@ -1,0 +1,72 @@
+.feed-item {
+  display: flex;
+  gap: 12px;
+  position: relative;
+}
+
+.feed-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.feed-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  flex-shrink: 0;
+
+  &--info {
+    background: rgba(26, 107, 138, 0.12);
+  }
+
+  &--success {
+    background: rgba(30, 94, 41, 0.12);
+  }
+
+  &--warning {
+    background: rgba(192, 120, 32, 0.12);
+  }
+
+  &--danger {
+    background: rgba(139, 32, 32, 0.12);
+  }
+}
+
+.feed-connector {
+  width: 1.5px;
+  flex: 1;
+  background: rgba(55, 38, 23, 0.08);
+  margin-top: 4px;
+  min-height: 12px;
+}
+
+.feed-body {
+  flex: 1;
+  padding-bottom: 14px;
+}
+
+.feed-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--espresso);
+  line-height: 1.3;
+}
+
+.feed-desc {
+  font-size: 0.8125rem;
+  color: var(--cafe-medio);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+.feed-time {
+  font-size: 0.75rem;
+  color: var(--cafe-claro);
+  margin-top: 4px;
+}
