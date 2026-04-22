@@ -1,0 +1,41 @@
+:host {
+  --crema: #CDC4B5;
+
+  display: block;
+}
+
+.mini-chart {
+  display: flex;
+  gap: 4px;
+  align-items: flex-end;
+  height: 52px;
+  margin-top: 6px;
+}
+
+.bar-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+}
+
+.bar {
+  width: 100%;
+  border-radius: 4px 4px 0 0;
+  background: var(--crema);
+  transition: background .2s;
+  min-height: 4px;
+
+  &.active {
+    background: var(--verde-fresco, #4A8C56);
+  }
+}
+
+.bar-lbl {
+  font-size: .5625rem;
+  color: var(--cafe-medio, #7A5C42);
+  font-weight: 600;
+  letter-spacing: .04em;
+  font-family: var(--font-body, 'Mulish', sans-serif);
+}

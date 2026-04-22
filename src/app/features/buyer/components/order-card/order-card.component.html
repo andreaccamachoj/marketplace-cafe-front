@@ -1,0 +1,58 @@
+<div class="order-card" [class.show-progress]="expanded()">
+
+  <!-- Header -->
+  <div class="order-card-header">
+    <div class="order-num">#{{ order().number }}</div>
+    <div class="order-date">{{ order().date }}</div>
+    <div class="order-spacer"></div>
+    <span class="status-badge" [ngClass]="'status-' + order().status">
+      {{ getStatusLabel() }}
+    </span>
+    <div class="order-total">${{ order().total | number:'1.0-0' }}</div>
+  </div>
+
+  <!-- Items row -->
+  <div class="order-items-row">
+    @for (item of order().items; track item.productId) {
+      <div class="order-mini-item">
+        <span class="order-mini-emoji" aria-hidden="true">{{ item.emoji }}</span>
+        <div>
+          <div class="order-mini-name">{{ item.name }}</div>
+          <div class="order-mini-qty">x{{ item.qty }}</div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Footer -->
+  <div class="order-card-footer">
+    <div class="order-meta">
+      <span class="order-meta-item">📍 {{ order().address }}</span>
+    </div>
+    <div class="order-actions">
+      <button
+        class="btn-order-action btn-expand"
+        type="button"
+        (click)="onToggle()"
+        [attr.aria-expanded]="expanded()"
+      >
+        Ver detalle <span class="expand-arrow" aria-hidden="true">▼</span>
+      </button>
+      @if (order().status === 'delivered' && !order().reviewSubmitted) {
+        <button
+          class="btn-order-action btn-review"
+          type="button"
+          (click)="onReviewClick()"
+        >⭐ Dejar reseña</button>
+      }
+    </div>
+  </div>
+
+  <!-- Stepper (expanded) -->
+  @if (expanded()) {
+    <div class="order-progress" role="region" aria-label="Progreso del pedido">
+      <app-order-stepper [steps]="order().steps" />
+    </div>
+  }
+
+</div>

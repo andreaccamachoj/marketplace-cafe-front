@@ -1,0 +1,41 @@
+<div class="order-row">
+  <!-- N° Pedido -->
+  <div>
+    <div class="order-num-cell">{{ order().number }}</div>
+    <div class="order-date-cell">{{ order().date }}</div>
+  </div>
+
+  <!-- Comprador -->
+  <div class="buyer-cell">
+    <div class="buyer-avatar">{{ order().buyerInitials }}</div>
+    <div>
+      <div class="buyer-name">{{ order().buyerName }}</div>
+      <div class="buyer-city">{{ order().buyerCity }}</div>
+    </div>
+  </div>
+
+  <!-- Productos -->
+  <div class="order-items-cell">{{ itemsLabel() }}</div>
+
+  <!-- Total -->
+  <div class="order-amount">${{ order().total | number:'1.0-0' }}</div>
+
+  <!-- Estado -->
+  <div>
+    <select
+      [class]="statusSelectClass()"
+      [value]="order().status"
+      aria-label="Cambiar estado del pedido"
+      (change)="onStatusChange($event)"
+    >
+      @for (s of statusFlow; track s) {
+        <option [value]="s" [disabled]="isDisabled(s)">
+          {{ statusLabels[s] }}
+        </option>
+      }
+    </select>
+  </div>
+
+  <!-- Fecha (columna extra) -->
+  <div class="order-date-extra">{{ order().date }}</div>
+</div>

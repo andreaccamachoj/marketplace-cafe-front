@@ -1,0 +1,134 @@
+<!-- 1. Dirección de envío -->
+<div class="summary-card">
+  <div class="summary-head">
+    <div class="summary-head-title">📍 Dirección de envío</div>
+  </div>
+  <div class="summary-body">
+    @if (defaultAddress()) {
+      <div class="address-card">
+        <div class="address-icon">🏠</div>
+        <div class="address-info">
+          <div class="address-label">{{ defaultAddress()!.label }}</div>
+          <div class="address-line">{{ defaultAddress()!.line1 }}</div>
+          <div class="address-city">{{ defaultAddress()!.city }}</div>
+        </div>
+      </div>
+    } @else {
+      <p class="address-empty">No hay dirección configurada</p>
+    }
+    <button
+      class="btn-change-address"
+      type="button"
+      (click)="checkoutClick.emit()"
+    >Cambiar dirección</button>
+  </div>
+</div>
+
+<!-- 2. Método de envío -->
+<div class="summary-card">
+  <div class="summary-head">
+    <div class="summary-head-title">🚚 Método de envío</div>
+  </div>
+  <div class="summary-body">
+    <div class="shipping-opts">
+      @for (opt of shippingOptions; track opt.id) {
+        <div
+          class="shipping-opt"
+          [class.selected]="selectedShippingId() === opt.id"
+          (click)="shippingChange.emit(opt.id)"
+          role="radio"
+          [attr.aria-checked]="selectedShippingId() === opt.id"
+          tabindex="0"
+          (keydown.enter)="shippingChange.emit(opt.id)"
+          (keydown.space)="shippingChange.emit(opt.id)"
+        >
+          <div class="shipping-opt-radio">
+            <div class="radio-dot"></div>
+          </div>
+          <div class="shipping-opt-info">
+            <div class="shipping-opt-name">{{ opt.name }}</div>
+            <div class="shipping-opt-days">{{ opt.days }}</div>
+          </div>
+          <div class="shipping-opt-price">
+            @if (opt.price === 0) {
+              <span class="shipping-free">Gratis</span>
+            } @else {
+              <span>${{ opt.price | number:'1.0-0' }}</span>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+
+<!-- 3. Cupón de descuento -->
+<div class="summary-card">
+  <div class="summary-head">
+    <div class="summary-head-title">🏷 Cupón de descuento</div>
+  </div>
+  <div class="summary-body">
+    @if (couponCode()) {
+      <div class="coupon-applied">
+        <span class="coupon-badge">✓ Cupón aplicado: {{ couponCode() }}</span>
+      </div>
+    } @else {
+      <div class="coupon-row">
+        <input
+          class="coupon-input"
+          type="text"
+          placeholder="Código de cupón"
+          [value]="couponInput()"
+          (input)="onCouponInput($event)"
+          aria-label="Código de cupón de descuento"
+        />
+        <button
+          class="btn-apply-coupon"
+          type="button"
+          (click)="onApplyCoupon()"
+        >Aplicar</button>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- 4. Resumen del pedido -->
+<div class="summary-card">
+  <div class="summary-head">
+    <div class="summary-head-title">💰 Resumen del pedido</div>
+  </div>
+  <div class="summary-body">
+    <div class="summary-row">
+      <span class="summary-label">Subtotal ({{ itemCount() }} productos)</span>
+      <span class="summary-value">${{ subtotal() | number:'1.0-0' }}</span>
+    </div>
+    <div class="summary-row">
+      <span class="summary-label">Envío</span>
+      @if (shipping() > 0) {
+        <span class="summary-value">${{ shipping() | number:'1.0-0' }}</span>
+      } @else {
+        <span class="summary-value shipping-free-label">Gratis</span>
+      }
+    </div>
+    @if (discount() > 0) {
+      <div class="summary-row">
+        <span class="summary-label">Descuento</span>
+        <span class="summary-value discount-value">−${{ discount() | number:'1.0-0' }}</span>
+      </div>
+    }
+    <div class="summary-sep"></div>
+    <div class="summary-row">
+      <span class="summary-total-label">Total</span>
+      <span class="summary-total-value">${{ total() | number:'1.0-0' }}</span>
+    </div>
+  </div>
+
+  <button
+    class="btn-checkout"
+    type="button"
+    (click)="checkoutClick.emit()"
+  >
+    <span>Proceder al pago</span>
+  </button>
+  <div class="secure-note">🔒 Pago 100% seguro · SSL · PCI DSS</div>
+</div>

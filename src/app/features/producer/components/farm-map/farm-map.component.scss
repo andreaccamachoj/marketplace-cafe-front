@@ -1,0 +1,81 @@
+:host {
+  display: block;
+  margin-bottom: 16px;
+}
+
+.farm-map {
+  height: 200px;
+  background: linear-gradient(
+    145deg,
+    rgba(74, 140, 86, .12) 0%,
+    rgba(30, 94, 41, .08) 50%,
+    rgba(55, 38, 23, .05) 100%
+  );
+  border-radius: var(--r-md, 10px);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.farm-map-bg {
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 28px,
+      rgba(74, 140, 86, .06) 28px,
+      rgba(74, 140, 86, .06) 29px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 28px,
+      rgba(74, 140, 86, .06) 28px,
+      rgba(74, 140, 86, .06) 29px
+    );
+}
+
+.farm-map-pin {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.pin-circle {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--espresso, #372617);
+  border: 4px solid var(--marfil, #E4DCD1);
+  box-shadow: 0 4px 16px rgba(55, 38, 23, .35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  animation: pinBounce 2s ease-in-out infinite;
+}
+
+.pin-label {
+  background: var(--espresso, #372617);
+  color: var(--marfil, #E4DCD1);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: .6875rem;
+  font-weight: 800;
+  white-space: nowrap;
+  font-family: var(--font-body, 'Mulish', sans-serif);
+}
+
+@keyframes pinBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}

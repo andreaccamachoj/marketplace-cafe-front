@@ -1,0 +1,76 @@
+<div class="product-row">
+  <!-- Producto -->
+  <div class="pr-product">
+    <div class="pr-emoji">{{ product().emoji }}</div>
+    <div class="pr-info">
+      <div class="pr-name">{{ product().name }}</div>
+      <div class="pr-cat">{{ product().category }}</div>
+      <div class="pr-certs">
+        @if (hasOrganico()) {
+          <span class="badge b-org">Orgánico</span>
+        }
+        @if (hasFairtrade()) {
+          <span class="badge b-fair">Fair Trade</span>
+        }
+        @if (hasRainforest()) {
+          <span class="badge b-rain">Rainforest</span>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Categoría -->
+  <div class="pr-cat-col">{{ product().category }}</div>
+
+  <!-- Stock -->
+  <div class="pr-stock">
+    <span class="stock-num" [class]="stockClass()">{{ product().stock }}</span>
+    <span class="stock-unit">kg</span>
+  </div>
+
+  <!-- Precio -->
+  <div class="pr-price">
+    ${{ product().price | number:'1.0-0' }}
+    <span class="pr-price-unit">/kg</span>
+  </div>
+
+  <!-- Estado -->
+  <div>
+    <span class="status-pill" [class]="statusClass()">{{ statusLabel() }}</span>
+  </div>
+
+  <!-- Acciones -->
+  <div class="pr-actions">
+    <button
+      class="btn-row-action edit"
+      type="button"
+      title="Editar producto"
+      aria-label="Editar producto"
+      (click)="onEdit()"
+    >
+      ✏
+    </button>
+    <button
+      class="btn-row-action toggle-off"
+      type="button"
+      title="Cambiar estado"
+      aria-label="Cambiar estado del producto"
+      (click)="onToggle()"
+    >
+      @if (product().status === 'active') {
+        ⏸
+      } @else {
+        ▶
+      }
+    </button>
+    <button
+      class="btn-row-action del"
+      type="button"
+      title="Eliminar producto"
+      aria-label="Eliminar producto"
+      (click)="onRemove()"
+    >
+      🗑
+    </button>
+  </div>
+</div>

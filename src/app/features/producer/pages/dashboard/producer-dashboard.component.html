@@ -1,291 +1,334 @@
+<app-dashboard-nav [pageTitle]="'Panel del Productor'" (onMenuToggle)="toggleSidebar()" />
+
 <div class="page-layout">
 
-  <!-- Sidebar overlay (mobile) -->
-  <div
-    class="sidebar-overlay"
-    [ngClass]="{ visible: sidebarOpen() }"
-    (click)="toggleSidebar()"
-  ></div>
-
   <!-- Sidebar -->
-  <aside class="sidebar" [ngClass]="{ open: sidebarOpen() }">
+  <aside class="sidebar" [class.open]="sidebarOpen()">
 
-    <!-- Principal -->
+    <!-- Panel -->
     <div class="sidebar-section">
-      <span class="sidebar-label">Principal</span>
+      <span class="sidebar-label">Panel</span>
       <nav class="sidebar-nav">
         <button
-          [ngClass]="{ active: activeTab() === 'overview' }"
-          (click)="setTab('overview')"
-        >
-          <span>🏠</span>
-          <span>Dashboard</span>
-        </button>
-        <button
-          [ngClass]="{ active: activeTab() === 'products' }"
+          [class.active]="activeTab() === 'products'"
           (click)="setTab('products')"
         >
-          <span>📦</span>
-          <span>Mis Productos</span>
-          <span class="nav-pill green">{{ products().length }}</span>
+          🫘 Mis Productos
+          <span class="nav-pill green">{{ activeCount() }}</span>
         </button>
         <button
-          [ngClass]="{ active: activeTab() === 'orders' }"
+          [class.active]="activeTab() === 'orders'"
           (click)="setTab('orders')"
         >
-          <span>📋</span>
-          <span>Pedidos</span>
-          @if (pendingOrders() > 0) {
-            <span class="nav-pill">{{ pendingOrders() }}</span>
-          }
+          📋 Pedidos recibidos
+          <span class="nav-pill">{{ pendingCount() }}</span>
         </button>
-        <button (click)="showToast('Analíticas disponible próximamente.', 'info')">
-          <span>📊</span>
-          <span>Analíticas</span>
-        </button>
-        <button (click)="showToast('Perfil disponible próximamente.', 'info')">
-          <span>👤</span>
-          <span>Mi Perfil</span>
+        <button
+          [class.active]="activeTab() === 'farm'"
+          (click)="setTab('farm')"
+        >
+          🌿 Mi Finca
         </button>
       </nav>
     </div>
 
     <hr class="sidebar-sep" />
 
-    <!-- Bottom actions -->
+    <!-- Desempeño -->
+    <div class="sidebar-section">
+      <span class="sidebar-label">Desempeño</span>
+      <nav class="sidebar-nav">
+        <button (click)="notify.info('Próximamente')">📊 Estadísticas</button>
+        <button (click)="notify.info('Próximamente')">★ Mis reseñas</button>
+        <button (click)="notify.info('Próximamente')">💰 Ganancias</button>
+      </nav>
+    </div>
+
+    <hr class="sidebar-sep" />
+
+    <!-- Bottom -->
     <div class="sidebar-bottom">
       <nav class="sidebar-nav">
-        <a routerLink="/" class="sidebar-nav">
-          <span>🏪</span>
-          <span>Ir al catálogo</span>
-        </a>
-        <button (click)="showToast('Configuración disponible próximamente.', 'info')">
-          <span>⚙️</span>
-          <span>Configuración</span>
-        </button>
-        <button class="danger" (click)="logout()">
-          <span>🚪</span>
-          <span>Cerrar sesión</span>
-        </button>
+        <button (click)="notify.info('Próximamente')">⚙ Configuración</button>
+        <button class="danger" (click)="logout()">↩ Cerrar sesión</button>
       </nav>
     </div>
   </aside>
 
-  <!-- Main content -->
+  <div
+    class="sidebar-overlay"
+    [class.visible]="sidebarOpen()"
+    (click)="toggleSidebar()"
+  ></div>
+
   <main class="main-content">
-
-    <!-- Top nav -->
-    <app-dashboard-nav
-      pageTitle="Panel del Productor"
-      (onMenuToggle)="toggleSidebar()"
-    />
-
-    <!-- Page header -->
-    <div class="page-header">
-      <div>
-        <p class="page-eyebrow">Panel del Productor</p>
-        <h1 class="page-title">Bienvenido, {{ firstName() }}</h1>
-        <p class="page-subtitle">Gestiona tus productos, pedidos y analíticas desde aquí.</p>
-      </div>
-      <div class="header-actions">
-        <button class="btn-secondary" (click)="showToast('Exportar disponible próximamente.', 'info')">
-          📥 Exportar
-        </button>
-        <button class="btn-primary" (click)="showToast('Agregar producto disponible próximamente.', 'info')">
-          ＋ Nuevo Producto
-        </button>
-      </div>
-    </div>
 
     <!-- Stats row -->
     <div class="stats-row">
       <div class="stat-card">
-        <div class="stat-icon" style="background: rgba(55,38,23,.07)">📦</div>
-        <p class="stat-label">Productos activos</p>
-        <p class="stat-value">{{ activeProducts() }}</p>
-        <p class="stat-sub stat-up">+2 este mes</p>
+        <div class="stat-icon" style="background:rgba(55,38,23,.07)">🫘</div>
+        <div class="stat-label">Productos activos</div>
+        <div class="stat-value">{{ activeCount() }}</div>
+        <div class="stat-sub">
+          <span class="stat-up">{{ filteredProducts().length }} total</span>
+        </div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon" style="background: rgba(30,94,41,.1)">💰</div>
-        <p class="stat-label">Ventas del mes</p>
-        <p class="stat-value">$ {{ monthlySales() | number:'1.0-0' }}</p>
-        <p class="stat-sub stat-up">+18% vs anterior</p>
+        <div class="stat-icon" style="background:rgba(192,120,32,.1)">📦</div>
+        <div class="stat-label">Pedidos pendientes</div>
+        <div class="stat-value">{{ pendingCount() }}</div>
+        <div class="stat-sub">
+          <span class="stat-warn">por atender</span>
+        </div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon" style="background: rgba(192,120,32,.1)">📋</div>
-        <p class="stat-label">Pedidos pendientes</p>
-        <p class="stat-value">{{ pendingOrders() }}</p>
-        <p class="stat-sub stat-warn">Requieren atención</p>
+        <div class="stat-icon" style="background:rgba(30,94,41,.1)">💰</div>
+        <div class="stat-label">Ventas este mes</div>
+        <div class="stat-value">${{ monthlySales() | number:'1.0-0' }}</div>
+        <div class="stat-sub">
+          <span class="stat-up">↑ 18% vs anterior</span>
+        </div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon" style="background: rgba(192,120,32,.1)">⭐</div>
-        <p class="stat-label">Calificación promedio</p>
-        <p class="stat-value">{{ avgRating() }}<span style="font-size:.9375rem;color:var(--cafe-medio)">/5</span></p>
-        <p class="stat-sub">Basado en 47 reseñas</p>
+        <div class="stat-icon" style="background:rgba(192,120,32,.1)">★</div>
+        <div class="stat-label">Calificación</div>
+        <div class="stat-value">{{ avgRating() }}</div>
+        <div class="stat-sub">de 5 · {{ reviewCount() }} reseñas</div>
       </div>
     </div>
 
-    <!-- Tabs -->
-    <div class="tabs-row">
+    <!-- Tabs row -->
+    <div class="tabs-row" role="tablist">
       <button
         class="tab"
-        [ngClass]="{ active: activeTab() === 'overview' }"
-        (click)="setTab('overview')"
-      >
-        🏠 Dashboard
-      </button>
-      <button
-        class="tab"
-        [ngClass]="{ active: activeTab() === 'products' }"
+        role="tab"
+        [class.active]="activeTab() === 'products'"
+        [attr.aria-selected]="activeTab() === 'products'"
         (click)="setTab('products')"
       >
-        📦 Mis Productos
-        <span class="tab-count tc-green">{{ products().length }}</span>
+        🫘 Mis Productos
+        <span class="tab-count tc-espresso">{{ products().length }}</span>
       </button>
       <button
         class="tab"
-        [ngClass]="{ active: activeTab() === 'orders' }"
+        role="tab"
+        [class.active]="activeTab() === 'orders'"
+        [attr.aria-selected]="activeTab() === 'orders'"
         (click)="setTab('orders')"
       >
-        📋 Pedidos
+        📋 Pedidos recibidos
         <span class="tab-count tc-amber">{{ orders().length }}</span>
+      </button>
+      <button
+        class="tab"
+        role="tab"
+        [class.active]="activeTab() === 'farm'"
+        [attr.aria-selected]="activeTab() === 'farm'"
+        (click)="setTab('farm')"
+      >
+        🌿 Mi Finca
       </button>
     </div>
 
-    <!-- ─── Overview Tab ─── -->
-    @if (activeTab() === 'overview') {
-      <div class="overview-grid">
+    <!-- ── Tab: Mis Productos ── -->
+    @if (activeTab() === 'products') {
+      <div class="page-header">
+        <div>
+          <div class="page-eyebrow">Mi catálogo</div>
+          <h1 class="page-title">Mis Productos</h1>
+          <p class="page-subtitle">Gestiona tu inventario y precios</p>
+        </div>
+        <div class="header-actions">
+          <button
+            class="btn-primary"
+            type="button"
+            (click)="newProductOpen.set(true)"
+          >
+            + Nuevo Producto
+          </button>
+        </div>
+      </div>
 
-        <!-- Welcome card -->
-        <div class="info-card">
-          <p class="info-card-title">Estado de tu perfil</p>
-          @if (producerStatus() === 'approved') {
-            <span class="producer-status-badge ps-approved">✅ Perfil Aprobado</span>
-          } @else if (producerStatus() === 'pending') {
-            <span class="producer-status-badge ps-pending">⏳ En revisión</span>
-          } @else {
-            <span class="producer-status-badge ps-rejected">❌ Rechazado</span>
-          }
-          <p class="welcome-message" style="margin-top:14px">
-            Tu perfil de productor está activo en el marketplace. Los compradores pueden
-            descubrir tus productos y hacer pedidos directamente. Mantén tu inventario
-            actualizado para maximizar tus ventas.
-          </p>
+      <!-- Toolbar -->
+      <div class="products-toolbar">
+        <div class="toolbar-search">
+          <span class="toolbar-search-icon" aria-hidden="true">🔍</span>
+          <input
+            class="toolbar-search-input"
+            type="search"
+            placeholder="Buscar producto..."
+            [value]="productSearch()"
+            (input)="onSearchInput($event)"
+            aria-label="Buscar producto"
+          />
+        </div>
+        <div class="toolbar-filter">
+          <button
+            class="filter-chip"
+            [class.active]="productFilter() === 'all'"
+            (click)="productFilter.set('all')"
+          >
+            Todos
+          </button>
+          <button
+            class="filter-chip"
+            [class.active]="productFilter() === 'active'"
+            (click)="productFilter.set('active')"
+          >
+            Activos
+          </button>
+          <button
+            class="filter-chip"
+            [class.active]="productFilter() === 'draft'"
+            (click)="productFilter.set('draft')"
+          >
+            Borradores
+          </button>
+          <button
+            class="filter-chip"
+            [class.active]="productFilter() === 'inactive'"
+            (click)="productFilter.set('inactive')"
+          >
+            Inactivos
+          </button>
+        </div>
+      </div>
+
+      <!-- Tabla de productos -->
+      <div class="products-table-wrap">
+        <div class="table-header" aria-hidden="true">
+          <span class="th">Producto</span>
+          <span class="th">Categoría</span>
+          <span class="th">Stock</span>
+          <span class="th r">Precio</span>
+          <span class="th">Estado</span>
+          <span class="th r">Acciones</span>
         </div>
 
-        <!-- Quick summary card -->
-        <div class="info-card">
-          <p class="info-card-title">Resumen rápido</p>
-          <p class="welcome-message">
-            Este mes has vendido
-            <strong style="color:var(--espresso)">$ {{ monthlySales() | number:'1.0-0' }} COP</strong>
-            en {{ orders().length }} pedidos. Tienes
-            <strong style="color:var(--amber)">{{ pendingOrders() }} pedido(s) pendiente(s)</strong>
-            esperando tu atención. Tu calificación promedio es de
-            <strong style="color:var(--espresso)">{{ avgRating() }}/5 ⭐</strong>.
-          </p>
-          <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
-            <button class="btn-primary" (click)="setTab('orders')">Ver pedidos pendientes</button>
-            <button class="btn-secondary" (click)="setTab('products')">Gestionar productos</button>
+        @for (product of filteredProducts(); track product.id) {
+          <app-product-table-row
+            [product]="product"
+            (toggleStatus)="onToggleStatus($event)"
+            (edit)="onEditProduct($event)"
+            (remove)="onRemoveProduct($event)"
+          />
+        }
+
+        @if (filteredProducts().length === 0) {
+          <div class="empty-state">
+            <div class="empty-icon">🫘</div>
+            <div class="empty-title">Sin productos</div>
+            <div class="empty-desc">No hay productos con este filtro</div>
           </div>
-        </div>
+        }
       </div>
     }
 
-    <!-- ─── Products Tab ─── -->
-    @if (activeTab() === 'products') {
-      <div class="data-table-wrap">
-        <div class="data-table-header">
-          <span class="th">Producto</span>
-          <span class="th">Estado</span>
-          <span class="th">Precio</span>
-          <span class="th">Stock</span>
-          <span class="th">Acciones</span>
+    <!-- ── Tab: Pedidos recibidos ── -->
+    @if (activeTab() === 'orders') {
+      <div class="page-header">
+        <div>
+          <div class="page-eyebrow">Gestión</div>
+          <h1 class="page-title">Pedidos Recibidos</h1>
+          <p class="page-subtitle">Actualiza el estado de tus pedidos</p>
         </div>
-        @for (product of products(); track product.id) {
-          <div class="data-row">
-            <!-- Producto -->
-            <div class="row-product">
-              <div class="row-emoji">{{ product.emoji }}</div>
-              <div>
-                <p class="row-name">{{ product.name }}</p>
-                <p class="row-category">{{ product.category }}</p>
+      </div>
+
+      <div class="orders-table-wrap">
+        <div class="orders-table-head" aria-hidden="true">
+          <span class="th">N° Pedido</span>
+          <span class="th">Comprador</span>
+          <span class="th">Productos</span>
+          <span class="th r">Total</span>
+          <span class="th">Estado</span>
+          <span class="th">Fecha</span>
+        </div>
+
+        @for (order of orders(); track order.id) {
+          <app-received-order-row
+            [order]="order"
+            (statusChange)="onOrderStatusChange($event)"
+          />
+        }
+
+        @if (orders().length === 0) {
+          <div class="empty-state">
+            <div class="empty-icon">📋</div>
+            <div class="empty-title">Sin pedidos</div>
+            <div class="empty-desc">No tienes pedidos recibidos aún</div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- ── Tab: Mi Finca ── -->
+    @if (activeTab() === 'farm') {
+      <div class="page-header">
+        <div>
+          <div class="page-eyebrow">Mi producción</div>
+          <h1 class="page-title">Mi Finca</h1>
+          <p class="page-subtitle">
+            {{ farm().name }} · {{ farm().municipality }}, {{ farm().department }}
+          </p>
+        </div>
+      </div>
+
+      <div class="farm-layout">
+        <!-- Columna izquierda -->
+        <div>
+          <app-farm-info-card [farm]="farm()" />
+
+          <div class="farm-card" style="margin-top:16px">
+            <div class="farm-card-header">
+              <div class="farm-card-title">🏆 Certificaciones</div>
+            </div>
+            <div class="farm-card-body">
+              <app-certification-list [certifications]="farm().certifications" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Columna derecha -->
+        <div>
+          <app-farm-map [farmName]="farm().name" />
+
+          <div class="farm-sidebar-card">
+            <div class="fsb-head">
+              <div class="fsb-title">📈 Ventas por mes</div>
+            </div>
+            <div class="fsb-body">
+              <app-sales-mini-chart />
+
+              <div class="metric-row" style="margin-top:14px">
+                <span class="metric-label">Ingresos este mes</span>
+                <span class="metric-value green">${{ monthlySales() | number:'1.0-0' }}</span>
+              </div>
+              <div class="metric-row">
+                <span class="metric-label">Calificación promedio</span>
+                <span class="metric-value">{{ avgRating() }} ★</span>
+              </div>
+              <div class="metric-row">
+                <span class="metric-label">Total reseñas</span>
+                <span class="metric-value">{{ reviewCount() }}</span>
               </div>
             </div>
-            <!-- Estado -->
-            <div>
-              <span
-                class="product-badge"
-                [ngClass]="{
-                  'pb-active': product.status === 'active',
-                  'pb-inactive': product.status === 'inactive'
-                }"
-              >
-                {{ product.status === 'active' ? 'Activo' : 'Inactivo' }}
-              </span>
-            </div>
-            <!-- Precio -->
-            <p class="row-price">$ {{ product.price | number:'1.0-0' }}</p>
-            <!-- Stock -->
-            <p class="row-stock">{{ product.stock }} uds</p>
-            <!-- Acciones -->
-            <div class="row-actions">
-              <button
-                class="btn-action"
-                (click)="showToast('Editar producto disponible próximamente.', 'info')"
-              >
-                ✏️ Editar
-              </button>
-              <button
-                class="btn-action"
-                (click)="toggleProductStatus(product.id)"
-              >
-                {{ product.status === 'active' ? '⏸ Pausar' : '▶ Activar' }}
-              </button>
-            </div>
           </div>
-        }
-      </div>
-    }
-
-    <!-- ─── Orders Tab ─── -->
-    @if (activeTab() === 'orders') {
-      <div class="data-table-wrap">
-        <div class="orders-table-header">
-          <span class="th">Pedido</span>
-          <span class="th">Comprador</span>
-          <span class="th">Fecha</span>
-          <span class="th">Total</span>
-          <span class="th">Estado</span>
         </div>
-        @for (order of orders(); track order.id) {
-          <div class="orders-data-row">
-            <!-- Número -->
-            <p class="order-num">{{ order.number }}</p>
-            <!-- Comprador -->
-            <p class="buyer-name">{{ order.buyer }}</p>
-            <!-- Fecha -->
-            <p class="order-date">{{ order.date }}</p>
-            <!-- Total -->
-            <p class="order-total">$ {{ order.total | number:'1.0-0' }}</p>
-            <!-- Estado -->
-            <span
-              class="status-badge"
-              [ngClass]="{
-                'status-pending':   order.status === 'pending',
-                'status-preparing': order.status === 'preparing',
-                'status-shipped':   order.status === 'shipped',
-                'status-delivered': order.status === 'delivered'
-              }"
-            >
-              {{ order.status === 'pending'   ? 'Pendiente'  :
-                 order.status === 'preparing' ? 'Preparando' :
-                 order.status === 'shipped'   ? 'En camino'  : 'Entregado' }}
-            </span>
-          </div>
-        }
       </div>
     }
 
   </main>
 </div>
+
+<!-- Modal: nuevo producto -->
+<app-modal
+  title="Nuevo Producto"
+  [open]="newProductOpen()"
+  size="lg"
+  (closed)="newProductOpen.set(false)"
+>
+  <app-product-form
+    (save)="onNewProduct($event)"
+    (formCancel)="newProductOpen.set(false)"
+  />
+</app-modal>

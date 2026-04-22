@@ -7,189 +7,81 @@ import {
 } from '@angular/core';
 import { DecimalPipe, NgClass } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { Router } from '@angular/router';
 import { AuthService } from '@core/auth/services/auth.service';
 import { NotificationService } from '@core/services/notification.service';
 import { DashboardNavComponent } from '@shared/layout/dashboard-nav/dashboard-nav.component';
-
-/* ── Interfaces ── */
-export interface ICartItem {
-  id: string;
-  name: string;
-  producer: string;
-  price: number;
-  qty: number;
-  emoji: string;
-  organic: boolean;
-  fairTrade: boolean;
-}
-
-export interface IOrderStep {
-  label: string;
-  done: boolean;
-  active: boolean;
-}
-
-export interface IOrderItem {
-  name: string;
-  qty: number;
-  emoji: string;
-}
-
-export interface IOrder {
-  id: string;
-  number: string;
-  date: string;
-  status: 'confirmed' | 'preparing' | 'shipped' | 'delivered' | 'cancelled';
-  statusLabel: string;
-  total: number;
-  address: string;
-  items: IOrderItem[];
-  steps: IOrderStep[];
-}
-
-export interface IOrderFilter {
-  label: string;
-  value: string;
-}
-
-/* ── Seed data ── */
-const INITIAL_CART_ITEMS: ICartItem[] = [
-  {
-    id: 'c1',
-    name: 'Geisha Washed',
-    producer: 'Finca La Esperanza',
-    price: 58000,
-    qty: 2,
-    emoji: '☕',
-    organic: true,
-    fairTrade: true,
-  },
-  {
-    id: 'c2',
-    name: 'Tabi Natural',
-    producer: 'Café del Huila',
-    price: 42000,
-    qty: 1,
-    emoji: '🫘',
-    organic: false,
-    fairTrade: true,
-  },
-  {
-    id: 'c3',
-    name: 'Caturra Honey',
-    producer: 'Sierra Nevada Beans',
-    price: 36000,
-    qty: 3,
-    emoji: '🌿',
-    organic: true,
-    fairTrade: false,
-  },
-];
-
-const MOCK_ORDERS: IOrder[] = [
-  {
-    id: 'o1',
-    number: 'WCM-2025-001',
-    date: '15 abr 2025',
-    status: 'shipped',
-    statusLabel: 'En camino',
-    total: 134000,
-    address: 'Calle 72 #10-45, Bogotá',
-    items: [
-      { name: 'Geisha Washed', qty: 1, emoji: '☕' },
-      { name: 'Tabi Natural', qty: 2, emoji: '🫘' },
-    ],
-    steps: [
-      { label: 'Confirmado', done: true,  active: false },
-      { label: 'Preparando', done: true,  active: false },
-      { label: 'En camino',  done: false, active: true  },
-      { label: 'Entregado',  done: false, active: false },
-    ],
-  },
-  {
-    id: 'o2',
-    number: 'WCM-2025-002',
-    date: '10 abr 2025',
-    status: 'preparing',
-    statusLabel: 'Preparando',
-    total: 72000,
-    address: 'Carrera 15 #88-20, Bogotá',
-    items: [
-      { name: 'Caturra Honey', qty: 2, emoji: '🌿' },
-    ],
-    steps: [
-      { label: 'Confirmado', done: true,  active: false },
-      { label: 'Preparando', done: false, active: true  },
-      { label: 'En camino',  done: false, active: false },
-      { label: 'Entregado',  done: false, active: false },
-    ],
-  },
-  {
-    id: 'o3',
-    number: 'WCM-2025-003',
-    date: '02 abr 2025',
-    status: 'delivered',
-    statusLabel: 'Entregado',
-    total: 96000,
-    address: 'Av. El Dorado #69-76, Bogotá',
-    items: [
-      { name: 'Geisha Washed', qty: 1, emoji: '☕' },
-      { name: 'Tabi Natural',  qty: 1, emoji: '🫘' },
-    ],
-    steps: [
-      { label: 'Confirmado', done: true, active: false },
-      { label: 'Preparando', done: true, active: false },
-      { label: 'En camino',  done: true, active: false },
-      { label: 'Entregado',  done: true, active: false },
-    ],
-  },
-];
+import { CartService } from '../../services/cart.service';
+import { OrderService } from '../../services/order.service';
+import { AddressService } from '../../services/address.service';
+import { CartItemRowComponent } from '../../components/cart-item-row/cart-item-row.component';
+import { CartSummaryComponent } from '../../components/cart-summary/cart-summary.component';
+import { OrderCardComponent } from '../../components/order-card/order-card.component';
+import { ReviewModalComponent } from '../../components/review-modal/review-modal.component';
 
 @Component({
   selector: 'app-buyer-dashboard',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgClass, DecimalPipe, RouterLink, DashboardNavComponent],
+  imports: [
+    NgClass,
+    DecimalPipe,
+    RouterLink,
+    DashboardNavComponent,
+    CartItemRowComponent,
+    CartSummaryComponent,
+    OrderCardComponent,
+    ReviewModalComponent,
+  ],
   templateUrl: './buyer-dashboard.component.html',
   styleUrl: './buyer-dashboard.component.scss',
 })
 export class BuyerDashboardComponent {
-  protected readonly auth   = inject(AuthService);
-  protected readonly notify = inject(NotificationService);
-  protected readonly router = inject(Router);
+  protected readonly auth     = inject(AuthService);
+  protected readonly notify   = inject(NotificationService);
+  protected readonly cartSvc  = inject(CartService);
+  protected readonly orderSvc = inject(OrderService);
+  protected readonly addrSvc  = inject(AddressService);
 
   /* ── UI state ── */
-  readonly sidebarOpen   = signal(false);
-  readonly activeTab     = signal<'cart' | 'orders'>('cart');
-  readonly orderFilter   = signal<string>('all');
-  readonly expandedOrder = signal<string | null>(null);
+  readonly sidebarOpen     = signal(false);
+  readonly activeTab       = signal<'cart' | 'orders'>('cart');
+  readonly orderFilter     = signal<string>('all');
+  readonly expandedOrder   = signal<string | null>(null);
+  readonly reviewModalOpen = signal(false);
+  readonly reviewOrderId   = signal<string | null>(null);
 
   /* ── User ── */
   protected readonly firstName = computed(() =>
     this.auth.currentUser()?.fullName.split(' ')[0] ?? 'Usuario',
   );
 
-  /* ── Cart state ── */
-  readonly cartItems = signal<ICartItem[]>(INITIAL_CART_ITEMS);
+  /* ── Cart (from service) ── */
+  readonly cartItems          = this.cartSvc.items;
+  readonly cartCount          = this.cartSvc.count;
+  readonly cartTotal          = this.cartSvc.total;
+  readonly cartSubtotal       = this.cartSvc.subtotal;
+  readonly cartShipping       = this.cartSvc.shipping;
+  readonly cartDiscount       = this.cartSvc.discount;
+  readonly selectedShippingId = this.cartSvc.shippingOptionId;
+  readonly appliedCoupon      = this.cartSvc.couponCode;
 
-  readonly cartCount = computed(() =>
-    this.cartItems().reduce((sum, i) => sum + i.qty, 0),
+  /* ── Address ── */
+  readonly defaultAddress = this.addrSvc.defaultAddress;
+
+  /* ── Orders (from service) ── */
+  readonly orders = this.orderSvc.orders;
+
+  readonly activeOrdersCount = computed(() =>
+    this.orders().filter(
+      o => o.status === 'confirmed' || o.status === 'preparing' || o.status === 'shipped',
+    ).length,
   );
 
-  readonly cartTotal = computed(() =>
-    this.cartItems().reduce((sum, i) => sum + i.price * i.qty, 0),
+  readonly deliveredCount = computed(() =>
+    this.orders().filter(o => o.status === 'delivered').length,
   );
 
-  /* ── Order stats ── */
-  readonly activeOrders    = signal(2);
-  readonly deliveredOrders = signal(8);
-  readonly favoritesCount  = signal(5);
-
-  /* ── Orders ── */
-  readonly orders = signal<IOrder[]>(MOCK_ORDERS);
-
-  readonly orderFilters: IOrderFilter[] = [
+  readonly orderFilters = [
     { label: 'Todos',       value: 'all'       },
     { label: 'En camino',   value: 'shipped'   },
     { label: 'Preparando',  value: 'preparing' },
@@ -199,9 +91,22 @@ export class BuyerDashboardComponent {
 
   readonly filteredOrders = computed(() => {
     const filter = this.orderFilter();
-    if (filter === 'all') return this.orders();
-    return this.orders().filter(o => o.status === filter);
+    return filter === 'all'
+      ? this.orders()
+      : this.orders().filter(o => o.status === filter);
   });
+
+  /* ── Review modal target ── */
+  protected readonly reviewOrder = computed(() => {
+    const id = this.reviewOrderId();
+    return id ? this.orderSvc.getById(id) : undefined;
+  });
+
+  protected reviewProductName(): string {
+    const order = this.reviewOrder();
+    if (!order || order.items.length === 0) return '';
+    return order.items[0]?.name ?? '';
+  }
 
   /* ── Actions ── */
   toggleSidebar(): void {
@@ -217,27 +122,58 @@ export class BuyerDashboardComponent {
     this.orderFilter.set(filter);
   }
 
+  onItemRemove(id: string): void {
+    this.cartSvc.remove(id);
+  }
+
+  onQtyChange(event: { id: string; qty: number }): void {
+    this.cartSvc.updateQty(event.id, event.qty);
+  }
+
+  onShippingChange(optionId: string): void {
+    this.cartSvc.selectShipping(optionId);
+  }
+
+  onCouponApply(code: string): void {
+    const ok = this.cartSvc.applyCoupon(code);
+    if (ok) {
+      this.notify.success('Cupón aplicado: 10% de descuento');
+    } else {
+      this.notify.error('Cupón inválido o expirado');
+    }
+  }
+
+  onCheckout(): void {
+    this.notify.info('Checkout — próximamente');
+  }
+
   toggleOrder(id: string): void {
-    this.expandedOrder.update(current => (current === id ? null : id));
+    this.expandedOrder.update(v => (v === id ? null : id));
   }
 
-  increaseQty(id: string): void {
-    this.cartItems.update(items =>
-      items.map(i => (i.id === id ? { ...i, qty: i.qty + 1 } : i)),
-    );
+  openReview(orderId: string): void {
+    this.reviewOrderId.set(orderId);
+    this.reviewModalOpen.set(true);
   }
 
-  decreaseQty(id: string): void {
-    this.cartItems.update(items =>
-      items.map(i => (i.id === id && i.qty > 1 ? { ...i, qty: i.qty - 1 } : i)),
-    );
+  closeReview(): void {
+    this.reviewModalOpen.set(false);
+    this.reviewOrderId.set(null);
   }
 
-  removeItem(id: string): void {
-    this.cartItems.update(items => items.filter(i => i.id !== id));
+  onReviewSubmit(data: { rating: number; comment: string }): void {
+    const orderId = this.reviewOrderId();
+    if (!orderId) return;
+    this.orderSvc.markReviewSubmitted(orderId);
+    this.notify.success(`Reseña enviada (${data.rating}★). ¡Gracias!`);
+    this.closeReview();
   }
 
-  showToast(msg: string, type: 'info' | 'success' | 'error'): void {
+  logout(): void {
+    this.auth.logout();
+  }
+
+  protected showToast(msg: string, type: 'info' | 'success' | 'error'): void {
     if (type === 'success') {
       this.notify.success(msg);
     } else if (type === 'error') {
@@ -245,9 +181,5 @@ export class BuyerDashboardComponent {
     } else {
       this.notify.info(msg);
     }
-  }
-
-  logout(): void {
-    this.auth.logout();
   }
 }

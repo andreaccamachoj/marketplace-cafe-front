@@ -5,122 +5,58 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { DecimalPipe, NgClass } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '@core/auth/services/auth.service';
 import { NotificationService } from '@core/services/notification.service';
 import { DashboardNavComponent } from '@shared/layout/dashboard-nav/dashboard-nav.component';
+import { ModalComponent } from '@shared/ui/modal/modal.component';
+import { ProductFormComponent } from '@features/product-management/components/product-form/product-form.component';
 
-/* ── Interfaces ── */
-export interface IProducerProduct {
-  id: string;
-  emoji: string;
-  name: string;
-  category: string;
-  status: 'active' | 'inactive';
-  price: number;
-  stock: number;
-}
-
-export interface IProducerOrder {
-  id: string;
-  number: string;
-  buyer: string;
-  date: string;
-  total: number;
-  status: 'pending' | 'preparing' | 'shipped' | 'delivered';
-}
-
-/* ── Seed data ── */
-const INITIAL_PRODUCTS: IProducerProduct[] = [
-  {
-    id: 'p1',
-    emoji: '☕',
-    name: 'Geisha Washed',
-    category: 'Especial',
-    status: 'active',
-    price: 58000,
-    stock: 35,
-  },
-  {
-    id: 'p2',
-    emoji: '🫘',
-    name: 'Tabi Natural',
-    category: 'Microlote',
-    status: 'active',
-    price: 42000,
-    stock: 60,
-  },
-  {
-    id: 'p3',
-    emoji: '🌿',
-    name: 'Caturra Honey',
-    category: 'Honey Process',
-    status: 'active',
-    price: 36000,
-    stock: 80,
-  },
-  {
-    id: 'p4',
-    emoji: '🍂',
-    name: 'Bourbon Natural',
-    category: 'Natural',
-    status: 'inactive',
-    price: 29000,
-    stock: 0,
-  },
-];
-
-const INITIAL_ORDERS: IProducerOrder[] = [
-  {
-    id: 'o1',
-    number: 'WCM-2025-041',
-    buyer: 'Ana García',
-    date: '18 abr 2025',
-    total: 116000,
-    status: 'pending',
-  },
-  {
-    id: 'o2',
-    number: 'WCM-2025-039',
-    buyer: 'Luis Torres',
-    date: '16 abr 2025',
-    total: 84000,
-    status: 'preparing',
-  },
-  {
-    id: 'o3',
-    number: 'WCM-2025-035',
-    buyer: 'Marta López',
-    date: '12 abr 2025',
-    total: 58000,
-    status: 'shipped',
-  },
-  {
-    id: 'o4',
-    number: 'WCM-2025-030',
-    buyer: 'Diego Rojas',
-    date: '05 abr 2025',
-    total: 72000,
-    status: 'delivered',
-  },
-];
+import { ProducerProductService } from '../../services/producer-product.service';
+import { ProducerOrderService } from '../../services/producer-order.service';
+import { FarmService } from '../../services/farm.service';
+import { ReceivedOrderStatus } from '../../models/received-order.model';
+import { ProductTableRowComponent } from '../../components/product-table-row/product-table-row.component';
+import { ReceivedOrderRowComponent } from '../../components/received-order-row/received-order-row.component';
+import { FarmInfoCardComponent } from '../../components/farm-info-card/farm-info-card.component';
+import { FarmMapComponent } from '../../components/farm-map/farm-map.component';
+import { CertificationListComponent } from '../../components/certification-list/certification-list.component';
+import { SalesMiniChartComponent } from '../../components/sales-mini-chart/sales-mini-chart.component';
 
 @Component({
   selector: 'app-producer-dashboard',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgClass, DecimalPipe, RouterLink, DashboardNavComponent],
+  imports: [
+    DecimalPipe,
+    RouterLink,
+    DashboardNavComponent,
+    ModalComponent,
+    ProductFormComponent,
+    ProductTableRowComponent,
+    ReceivedOrderRowComponent,
+    FarmInfoCardComponent,
+    FarmMapComponent,
+    CertificationListComponent,
+    SalesMiniChartComponent,
+  ],
   templateUrl: './producer-dashboard.component.html',
   styleUrl: './producer-dashboard.component.scss',
 })
 export class ProducerDashboardComponent {
-  protected readonly auth   = inject(AuthService);
-  protected readonly notify = inject(NotificationService);
+  protected readonly auth       = inject(AuthService);
+  protected readonly notify     = inject(NotificationService);
+  protected readonly productSvc = inject(ProducerProductService);
+  protected readonly orderSvc   = inject(ProducerOrderService);
+  protected readonly farmSvc    = inject(FarmService);
 
   /* ── UI state ── */
-  readonly sidebarOpen = signal(false);
-  readonly activeTab   = signal<'overview' | 'products' | 'orders'>('overview');
+  readonly sidebarOpen    = signal(false);
+  readonly activeTab      = signal<'products' | 'orders' | 'farm'>('products');
+  readonly productFilter  = signal<'all' | 'active' | 'draft' | 'inactive'>('all');
+  readonly productSearch  = signal('');
+  readonly newProductOpen = signal(false);
 
   /* ── User ── */
   protected readonly firstName = computed(() =>
@@ -131,49 +67,73 @@ export class ProducerDashboardComponent {
     this.auth.currentUser()?.producerStatus ?? 'pending',
   );
 
-  /* ── Stats ── */
-  readonly activeProducts = signal(12);
-  readonly monthlySales   = signal(4850000);
-  readonly pendingOrders  = signal(3);
-  readonly avgRating      = signal(4.8);
+  /* ── Products from service ── */
+  readonly products    = this.productSvc.products;
+  readonly activeCount = this.productSvc.activeCount;
 
-  /* ── Data ── */
-  readonly products = signal<IProducerProduct[]>(INITIAL_PRODUCTS);
-  readonly orders   = signal<IProducerOrder[]>(INITIAL_ORDERS);
+  readonly filteredProducts = computed(() => {
+    const filter = this.productFilter();
+    const search = this.productSearch().toLowerCase();
+    return this.products()
+      .filter(p => filter === 'all' || p.status === filter)
+      .filter(
+        p =>
+          !search ||
+          p.name.toLowerCase().includes(search) ||
+          p.category.toLowerCase().includes(search),
+      );
+  });
+
+  /* ── Orders from service ── */
+  readonly orders       = this.orderSvc.orders;
+  readonly pendingCount = this.orderSvc.pendingCount;
+
+  /* ── Farm from service ── */
+  readonly farm = this.farmSvc.farm;
+
+  /* ── Stats (mock) ── */
+  readonly monthlySales = signal(912000);
+  readonly avgRating    = signal(4.8);
+  readonly reviewCount  = signal(127);
 
   /* ── Actions ── */
   toggleSidebar(): void {
     this.sidebarOpen.update(v => !v);
   }
 
-  setTab(tab: 'overview' | 'products' | 'orders'): void {
+  setTab(tab: 'products' | 'orders' | 'farm'): void {
     this.activeTab.set(tab);
+  }
+
+  onToggleStatus(id: string): void {
+    this.productSvc.toggleStatus(id);
+    this.notify.success('Estado del producto actualizado.');
+  }
+
+  onEditProduct(_id: string): void {
+    this.notify.info('Edición de producto — próximamente.');
+  }
+
+  onRemoveProduct(id: string): void {
+    this.productSvc.remove(id);
+    this.notify.success('Producto eliminado.');
+  }
+
+  onOrderStatusChange(event: { id: string; status: ReceivedOrderStatus }): void {
+    this.orderSvc.updateStatus(event.id, event.status);
+    this.notify.success('Estado del pedido actualizado.');
+  }
+
+  onNewProduct(_payload: unknown): void {
+    this.notify.success('Producto guardado (mock).');
+    this.newProductOpen.set(false);
+  }
+
+  onSearchInput(event: Event): void {
+    this.productSearch.set((event.target as HTMLInputElement).value);
   }
 
   logout(): void {
     this.auth.logout();
-  }
-
-  showToast(msg: string, type: 'info' | 'success' | 'error'): void {
-    if (type === 'success') {
-      this.notify.success(msg);
-    } else if (type === 'error') {
-      this.notify.error(msg);
-    } else {
-      this.notify.info(msg);
-    }
-  }
-
-  toggleProductStatus(id: string): void {
-    this.products.update(list =>
-      list.map(p =>
-        p.id === id
-          ? { ...p, status: p.status === 'active' ? 'inactive' : 'active' }
-          : p,
-      ),
-    );
-    const product = this.products().find(p => p.id === id);
-    const label = product?.status === 'active' ? 'activado' : 'desactivado';
-    this.showToast(`Producto ${label} correctamente.`, 'success');
   }
 }

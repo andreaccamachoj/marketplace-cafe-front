@@ -1,10 +1,11 @@
 import {
-  Component, inject, signal, computed, ChangeDetectionStrategy,
+  Component, inject, computed, signal, ChangeDetectionStrategy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IProduct, SortBy, CatalogFilter } from '../../models/product.model';
 import { ProductService } from '../../services/product.service';
-import { LandingNavbarComponent } from '../../components/landing-navbar/landing-navbar.component';
+import { CartService } from '@features/buyer/services/cart.service';
+import { LandingNavbarComponent } from '@shared/layout/landing-navbar/landing-navbar.component';
 import { HeroSectionComponent } from '../../components/hero-section/hero-section.component';
 import { FiltersBarComponent } from '../../components/filters-bar/filters-bar.component';
 import { ProductGridComponent } from '../../components/product-grid/product-grid.component';
@@ -31,7 +32,6 @@ import { FooterComponent } from '@shared/layout/footer/footer.component';
 
     <!-- Navbar pública -->
     <app-landing-navbar
-      [cartCount]="cartCount()"
       (searchChange)="onSearchChange($event)"
     ></app-landing-navbar>
 
@@ -71,12 +71,12 @@ import { FooterComponent } from '@shared/layout/footer/footer.component';
 })
 export class HomeComponent {
   private readonly productService = inject(ProductService);
+  private readonly cartService    = inject(CartService);
 
   protected readonly selectedCategory = signal<string | null>(null);
   protected readonly selectedCerts    = signal<string[]>([]);
   protected readonly sortBy           = signal<SortBy>('relevance');
   protected readonly searchQuery      = signal<string>('');
-  protected readonly cartCount        = signal<number>(0);
 
   protected readonly products = computed<IProduct[]>(() => {
     const filter: CatalogFilter = {
@@ -94,12 +94,21 @@ export class HomeComponent {
   protected onSearchChange(q: string): void            { this.searchQuery.set(q); }
 
   protected onAddToCart(product: IProduct): void {
-    this.cartCount.update(n => n + 1);
-    // TODO: conectar con CartService en Fase 6
+    this.cartService.add({
+      id:       product.id,
+      productId: product.id,
+      name:     product.name,
+      producer: product.producerName,
+      price:    product.price,
+      emoji:    product.emoji ?? '☕',
+      organic:  product.certifications.includes('ORGANIC'),
+      fairTrade: product.certifications.includes('FAIRTRADE'),
+      maxStock: product.maxStock ?? product.stock,
+    });
   }
 
   protected onToggleFavorite(_id: string): void {
-    // TODO: conectar con FavoritesService en Fase 6
+    // TODO: conectar con FavoritesService en Fase 9
   }
 
   protected scrollToCatalog(): void {
