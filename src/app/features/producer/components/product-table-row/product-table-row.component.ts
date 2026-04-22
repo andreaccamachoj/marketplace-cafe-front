@@ -5,7 +5,7 @@ import {
   input,
   output,
 } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
+import { DecimalPipe, NgClass } from '@angular/common';
 import {
   IManagedProduct,
   ManagedProductStatus,
@@ -15,7 +15,7 @@ import {
   selector: 'app-product-table-row',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DecimalPipe],
+  imports: [DecimalPipe, NgClass],
   templateUrl: './product-table-row.component.html',
   styleUrl: './product-table-row.component.scss',
 })
@@ -49,6 +49,20 @@ export class ProductTableRowComponent {
     if (stock === 0) return 'stock-crit';
     if (stock < 10) return 'stock-warn';
     return '';
+  });
+
+  protected readonly stockUnit = computed(() => {
+    const stock = this.product().stock;
+    if (stock === 0) return 'Agotado';
+    if (stock < 10) return 'Stock crítico';
+    return this.product().unit;
+  });
+
+  protected readonly starsHtml = computed(() => {
+    const r = this.product().rating;
+    if (!r) return '';
+    const full = Math.floor(r);
+    return '★'.repeat(full) + '☆'.repeat(5 - full);
   });
 
   protected onToggle(): void {

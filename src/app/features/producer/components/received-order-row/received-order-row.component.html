@@ -5,23 +5,24 @@
     <div class="order-date-cell">{{ order().date }}</div>
   </div>
 
-  <!-- Comprador -->
-  <div class="buyer-cell">
-    <div class="buyer-avatar">{{ order().buyerInitials }}</div>
-    <div>
-      <div class="buyer-name">{{ order().buyerName }}</div>
-      <div class="buyer-city">{{ order().buyerCity }}</div>
+  <!-- Comprador y productos -->
+  <div>
+    <div class="buyer-cell">
+      <div class="buyer-avatar">{{ order().buyerInitials }}</div>
+      <div>
+        <div class="buyer-name">{{ order().buyerName }}</div>
+        <div class="buyer-city">{{ order().buyerCity }}</div>
+      </div>
+    </div>
+    <div class="order-items-cell">
+      @for (item of order().items; track item.name; let last = $last) {
+        {{ item.emoji }} {{ item.name }} ×{{ item.qty }}{{ last ? '' : ' · ' }}
+      }
     </div>
   </div>
 
-  <!-- Productos -->
-  <div class="order-items-cell">{{ itemsLabel() }}</div>
-
-  <!-- Total -->
-  <div class="order-amount">${{ order().total | number:'1.0-0' }}</div>
-
   <!-- Estado -->
-  <div>
+  <div style="text-align:center">
     <select
       [class]="statusSelectClass()"
       [value]="order().status"
@@ -36,6 +37,21 @@
     </select>
   </div>
 
-  <!-- Fecha (columna extra) -->
-  <div class="order-date-extra">{{ order().date }}</div>
+  <!-- Total -->
+  <div class="order-amount">${{ order().total | number:'1.0-0' }}</div>
+
+  <!-- Envío -->
+  <div class="order-shipping">{{ order().shipping }}</div>
+
+  <!-- Acciones -->
+  <div class="order-actions">
+    <button
+      class="btn-row-action"
+      type="button"
+      title="Ver detalle del pedido"
+      aria-label="Ver detalle del pedido"
+    >
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+    </button>
+  </div>
 </div>

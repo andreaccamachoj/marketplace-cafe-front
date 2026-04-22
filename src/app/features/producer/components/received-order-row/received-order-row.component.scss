@@ -8,7 +8,7 @@
 .order-row {
   display: grid;
   grid-template-columns: 130px 1fr 120px 100px 110px 90px;
-  align-items: center;
+  align-items: start;
   padding: 14px 20px;
   border-bottom: 1px solid rgba(55, 38, 23, .045);
   transition: background .15s;
@@ -67,9 +67,10 @@
 }
 
 .order-items-cell {
-  font-size: .8125rem;
+  font-size: .75rem;
   color: var(--cafe-medio, #7A5C42);
   font-weight: 500;
+  margin-top: 4px;
 }
 
 .order-amount {
@@ -80,9 +81,34 @@
   text-align: right;
 }
 
-.order-date-extra {
-  font-size: .75rem;
+.order-shipping {
+  font-size: .8125rem;
   color: var(--cafe-medio, #7A5C42);
+  font-weight: 500;
+}
+
+.order-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-row-action {
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--cafe-medio, #7A5C42);
+  transition: all .15s;
+  background: none;
+  border: none;
+  cursor: pointer;
+
+  &:hover {
+    background: #E0F2F8;
+    color: #1A6B8A;
+  }
 }
 
 /* Status select */

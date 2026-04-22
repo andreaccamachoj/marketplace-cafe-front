@@ -29,5 +29,6 @@ export interface IReceivedOrder {
   date: string;
   items: IReceivedOrderItem[];
   total: number;
+  shipping: string;
   status: ReceivedOrderStatus;
 }

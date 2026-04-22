@@ -5,7 +5,6 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '@core/auth/services/auth.service';
 import { NotificationService } from '@core/services/notification.service';
@@ -20,7 +19,6 @@ import { ReceivedOrderStatus } from '../../models/received-order.model';
 import { ProductTableRowComponent } from '../../components/product-table-row/product-table-row.component';
 import { ReceivedOrderRowComponent } from '../../components/received-order-row/received-order-row.component';
 import { FarmInfoCardComponent } from '../../components/farm-info-card/farm-info-card.component';
-import { FarmMapComponent } from '../../components/farm-map/farm-map.component';
 import { CertificationListComponent } from '../../components/certification-list/certification-list.component';
 import { SalesMiniChartComponent } from '../../components/sales-mini-chart/sales-mini-chart.component';
 
@@ -29,7 +27,6 @@ import { SalesMiniChartComponent } from '../../components/sales-mini-chart/sales
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    DecimalPipe,
     RouterLink,
     DashboardNavComponent,
     ModalComponent,
@@ -37,7 +34,6 @@ import { SalesMiniChartComponent } from '../../components/sales-mini-chart/sales
     ProductTableRowComponent,
     ReceivedOrderRowComponent,
     FarmInfoCardComponent,
-    FarmMapComponent,
     CertificationListComponent,
     SalesMiniChartComponent,
   ],
@@ -71,6 +67,10 @@ export class ProducerDashboardComponent {
   readonly products    = this.productSvc.products;
   readonly activeCount = this.productSvc.activeCount;
 
+  readonly draftCount = computed(
+    () => this.products().filter(p => p.status === 'draft').length,
+  );
+
   readonly filteredProducts = computed(() => {
     const filter = this.productFilter();
     const search = this.productSearch().toLowerCase();
@@ -88,13 +88,26 @@ export class ProducerDashboardComponent {
   readonly orders       = this.orderSvc.orders;
   readonly pendingCount = this.orderSvc.pendingCount;
 
+  readonly preparingCount = computed(
+    () => this.orders().filter(o => o.status === 'confirmed' || o.status === 'preparing').length,
+  );
+
   /* ── Farm from service ── */
   readonly farm = this.farmSvc.farm;
 
   /* ── Stats (mock) ── */
-  readonly monthlySales = signal(912000);
-  readonly avgRating    = signal(4.8);
-  readonly reviewCount  = signal(127);
+  readonly monthlySales        = signal(912000);
+  readonly avgRating           = signal(4.8);
+  readonly reviewCount         = signal(127);
+
+  readonly monthlySalesFormatted = computed(() => {
+    const v = this.monthlySales();
+    if (v >= 1000000) return (v / 1000000).toFixed(1).replace('.', ',') + 'M';
+    if (v >= 1000) return (v / 1000).toFixed(0) + 'K';
+    return v.toLocaleString('es-CO');
+  });
+
+  readonly semesterSales = computed(() => '$5,4M');
 
   /* ── Actions ── */
   toggleSidebar(): void {

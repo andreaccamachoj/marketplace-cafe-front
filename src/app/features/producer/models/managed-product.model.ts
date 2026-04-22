@@ -5,6 +5,7 @@ export interface IManagedProduct {
   emoji: string;
   name: string;
   category: string;
+  unit: string;
   status: ManagedProductStatus;
   price: number;
   stock: number;

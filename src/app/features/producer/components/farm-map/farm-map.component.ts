@@ -10,4 +10,5 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 })
 export class FarmMapComponent {
   readonly farmName = input<string>('Finca');
+  readonly location = input<string>('');
 }
