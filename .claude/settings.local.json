@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(git *)"
+    ]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/check-uncommitted.sh 2>/dev/null || true",
+            "timeout": 10,
+            "statusMessage": "Verificando cambios sin commitear..."
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { ProductFormComponent } from '../../components/product-form/product-form.component';
 import { ProductPayload } from '../../models/product.model';
 import { PRODUCT_COPY } from '../../constants/product.constants';
-import { ModalComponent } from '../../../../shared/components/modal/modal/modal.component';
+import { ModalComponent } from '@shared/ui/modal/modal.component';
 
 @Component({
   selector: 'app-product-dashboard',

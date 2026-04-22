@@ -3,9 +3,10 @@
   <button class="btn-primary" (click)="openProductModal()">Agregar Producto</button>
 
   <app-modal
-    [(isOpen)]="isModalOpen"
+    [open]="isModalOpen"
     [title]="COPY.TITLE"
-    [subtitle]="COPY.SUBTITLE">
+    size="lg"
+    (closed)="closeProductModal()">
 
     @if (isModalOpen) {
       <app-product-form
