@@ -26,8 +26,8 @@ export interface IToast {
     <div
       class="toast"
       [ngClass]="'toast--' + toast.type"
-      role="alert"
-      aria-live="assertive"
+      [attr.role]="isAssertive ? 'alert' : 'status'"
+      [attr.aria-live]="isAssertive ? 'assertive' : 'polite'"
       aria-atomic="true"
     >
       <span class="toast__icon" aria-hidden="true">{{ icon }}</span>
@@ -52,6 +52,14 @@ export interface IToast {
 export class ToastComponent {
   @Input({ required: true }) toast!: IToast;
   @Output() dismiss = new EventEmitter<string>();
+
+  /**
+   * WCAG 4.1.3 — Errores y advertencias: aria-live="assertive" (interrumpe al usuario).
+   * Éxitos e información: aria-live="polite" (espera pausa natural).
+   */
+  get isAssertive(): boolean {
+    return this.toast.type === 'error' || this.toast.type === 'warning';
+  }
 
   get icon(): string {
     switch (this.toast.type) {

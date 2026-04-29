@@ -3,6 +3,7 @@ import {
   Component,
   ElementRef,
   EventEmitter,
+  HostListener,
   Input,
   OnChanges,
   OnDestroy,
@@ -94,17 +95,69 @@ export class ModalComponent implements OnChanges, OnDestroy {
   private readonly platformId = inject(PLATFORM_ID);
   private previouslyFocused: HTMLElement | null = null;
 
+  /** WCAG 2.1.1 — Escape cierra el modal por teclado */
+  @HostListener('document:keydown.escape')
+  onEscapeKey(): void {
+    if (this.open) this.closeModal();
+  }
+
+  /** WCAG 2.1.2 — Focus trap: Tab/Shift+Tab quedan dentro del diálogo */
+  @HostListener('document:keydown.tab', ['$event'])
+  @HostListener('document:keydown.shift.tab', ['$event'])
+  onTab(event: KeyboardEvent): void {
+    if (!this.open || !isPlatformBrowser(this.platformId)) return;
+
+    const dialog = this.dialogEl?.nativeElement;
+    if (!dialog) return;
+
+    const focusableSelectors = [
+      'a[href]', 'button:not([disabled])', 'textarea:not([disabled])',
+      'input:not([disabled])', 'select:not([disabled])',
+      '[tabindex]:not([tabindex="-1"])',
+    ].join(', ');
+
+    const focusable = Array.from(dialog.querySelectorAll<HTMLElement>(focusableSelectors))
+      .filter(el => !el.closest('[disabled]') && el.offsetParent !== null);
+
+    if (!focusable.length) { event.preventDefault(); return; }
+
+    const first = focusable[0];
+    const last  = focusable[focusable.length - 1];
+
+    if (event.shiftKey) {
+      // Shift+Tab: si el foco está en el primer elemento, saltar al último
+      if (document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      }
+    } else {
+      // Tab: si el foco está en el último elemento, saltar al primero
+      if (document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     if (!isPlatformBrowser(this.platformId)) return;
 
     if (changes['open']) {
       if (this.open) {
         this.previouslyFocused = document.activeElement as HTMLElement;
-        document.body.style.overflow = 'hidden';
-        // Focus the dialog after it renders
-        setTimeout(() => this.dialogEl?.nativeElement.focus(), 50);
+        document.body.classList.add('modal-open');
+        // Foco al diálogo después de que Angular renderice el @if
+        setTimeout(() => {
+          const dialog = this.dialogEl?.nativeElement;
+          if (!dialog) return;
+          // Intentar foco en el primer elemento focusable; si no, al diálogo
+          const firstFocusable = dialog.querySelector<HTMLElement>(
+            'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+          );
+          (firstFocusable ?? dialog).focus();
+        }, 50);
       } else {
-        document.body.style.overflow = '';
+        document.body.classList.remove('modal-open');
         this.previouslyFocused?.focus();
       }
     }
@@ -112,7 +165,7 @@ export class ModalComponent implements OnChanges, OnDestroy {
 
   ngOnDestroy(): void {
     if (isPlatformBrowser(this.platformId)) {
-      document.body.style.overflow = '';
+      document.body.classList.remove('modal-open');
     }
   }
 

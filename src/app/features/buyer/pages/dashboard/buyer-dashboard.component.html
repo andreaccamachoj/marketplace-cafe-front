@@ -6,44 +6,54 @@
   <aside class="sidebar" [class.open]="sidebarOpen()" id="sidebar" aria-label="Navegación del panel">
 
     <div class="sidebar-section">
-      <span class="sidebar-label">Principal</span>
-      <nav class="sidebar-nav">
+      <span class="sidebar-label" id="sidebar-nav-label">Principal</span>
+      <nav class="sidebar-nav" aria-labelledby="sidebar-nav-label">
         <button
           [class.active]="activeTab() === 'cart'"
+          [attr.aria-current]="activeTab() === 'cart' ? 'page' : null"
           (click)="setTab('cart')"
           type="button"
+          aria-controls="tab-panel-cart"
         >
           🛒 Carrito
-          <span class="nav-pill">{{ cartCount() }}</span>
+          <span class="nav-pill" [attr.aria-label]="cartCount() + ' productos en carrito'">{{ cartCount() }}</span>
         </button>
         <button
           [class.active]="activeTab() === 'orders'"
+          [attr.aria-current]="activeTab() === 'orders' ? 'page' : null"
           (click)="setTab('orders')"
           type="button"
+          aria-controls="tab-panel-orders"
         >
           📋 Mis Pedidos
-          <span class="nav-pill amber">{{ activeOrdersCount() }}</span>
+          <span class="nav-pill amber" [attr.aria-label]="activeOrdersCount() + ' pedidos activos'">{{ activeOrdersCount() }}</span>
         </button>
         <button
           [class.active]="activeTab() === 'favorites'"
+          [attr.aria-current]="activeTab() === 'favorites' ? 'page' : null"
           (click)="setTab('favorites')"
           type="button"
+          aria-controls="tab-panel-favorites"
         >
           ❤️ Favoritos
-          <span class="nav-pill green">{{ stats().favorites }}</span>
+          <span class="nav-pill green" [attr.aria-label]="stats().favorites + ' favoritos'">{{ stats().favorites }}</span>
         </button>
         <button
           [class.active]="activeTab() === 'reviews'"
+          [attr.aria-current]="activeTab() === 'reviews' ? 'page' : null"
           (click)="setTab('reviews')"
           type="button"
+          aria-controls="tab-panel-reviews"
         >
           ★ Reseñas
-          <span class="nav-pill">{{ stats().reviews }}</span>
+          <span class="nav-pill" [attr.aria-label]="stats().reviews + ' reseñas'">{{ stats().reviews }}</span>
         </button>
         <button
           [class.active]="activeTab() === 'profile'"
+          [attr.aria-current]="activeTab() === 'profile' ? 'page' : null"
           (click)="setTab('profile')"
           type="button"
+          aria-controls="tab-panel-profile"
         >
           👤 Mi Perfil
         </button>
@@ -118,57 +128,67 @@
       </div>
     </div>
 
-    <!-- Tabs -->
-    <div class="tabs-row" role="tablist">
+    <!-- Tabs (WCAG 4.1.2 — role=tablist con aria-selected y aria-controls) -->
+    <div class="tabs-row" role="tablist" aria-label="Secciones del panel">
       <button
+        id="tab-cart"
         role="tab"
         class="tab"
         [class.active]="activeTab() === 'cart'"
         [attr.aria-selected]="activeTab() === 'cart'"
+        aria-controls="tab-panel-cart"
         (click)="setTab('cart')"
         type="button"
       >
         🛒 Carrito
-        <span class="tab-count espresso">{{ cartCount() }}</span>
+        <span class="tab-count espresso" aria-hidden="true">{{ cartCount() }}</span>
       </button>
       <button
+        id="tab-orders"
         role="tab"
         class="tab"
         [class.active]="activeTab() === 'orders'"
         [attr.aria-selected]="activeTab() === 'orders'"
+        aria-controls="tab-panel-orders"
         (click)="setTab('orders')"
         type="button"
       >
         📋 Pedidos
-        <span class="tab-count amber">{{ activeOrdersCount() }}</span>
+        <span class="tab-count amber" aria-hidden="true">{{ activeOrdersCount() }}</span>
       </button>
       <button
+        id="tab-favorites"
         role="tab"
         class="tab"
         [class.active]="activeTab() === 'favorites'"
         [attr.aria-selected]="activeTab() === 'favorites'"
+        aria-controls="tab-panel-favorites"
         (click)="setTab('favorites')"
         type="button"
       >
         ❤️ Favoritos
-        <span class="tab-count green">{{ stats().favorites }}</span>
+        <span class="tab-count green" aria-hidden="true">{{ stats().favorites }}</span>
       </button>
       <button
+        id="tab-reviews"
         role="tab"
         class="tab"
         [class.active]="activeTab() === 'reviews'"
         [attr.aria-selected]="activeTab() === 'reviews'"
+        aria-controls="tab-panel-reviews"
         (click)="setTab('reviews')"
         type="button"
       >
         ★ Reseñas
-        <span class="tab-count espresso">{{ stats().reviews }}</span>
+        <span class="tab-count espresso" aria-hidden="true">{{ stats().reviews }}</span>
       </button>
       <button
+        id="tab-profile"
         role="tab"
         class="tab"
         [class.active]="activeTab() === 'profile'"
         [attr.aria-selected]="activeTab() === 'profile'"
+        aria-controls="tab-panel-profile"
         (click)="setTab('profile')"
         type="button"
       >
@@ -178,6 +198,7 @@
 
     <!-- ── CART TAB ── -->
     @if (activeTab() === 'cart') {
+      <div id="tab-panel-cart" role="tabpanel" aria-labelledby="tab-cart" tabindex="-1">
       <div class="cart-tab-header">
         <div class="page-eyebrow">Mi selección</div>
         <h2 class="cart-tab-title">Carrito de compras</h2>
@@ -233,10 +254,12 @@
         }
 
       </div>
+      </div><!-- /tab-panel-cart -->
     }
 
     <!-- ── ORDERS TAB ── -->
     @if (activeTab() === 'orders') {
+      <div id="tab-panel-orders" role="tabpanel" aria-labelledby="tab-orders" tabindex="-1">
       <div class="orders-section">
 
         <div class="orders-filters" role="group" aria-label="Filtrar pedidos">
@@ -268,10 +291,12 @@
         }
 
       </div>
+      </div><!-- /tab-panel-orders -->
     }
 
     <!-- ── FAVORITES TAB ── -->
     @if (activeTab() === 'favorites') {
+      <div id="tab-panel-favorites" role="tabpanel" aria-labelledby="tab-favorites" tabindex="-1">
       <div class="section-header">
         <div class="page-eyebrow">Mi lista</div>
         <h2 class="section-title">Productos favoritos</h2>
@@ -299,10 +324,12 @@
           </button>
         </div>
       }
+      </div><!-- /tab-panel-favorites -->
     }
 
     <!-- ── REVIEWS TAB ── -->
     @if (activeTab() === 'reviews') {
+      <div id="tab-panel-reviews" role="tabpanel" aria-labelledby="tab-reviews" tabindex="-1">
       <div class="section-header">
         <div class="page-eyebrow">Mis opiniones</div>
         <h2 class="section-title">Mis reseñas</h2>
@@ -364,10 +391,12 @@
           <div class="cart-empty-desc">Comparte tu experiencia con los cafés que has pedido</div>
         </div>
       }
+      </div><!-- /tab-panel-reviews -->
     }
 
     <!-- ── PROFILE TAB ── -->
     @if (activeTab() === 'profile') {
+      <div id="tab-panel-profile" role="tabpanel" aria-labelledby="tab-profile" tabindex="-1">
       <div class="section-header">
         <div class="page-eyebrow">Configuración</div>
         <h2 class="section-title">Mi perfil</h2>
@@ -425,7 +454,8 @@
           </div>
         </div>
 
-      </div>
+      </div><!-- /profile-layout -->
+      </div><!-- /tab-panel-profile -->
     }
 
   </main>

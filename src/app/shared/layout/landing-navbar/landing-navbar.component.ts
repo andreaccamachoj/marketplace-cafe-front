@@ -61,7 +61,8 @@ export class LandingNavbarComponent {
   protected readonly cartCount = this.cartSvc.count;
 
   /* ── Private UI state ── */
-  protected readonly searchValue = signal('');
+  protected readonly searchValue  = signal('');
+  protected readonly mobileMenuOpen = signal(false);
 
   /* ── Handlers ── */
   protected onSearch(event: Event): void {
@@ -94,6 +95,14 @@ export class LandingNavbarComponent {
     if (role === Role.BUYER)         void this.router.navigate(['/panel/comprador']);
     else if (role === Role.PRODUCER) void this.router.navigate(['/panel/productor']);
     else if (role === Role.ADMIN)    void this.router.navigate(['/panel/admin']);
+  }
+
+  protected toggleMobileMenu(): void {
+    this.mobileMenuOpen.update(v => !v);
+  }
+
+  protected closeMobileMenu(): void {
+    this.mobileMenuOpen.set(false);
   }
 
   protected logout(): void {

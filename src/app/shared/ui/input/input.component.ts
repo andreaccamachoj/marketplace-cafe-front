@@ -39,9 +39,10 @@ export type InputType = 'text' | 'email' | 'password' | 'tel' | 'number' | 'sear
         [placeholder]="placeholder"
         [disabled]="isDisabled()"
         [attr.id]="inputId"
-        [attr.aria-label]="ariaLabel"
-        [attr.aria-describedby]="ariaDescribedBy"
-        [attr.aria-invalid]="showError || null"
+        [attr.aria-label]="ariaLabel || null"
+        [attr.aria-describedby]="ariaDescribedBy || null"
+        [attr.aria-invalid]="showError ? true : null"
+        [attr.aria-required]="required ? true : null"
         [attr.autocomplete]="autocomplete"
         [(ngModel)]="innerValue"
         (ngModelChange)="onChange($event)"
@@ -74,6 +75,8 @@ export class InputComponent implements ControlValueAccessor {
   @Input() ariaDescribedBy = '';
   @Input() autocomplete = 'off';
   @Input() showError = false;
+  /** WCAG 1.3.1 — Marcar campo como requerido para lectores de pantalla */
+  @Input() required = false;
 
   protected innerValue = '';
   protected readonly isDisabled = signal(false);
