@@ -27,7 +27,7 @@
         class="btn-addr btn-addr--ghost"
         type="button"
         (click)="setDefault.emit(address().id)"
-        aria-label="Establecer {{ address().label }} como dirección principal"
+        [attr.aria-label]="'Establecer ' + address().label + ' como dirección principal'"
       >
         ★ Principal
       </button>
@@ -36,7 +36,7 @@
       class="btn-addr btn-addr--ghost"
       type="button"
       (click)="edit.emit(address())"
-      aria-label="Editar dirección {{ address().label }}"
+      [attr.aria-label]="'Editar dirección ' + address().label"
     >
       ✏️ Editar
     </button>
@@ -44,7 +44,7 @@
       class="btn-addr btn-addr--danger"
       type="button"
       (click)="delete.emit(address().id)"
-      aria-label="Eliminar dirección {{ address().label }}"
+      [attr.aria-label]="'Eliminar dirección ' + address().label"
     >
       🗑 Eliminar
     </button>
