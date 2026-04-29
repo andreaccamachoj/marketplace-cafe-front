@@ -18,3 +18,9 @@ export interface IBuyerProfilePayload {
   preferredPayment: 'card' | 'transfer' | 'cash_on_delivery';
   newsletterOptIn: boolean;
 }
+
+export interface IBuyerPasswordPayload {
+  currentPassword: string;
+  newPassword: string;
+  confirmNewPassword: string;
+}

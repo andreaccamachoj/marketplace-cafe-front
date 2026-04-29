@@ -4,6 +4,7 @@ import {
   effect,
   input,
   output,
+  signal,
 } from '@angular/core';
 import {
   FormControl,
@@ -11,7 +12,13 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { IBuyerProfile, IBuyerProfilePayload } from '../../models/buyer-profile.model';
+import {
+  IBuyerProfile,
+  IBuyerPasswordPayload,
+  IBuyerProfilePayload,
+} from '../../models/buyer-profile.model';
+import { matchFieldValidator } from '@shared/utils/validators/match-field.validator';
+import { passwordStrengthValidator } from '@shared/utils/validators/password.validator';
 
 @Component({
   selector: 'app-buyer-profile-form',
@@ -22,11 +29,15 @@ import { IBuyerProfile, IBuyerProfilePayload } from '../../models/buyer-profile.
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BuyerProfileFormComponent {
-  readonly profile = input.required<IBuyerProfile>();
-  readonly loading = input<boolean>(false);
-  readonly save    = output<IBuyerProfilePayload>();
+  readonly profile         = input.required<IBuyerProfile>();
+  readonly loading         = input<boolean>(false);
+  readonly passwordLoading = input<boolean>(false);
 
-  protected readonly form = new FormGroup({
+  readonly save         = output<IBuyerProfilePayload>();
+  readonly savePassword = output<IBuyerPasswordPayload>();
+
+  /* ── Profile form ── */
+  protected readonly profileForm = new FormGroup({
     fullName: new FormControl<string>('', {
       nonNullable: true,
       validators: [Validators.required, Validators.minLength(3)],
@@ -49,10 +60,34 @@ export class BuyerProfileFormComponent {
     newsletterOptIn: new FormControl<boolean>(false, { nonNullable: true }),
   });
 
+  /* ── Password form ── */
+  protected readonly passwordForm = new FormGroup(
+    {
+      currentPassword: new FormControl<string>('', {
+        nonNullable: true,
+        validators: [Validators.required],
+      }),
+      newPassword: new FormControl<string>('', {
+        nonNullable: true,
+        validators: [Validators.required, passwordStrengthValidator],
+      }),
+      confirmNewPassword: new FormControl<string>('', {
+        nonNullable: true,
+        validators: [Validators.required],
+      }),
+    },
+    { validators: [matchFieldValidator('newPassword', 'confirmNewPassword')] },
+  );
+
+  protected readonly showCurrentPwd = signal(false);
+  protected readonly showNewPwd     = signal(false);
+  protected readonly showConfirmPwd = signal(false);
+
   constructor() {
+    // Hydrate profile form whenever the input signal changes.
     effect(() => {
       const p = this.profile();
-      this.form.patchValue({
+      this.profileForm.patchValue({
         fullName:         p.fullName,
         phone:            p.phone,
         city:             p.city,
@@ -60,17 +95,29 @@ export class BuyerProfileFormComponent {
         preferredPayment: p.preferredPayment,
         newsletterOptIn:  p.newsletterOptIn,
       });
-      this.form.markAsPristine();
+      this.profileForm.markAsPristine();
     });
   }
 
-  protected get fullName()   { return this.form.controls['fullName']; }
-  protected get phone()      { return this.form.controls['phone']; }
-  protected get city()       { return this.form.controls['city']; }
-  protected get department() { return this.form.controls['department']; }
+  /* ── Getters for template error access ── */
+  protected get fullName()   { return this.profileForm.controls['fullName'];   }
+  protected get phone()      { return this.profileForm.controls['phone'];      }
+  protected get city()       { return this.profileForm.controls['city'];       }
+  protected get department() { return this.profileForm.controls['department']; }
 
-  protected onSubmit(): void {
-    if (this.form.invalid || this.form.pristine) return;
-    this.save.emit(this.form.getRawValue());
+  protected get currentPassword()    { return this.passwordForm.controls['currentPassword'];    }
+  protected get newPassword()        { return this.passwordForm.controls['newPassword'];        }
+  protected get confirmNewPassword() { return this.passwordForm.controls['confirmNewPassword']; }
+
+  /* ── Submit handlers ── */
+  protected onSubmitProfile(): void {
+    if (this.profileForm.invalid || this.profileForm.pristine) return;
+    this.save.emit(this.profileForm.getRawValue());
+  }
+
+  protected onSubmitPassword(): void {
+    if (this.passwordForm.invalid) return;
+    this.savePassword.emit(this.passwordForm.getRawValue() as IBuyerPasswordPayload);
+    this.passwordForm.reset();
   }
 }

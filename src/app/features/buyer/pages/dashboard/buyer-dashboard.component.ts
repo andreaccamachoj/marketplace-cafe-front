@@ -25,7 +25,7 @@ import { ReviewFormModalComponent } from '../../components/review-form-modal/rev
 import { BuyerProfileFormComponent } from '../../components/buyer-profile-form/buyer-profile-form.component';
 import { IReview, IReviewPayload } from '../../models/review.model';
 import { IFavorite } from '../../models/favorite.model';
-import { IBuyerProfilePayload } from '../../models/buyer-profile.model';
+import { IBuyerPasswordPayload, IBuyerProfilePayload } from '../../models/buyer-profile.model';
 
 type BuyerTab = 'cart' | 'orders' | 'favorites' | 'reviews' | 'profile';
 
@@ -242,14 +242,22 @@ export class BuyerDashboardComponent {
   }
 
   /* ── Profile ── */
-  readonly profile      = this.profileSvc.profile;
-  readonly profileSaving = signal(false);
+  readonly profile         = this.profileSvc.profile;
+  readonly profileSaving   = signal(false);
+  readonly passwordSaving  = signal(false);
 
   handleSaveProfile(payload: IBuyerProfilePayload): void {
     this.profileSaving.set(true);
     this.profileSvc.update(payload);
     this.profileSaving.set(false);
     this.notify.success('Perfil actualizado correctamente');
+  }
+
+  handleSavePassword(payload: IBuyerPasswordPayload): void {
+    // In a real app this would call an auth endpoint.
+    // For the mock we just show a success toast.
+    void payload;
+    this.notify.success('Contraseña actualizada correctamente.');
   }
 
   /* ── Stats overview ── */
