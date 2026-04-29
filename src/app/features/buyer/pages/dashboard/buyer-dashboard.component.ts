@@ -5,7 +5,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { DecimalPipe, NgClass } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '@core/auth/services/auth.service';
 import { NotificationService } from '@core/services/notification.service';
@@ -34,7 +34,6 @@ type BuyerTab = 'cart' | 'orders' | 'favorites' | 'reviews' | 'profile';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    NgClass,
     DecimalPipe,
     RouterLink,
     DashboardNavComponent,

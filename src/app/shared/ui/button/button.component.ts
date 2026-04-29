@@ -3,7 +3,6 @@ import {
   Component,
   Input,
 } from '@angular/core';
-import { NgClass } from '@angular/common';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'success';
 export type ButtonSize = 'sm' | 'md' | 'lg';
@@ -16,7 +15,7 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
 @Component({
   selector: 'app-button',
   standalone: true,
-  imports: [NgClass],
+  imports: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <button

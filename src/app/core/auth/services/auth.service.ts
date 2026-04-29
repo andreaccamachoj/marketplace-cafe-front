@@ -132,9 +132,9 @@ export class AuthService {
 
   private async navigateByRole(role: Role): Promise<void> {
     const paths: Record<Role, string> = {
-      [Role.BUYER]:    '/buyer',
-      [Role.PRODUCER]: '/producer',
-      [Role.ADMIN]:    '/admin',
+      [Role.BUYER]:    '/panel/comprador',
+      [Role.PRODUCER]: '/panel/productor',
+      [Role.ADMIN]:    '/panel/admin',
     };
     await this.router.navigate([paths[role] ?? '/']);
   }

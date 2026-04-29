@@ -94,7 +94,7 @@
   align-self: flex-start;
 
   &:hover {
-    color: darken(#1A6B8A, 10%);
+    color: #155570; /* color.adjust(#1A6B8A, $lightness: -10%) */
   }
 }
 

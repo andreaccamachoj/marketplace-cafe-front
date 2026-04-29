@@ -86,14 +86,14 @@ export class LandingNavbarComponent {
   }
 
   protected goToCart(): void {
-    void this.router.navigate(['/buyer']);
+    void this.router.navigate(['/panel/comprador']);
   }
 
   protected goToDashboard(): void {
     const role = this.userRole();
-    if (role === Role.BUYER)         void this.router.navigate(['/buyer']);
-    else if (role === Role.PRODUCER) void this.router.navigate(['/producer']);
-    else if (role === Role.ADMIN)    void this.router.navigate(['/admin']);
+    if (role === Role.BUYER)         void this.router.navigate(['/panel/comprador']);
+    else if (role === Role.PRODUCER) void this.router.navigate(['/panel/productor']);
+    else if (role === Role.ADMIN)    void this.router.navigate(['/panel/admin']);
   }
 
   protected logout(): void {

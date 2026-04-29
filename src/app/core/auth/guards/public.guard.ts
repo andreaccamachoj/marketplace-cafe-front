@@ -11,9 +11,9 @@ export const publicGuard: CanActivateFn = () => {
 
   const role = auth.currentRole();
   const paths: Record<string, string> = {
-    [Role.BUYER]:    '/buyer',
-    [Role.PRODUCER]: '/producer',
-    [Role.ADMIN]:    '/admin',
+    [Role.BUYER]:    '/panel/comprador',
+    [Role.PRODUCER]: '/panel/productor',
+    [Role.ADMIN]:    '/panel/admin',
   };
   return router.createUrlTree([paths[role ?? ''] ?? '/']);
 };
