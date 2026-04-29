@@ -22,7 +22,7 @@ export class DashboardNavComponent {
   protected readonly auth = inject(AuthService);
 
   readonly pageTitle = input<string>('');
-  readonly onMenuToggle = output<void>();
+  readonly menuToggle = output<void>();
 
   protected readonly userInitials = computed(() => {
     const name = this.auth.currentUser()?.fullName ?? '';
@@ -54,8 +54,8 @@ export class DashboardNavComponent {
     return role ? (colors[role] ?? 'var(--cafe-medio)') : 'var(--cafe-medio)';
   });
 
-  protected menuToggle(): void {
-    this.onMenuToggle.emit();
+  protected onHamburgerClick(): void {
+    this.menuToggle.emit();
   }
 
   protected logout(): void {

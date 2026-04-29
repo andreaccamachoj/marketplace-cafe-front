@@ -2,11 +2,13 @@
   <div
     class="review-overlay"
     (click)="onOverlayClick($event)"
+    (keydown.escape)="closed.emit()"
     role="dialog"
     aria-modal="true"
+    tabindex="-1"
     [attr.aria-label]="'Reseña de ' + productName()"
   >
-    <div class="review-modal" (click)="$event.stopPropagation()">
+    <div class="review-modal" tabindex="-1" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
       <div class="review-modal-title">Califica tu compra</div>
       <div class="review-modal-sub">{{ productName() }}</div>
 

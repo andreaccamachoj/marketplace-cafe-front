@@ -10,6 +10,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { IProducerApproval } from '../../models/producer-approval.model';
 
 @Component({
+  // eslint-disable-next-line @angular-eslint/component-selector
   selector: '[app-producer-table-row]',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,

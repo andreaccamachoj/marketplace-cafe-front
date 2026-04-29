@@ -1,5 +1,5 @@
 import {
-  Component, inject, computed, signal, ChangeDetectionStrategy,
+  Component, inject, computed, ChangeDetectionStrategy,
 } from '@angular/core';
 import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';

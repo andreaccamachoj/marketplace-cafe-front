@@ -44,7 +44,9 @@ export class ToggleComponent implements ControlValueAccessor {
   protected readonly checked = signal(false);
   protected readonly isDisabled = signal(false);
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   private onChange: (v: boolean) => void = () => {};
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   private onTouched: () => void = () => {};
 
   writeValue(val: boolean): void { this.checked.set(!!val); }

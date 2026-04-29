@@ -18,6 +18,6 @@ export class AddressCardComponent {
   readonly address   = input.required<IAddress>();
   readonly isDefault = input<boolean>(false);
 
-  readonly select = output<IAddress>();
+  readonly addressSelect = output<IAddress>();
   readonly edit   = output<IAddress>();
 }

@@ -1,4 +1,4 @@
-<app-dashboard-nav [pageTitle]="'Panel del Comprador'" (onMenuToggle)="toggleSidebar()" />
+<app-dashboard-nav [pageTitle]="'Panel del Comprador'" (menuToggle)="toggleSidebar()" />
 
 <div class="page-layout">
 
@@ -277,7 +277,7 @@
           <app-order-card
             [order]="order"
             [expanded]="expandedOrder() === order.id"
-            (toggle)="toggleOrder($event)"
+            (orderToggle)="toggleOrder($event)"
             (reviewClick)="openCreateReview($event, '', $event)"
           />
         }

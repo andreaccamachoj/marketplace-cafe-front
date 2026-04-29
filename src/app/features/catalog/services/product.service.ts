@@ -2,7 +2,7 @@ import { Injectable, signal, computed } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import {
   IProduct, CatalogFilter, SortBy,
-  IRoastLevel, IFlavorNote, ICuppingAttribute, IFarmInfo,
+  IRoastLevel, ICuppingAttribute,
 } from '../models/product.model';
 
 const ROASTS: IRoastLevel[] = [

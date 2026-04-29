@@ -10,6 +10,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { IAdminUser } from '../../models/admin-user.model';
 
 @Component({
+  // eslint-disable-next-line @angular-eslint/component-selector
   selector: '[app-user-table-row]',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -40,7 +41,7 @@ import { IAdminUser } from '../../models/admin-user.model';
           Ver
         </button>
         @if (user().status === 'active') {
-          <button class="btn-sm btn-danger" type="button" (click)="suspend.emit(user().id)">
+          <button class="btn-sm btn-danger" type="button" (click)="suspendUser.emit(user().id)">
             Suspender
           </button>
         } @else if (user().status === 'suspended') {
@@ -56,7 +57,7 @@ import { IAdminUser } from '../../models/admin-user.model';
 export class UserTableRowComponent {
   readonly user = input.required<IAdminUser>();
 
-  readonly suspend = output<string>();
+  readonly suspendUser = output<string>();
   readonly reactivate = output<string>();
   readonly viewProfile = output<string>();
 

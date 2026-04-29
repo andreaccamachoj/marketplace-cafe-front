@@ -6,7 +6,7 @@ interface IProducer {
   region: string;
   avatar: string;
   avatarBg: string;
-  certs: Array<{ label: string; cls: string }>;
+  certs: { label: string; cls: string }[];
 }
 
 @Component({

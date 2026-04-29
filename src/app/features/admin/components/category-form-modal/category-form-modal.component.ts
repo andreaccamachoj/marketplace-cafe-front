@@ -5,7 +5,6 @@ import {
   SimpleChanges,
   input,
   output,
-  signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ModalComponent } from '@shared/ui/modal/modal.component';
@@ -67,7 +66,7 @@ const EMOJI_OPTIONS = ['☕', '🌿', '⭐', '🔬', '🧊', '🌱', '🏔️'];
         </div>
 
         <div class="form-group">
-          <label class="form-label">Icono</label>
+          <span class="form-label">Icono</span>
           <div class="emoji-grid">
             @for (emoji of emojiOptions; track emoji) {
               <button

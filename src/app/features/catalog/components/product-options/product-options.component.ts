@@ -1,5 +1,5 @@
 import {
-  Component, Input, Output, EventEmitter, signal, ChangeDetectionStrategy,
+  Component, Input, Output, EventEmitter, OnInit, signal, ChangeDetectionStrategy,
 } from '@angular/core';
 import { IRoastLevel } from '../../models/product.model';
 
@@ -53,7 +53,7 @@ import { IRoastLevel } from '../../models/product.model';
   `,
   styleUrl: './product-options.component.scss',
 })
-export class ProductOptionsComponent {
+export class ProductOptionsComponent implements OnInit {
   @Input() presentationTypes: string[] = [];
   @Input() roastLevels: IRoastLevel[] = [];
 

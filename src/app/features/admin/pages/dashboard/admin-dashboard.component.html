@@ -4,7 +4,10 @@
   <div
     class="sidebar-overlay"
     [ngClass]="{ visible: sidebarOpen() }"
+    aria-hidden="true"
+    tabindex="-1"
     (click)="toggleSidebar()"
+    (keydown)="false"
   ></div>
 
   <!-- Sidebar -->
@@ -81,7 +84,7 @@
 
     <app-dashboard-nav
       pageTitle="Panel de Administración"
-      (onMenuToggle)="toggleSidebar()"
+      (menuToggle)="toggleSidebar()"
     />
 
     <!-- Page header -->
@@ -238,7 +241,7 @@
               <tr
                 app-user-table-row
                 [user]="user"
-                (suspend)="handleSuspendUser($event)"
+                (suspendUser)="handleSuspendUser($event)"
                 (reactivate)="handleReactivateUser($event)"
                 (viewProfile)="showToast('Vista de perfil disponible próximamente.', 'info')"
               ></tr>

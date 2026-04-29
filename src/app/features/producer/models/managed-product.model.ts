@@ -9,7 +9,7 @@ export interface IManagedProduct {
   status: ManagedProductStatus;
   price: number;
   stock: number;
-  certifications: Array<'organico' | 'fairtrade' | 'rainforest'>;
+  certifications: ('organico' | 'fairtrade' | 'rainforest')[];
   rating: number;
   reviewCount: number;
   salesCount: number;

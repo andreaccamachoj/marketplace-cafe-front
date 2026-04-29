@@ -1,5 +1,5 @@
 export interface ICheckoutPayload {
-  items: Array<{ productId: string; qty: number; unitPrice: number }>;
+  items: { productId: string; qty: number; unitPrice: number }[];
   shippingOptionId: string;
   couponCode: string | null;
   addressId: string;

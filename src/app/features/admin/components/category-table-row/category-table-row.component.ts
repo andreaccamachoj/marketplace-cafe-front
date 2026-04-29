@@ -7,6 +7,7 @@ import {
 import { IAdminCategory } from '../../models/admin-category.model';
 
 @Component({
+  // eslint-disable-next-line @angular-eslint/component-selector
   selector: '[app-category-table-row]',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,

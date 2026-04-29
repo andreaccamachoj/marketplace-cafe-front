@@ -1,4 +1,4 @@
-<app-dashboard-nav [pageTitle]="'Panel del Productor'" (onMenuToggle)="toggleSidebar()" />
+<app-dashboard-nav [pageTitle]="'Panel del Productor'" (menuToggle)="toggleSidebar()" />
 
 <div class="page-layout">
 
@@ -86,7 +86,10 @@
   <div
     class="sidebar-overlay"
     [class.visible]="sidebarOpen()"
+    aria-hidden="true"
+    tabindex="-1"
     (click)="toggleSidebar()"
+    (keydown)="false"
   ></div>
 
   <main class="main-content" role="main">

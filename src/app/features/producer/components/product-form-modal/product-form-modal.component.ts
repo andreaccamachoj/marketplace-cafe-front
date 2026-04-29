@@ -153,7 +153,7 @@ export class ProductFormModalComponent implements OnInit {
     }
 
     const v = this.form.getRawValue();
-    const certs: Array<'organico' | 'fairtrade' | 'rainforest'> = [];
+    const certs: ('organico' | 'fairtrade' | 'rainforest')[] = [];
     if (v.certOrganico)   certs.push('organico');
     if (v.certFairtrade)  certs.push('fairtrade');
     if (v.certRainforest) certs.push('rainforest');

@@ -20,7 +20,7 @@ export class OrderCardComponent {
   readonly order = input.required<IOrder>();
   readonly expanded = input<boolean>(false);
 
-  readonly toggle = output<string>();
+  readonly orderToggle = output<string>();
   readonly reviewClick = output<string>();
 
   protected readonly statusLabels = ORDER_STATUS_LABELS;
@@ -30,7 +30,7 @@ export class OrderCardComponent {
   }
 
   protected onToggle(): void {
-    this.toggle.emit(this.order().id);
+    this.orderToggle.emit(this.order().id);
   }
 
   protected onReviewClick(): void {

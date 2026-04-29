@@ -174,7 +174,8 @@ export class RegisterComponent {
     this.personalDataSaved.set(true);
   }
 
-  async onRoleData(roleData: Record<string, string>): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async onRoleData(_roleData: Record<string, string>): Promise<void> {
     this.loading.set(true);
     const personal = this.state.personalData();
     const payload: IRegisterPayload = {
