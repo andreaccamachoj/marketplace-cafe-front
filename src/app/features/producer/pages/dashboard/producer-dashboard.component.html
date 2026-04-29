@@ -55,9 +55,15 @@
           <span class="nav-item-icon">📊</span>
           Estadísticas
         </button>
-        <button class="nav-item" (click)="notify.info('Próximamente')">
+        <button
+          class="nav-item"
+          [class.active]="activeTab() === 'reviews'"
+          [attr.aria-current]="activeTab() === 'reviews' ? 'page' : null"
+          (click)="setTab('reviews')"
+        >
           <span class="nav-item-icon">★</span>
           Mis reseñas
+          <span class="nav-pill">{{ reviewSvc.totalReviews() }}</span>
         </button>
         <button class="nav-item" (click)="notify.info('Próximamente')">
           <span class="nav-item-icon">💰</span>
@@ -71,9 +77,14 @@
     <!-- Bottom -->
     <div class="sidebar-bottom">
       <nav class="sidebar-nav">
-        <button class="nav-item" (click)="notify.info('Próximamente')">
+        <button
+          class="nav-item"
+          [class.active]="activeTab() === 'profile'"
+          [attr.aria-current]="activeTab() === 'profile' ? 'page' : null"
+          (click)="setTab('profile')"
+        >
           <span class="nav-item-icon">⚙</span>
-          Configuración
+          Mi Perfil
         </button>
         <button class="nav-item danger" (click)="logout()">
           <span class="nav-item-icon">↩</span>
@@ -463,6 +474,88 @@
             </div>
           </div>
         </div>
+      </div>
+    }
+
+    <!-- ── Tab: Mi Perfil ── -->
+    @if (activeTab() === 'profile') {
+      <div id="panel-perfil" role="tabpanel" aria-labelledby="tab-perfil">
+        <div class="page-header">
+          <div>
+            <div class="page-eyebrow">Cuenta</div>
+            <h1 class="page-title">Mi Perfil</h1>
+            <p class="page-subtitle">Información personal y seguridad de tu cuenta</p>
+          </div>
+        </div>
+
+        <app-producer-profile-form
+          [profile]="profile()"
+          [loading]="profileLoading()"
+          (saveProfile)="handleSaveProfile($event)"
+          (savePassword)="handleSavePassword($event)"
+        />
+      </div>
+    }
+
+    <!-- ── Tab: Mis Reseñas ── -->
+    @if (activeTab() === 'reviews') {
+      <div id="panel-resenas" role="tabpanel" aria-labelledby="tab-resenas">
+        <div class="page-header">
+          <div>
+            <div class="page-eyebrow">Reputación</div>
+            <h1 class="page-title">Mis Reseñas</h1>
+            <p class="page-subtitle">
+              {{ reviewSvc.totalReviews() }} reseñas · Promedio
+              <strong>{{ reviewSvc.globalAvgRating() }}</strong> ★
+            </p>
+          </div>
+        </div>
+
+        <!-- Resumen global de calificación -->
+        <div class="reviews-summary-bar">
+          <div class="rsb-score">
+            <div class="rsb-big">{{ reviewSvc.globalAvgRating() }}</div>
+            <div class="rsb-stars" aria-hidden="true">
+              @for (s of [1,2,3,4,5]; track s) {
+                <span [style.color]="s <= reviewSvc.globalAvgRating() ? 'var(--amber,#c07820)' : 'rgba(55,38,23,.15)'">★</span>
+              }
+            </div>
+            <div class="rsb-total">{{ reviewSvc.totalReviews() }} reseñas</div>
+          </div>
+        </div>
+
+        <!-- Grupos por producto -->
+        @if (reviewGroups().length > 0) {
+          @for (group of reviewGroups(); track group.productId) {
+            <div class="review-group">
+              <div class="review-group-header">
+                <span class="rg-emoji" aria-hidden="true">{{ group.productEmoji }}</span>
+                <div class="rg-info">
+                  <h2 class="rg-title">{{ group.productName }}</h2>
+                  <div class="rg-meta">
+                    <span class="rg-avg">{{ group.avgRating }} ★</span>
+                    <span class="rg-count">{{ group.totalReviews }} reseñas</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="review-cards-grid">
+                @for (review of group.reviews; track review.id) {
+                  <app-producer-review-card
+                    [review]="review"
+                    (replied)="handleReply($event)"
+                  />
+                }
+              </div>
+            </div>
+          }
+        } @else {
+          <div class="empty-state">
+            <div class="empty-icon">★</div>
+            <div class="empty-title">Sin reseñas aún</div>
+            <div class="empty-desc">Cuando los compradores califiquen tus productos, las reseñas aparecerán aquí.</div>
+          </div>
+        }
       </div>
     }
 

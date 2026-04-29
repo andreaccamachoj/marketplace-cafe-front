@@ -12,10 +12,14 @@ import { DashboardNavComponent } from '@shared/layout/dashboard-nav/dashboard-na
 import { ProducerProductService } from '../../services/producer-product.service';
 import { ProducerOrderService } from '../../services/producer-order.service';
 import { FarmService } from '../../services/farm.service';
+import { ProducerProfileService } from '../../services/producer-profile.service';
+import { ProducerReviewService } from '../../services/producer-review.service';
 import { ReceivedOrderStatus } from '../../models/received-order.model';
 import { IManagedProduct } from '../../models/managed-product.model';
 import { IFarm } from '../../models/farm.model';
 import { ICertification } from '../../models/certification.model';
+import { IProducerProfilePayload, IProducerPasswordPayload } from '../../models/producer-profile.model';
+import { IProducerReplyPayload } from '../../models/producer-review.model';
 import { ProductTableRowComponent } from '../../components/product-table-row/product-table-row.component';
 import { ReceivedOrderRowComponent } from '../../components/received-order-row/received-order-row.component';
 import { FarmInfoCardComponent } from '../../components/farm-info-card/farm-info-card.component';
@@ -24,6 +28,8 @@ import { SalesMiniChartComponent } from '../../components/sales-mini-chart/sales
 import { ProductFormModalComponent } from '../../components/product-form-modal/product-form-modal.component';
 import { FarmEditModalComponent } from '../../components/farm-edit-modal/farm-edit-modal.component';
 import { CertificationFormModalComponent } from '../../components/certification-form-modal/certification-form-modal.component';
+import { ProducerProfileFormComponent } from '../../components/producer-profile-form/producer-profile-form.component';
+import { ProducerReviewCardComponent } from '../../components/producer-review-card/producer-review-card.component';
 
 @Component({
   selector: 'app-producer-dashboard',
@@ -39,20 +45,24 @@ import { CertificationFormModalComponent } from '../../components/certification-
     ProductFormModalComponent,
     FarmEditModalComponent,
     CertificationFormModalComponent,
+    ProducerProfileFormComponent,
+    ProducerReviewCardComponent,
   ],
   templateUrl: './producer-dashboard.component.html',
   styleUrl: './producer-dashboard.component.scss',
 })
 export class ProducerDashboardComponent {
-  protected readonly auth       = inject(AuthService);
-  protected readonly notify     = inject(NotificationService);
-  protected readonly productSvc = inject(ProducerProductService);
-  protected readonly orderSvc   = inject(ProducerOrderService);
-  protected readonly farmSvc    = inject(FarmService);
+  protected readonly auth          = inject(AuthService);
+  protected readonly notify        = inject(NotificationService);
+  protected readonly productSvc    = inject(ProducerProductService);
+  protected readonly orderSvc      = inject(ProducerOrderService);
+  protected readonly farmSvc       = inject(FarmService);
+  protected readonly profileSvc    = inject(ProducerProfileService);
+  protected readonly reviewSvc     = inject(ProducerReviewService);
 
   /* ── UI state ── */
   readonly sidebarOpen   = signal(false);
-  readonly activeTab     = signal<'products' | 'orders' | 'farm'>('products');
+  readonly activeTab     = signal<'products' | 'orders' | 'farm' | 'profile' | 'reviews'>('products');
   readonly productFilter = signal<'all' | 'active' | 'draft' | 'inactive'>('all');
   readonly productSearch = signal('');
 
@@ -108,6 +118,13 @@ export class ProducerDashboardComponent {
   /* ── Farm from service ── */
   readonly farm = this.farmSvc.farm;
 
+  /* ── Profile from service ── */
+  readonly profile      = this.profileSvc.profile;
+  readonly profileLoading = signal(false);
+
+  /* ── Reviews from service ── */
+  readonly reviewGroups = this.reviewSvc.reviewGroups;
+
   /* ── Stats (mock) ── */
   readonly monthlySales  = signal(912000);
   readonly avgRating     = signal(4.8);
@@ -127,7 +144,7 @@ export class ProducerDashboardComponent {
     this.sidebarOpen.update(v => !v);
   }
 
-  setTab(tab: 'products' | 'orders' | 'farm'): void {
+  setTab(tab: 'products' | 'orders' | 'farm' | 'profile' | 'reviews'): void {
     this.activeTab.set(tab);
   }
 
@@ -231,5 +248,29 @@ export class ProducerDashboardComponent {
     this.farmSvc.addCertification(cert);
     this.notify.success('Certificación agregada correctamente.');
     this.closeCertModal();
+  }
+
+  /* ── Actions: producer profile ── */
+  handleSaveProfile(payload: IProducerProfilePayload): void {
+    this.profileLoading.set(true);
+    // Mock async — simulate a brief API call delay.
+    setTimeout(() => {
+      this.profileSvc.update(payload);
+      this.profileLoading.set(false);
+      this.notify.success('Perfil actualizado correctamente.');
+    }, 600);
+  }
+
+  handleSavePassword(payload: IProducerPasswordPayload): void {
+    // In a real app this would call an auth endpoint.
+    // For the mock we just show a success toast.
+    void payload;
+    this.notify.success('Contraseña actualizada correctamente.');
+  }
+
+  /* ── Actions: reviews ── */
+  handleReply(payload: IProducerReplyPayload): void {
+    this.reviewSvc.reply(payload.reviewId, payload.text);
+    this.notify.success('Respuesta publicada.');
   }
 }

@@ -132,6 +132,16 @@ export class AuthService {
     this.router.navigate(['/auth/login']);
   }
 
+  /**
+   * Actualiza campos del usuario en sesión y persiste en storage.
+   * Usado por servicios de perfil para mantener navbar sincronizada.
+   */
+  updateProfile(patch: { fullName?: string; phone?: string }): void {
+    this.currentUser.update(u => (u ? { ...u, ...patch } : u));
+    const updated = this.currentUser();
+    if (updated) this.storage.setUser(updated);
+  }
+
   hasRole(role: Role): boolean {
     return this.currentUser()?.roles.includes(role) ?? false;
   }
