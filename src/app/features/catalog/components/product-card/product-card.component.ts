@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { IProduct } from '../../models/product.model';
@@ -27,15 +27,17 @@ import { CurrencyCopPipe } from '@shared/pipes/currency-cop.pipe';
           }
         </div>
 
-        <!-- Wishlist — arriba derecha -->
-        <button
-          type="button"
-          class="card-wishlist"
-          [class.active]="isFav"
-          [attr.aria-label]="(isFav ? 'Quitar de' : 'Agregar a') + ' lista de deseos'"
-          [attr.aria-pressed]="isFav"
-          (click)="onToggleFavorite()"
-        >{{ isFav ? '♥' : '♡' }}</button>
+        <!-- Wishlist — arriba derecha (solo compradores) -->
+        @if (canPurchase()) {
+          <button
+            type="button"
+            class="card-wishlist"
+            [class.active]="isFav"
+            [attr.aria-label]="(isFav ? 'Quitar de' : 'Agregar a') + ' lista de deseos'"
+            [attr.aria-pressed]="isFav"
+            (click)="onToggleFavorite()"
+          >{{ isFav ? '♥' : '♡' }}</button>
+        }
       </div>
 
       <!-- Cuerpo -->
@@ -75,25 +77,27 @@ import { CurrencyCopPipe } from '@shared/pipes/currency-cop.pipe';
           <span class="price-value">{{ product.price | currencyCop }}</span>
           <span class="price-unit">/ {{ product.unit || '500g' }}</span>
         </div>
-        <button
-          type="button"
-          class="btn-add-cart"
-          [class.added]="inCart"
-          [attr.aria-label]="(inCart ? 'Ya en carrito' : 'Agregar al carrito') + ': ' + product.name"
-          (click)="onAdd()"
-        >
-          @if (inCart) {
-            <span>✓ En carrito</span>
-          } @else {
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                 stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
-              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
-              <line x1="3" y1="6" x2="21" y2="6"/>
-              <path d="M16 10a4 4 0 01-8 0"/>
-            </svg>
-            <span>Agregar</span>
-          }
-        </button>
+        @if (canPurchase()) {
+          <button
+            type="button"
+            class="btn-add-cart"
+            [class.added]="inCart"
+            [attr.aria-label]="(inCart ? 'Ya en carrito' : 'Agregar al carrito') + ': ' + product.name"
+            (click)="onAdd()"
+          >
+            @if (inCart) {
+              <span>✓ En carrito</span>
+            } @else {
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+                <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <path d="M16 10a4 4 0 01-8 0"/>
+              </svg>
+              <span>Agregar</span>
+            }
+          </button>
+        }
       </div>
     </article>
   `,
@@ -103,6 +107,11 @@ export class ProductCardComponent {
   @Input({ required: true }) product!: IProduct;
   @Input() inCart = false;
   @Input() isFav  = false;
+
+  /** Controla si se muestran acciones de compra (carrito, favoritos).
+   *  Verdadero para compradores y usuarios no autenticados; falso para productores/admins. */
+  readonly canPurchase = input(true);
+
   @Output() add            = new EventEmitter<IProduct>();
   @Output() toggleFavorite = new EventEmitter<string>();
 

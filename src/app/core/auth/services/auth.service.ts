@@ -68,6 +68,12 @@ export class AuthService {
     () => this.currentUser()?.producerStatus === ProducerStatus.APPROVED,
   );
 
+  /**
+   * Verdadero solo para compradores autenticados.
+   * Productores y admins no pueden realizar compras.
+   */
+  readonly isBuyer = computed(() => this.currentRole() === Role.BUYER);
+
   async login(credentials: ILoginCredentials): Promise<void> {
     const found = SEED_USERS.find(
       u => u.email === credentials.email && u.password === credentials.password,

@@ -12,6 +12,7 @@ import { ProductService } from '../../services/product.service';
 import { ReviewService } from '../../services/review.service';
 import { CartService } from '@features/buyer/services/cart.service';
 import { FavoritesService } from '@features/buyer/services/favorites.service';
+import { AuthService } from '@core/auth/services/auth.service';
 
 import { ProductGalleryComponent } from '../../components/product-gallery/product-gallery.component';
 import { ProductOptionsComponent } from '../../components/product-options/product-options.component';
@@ -101,16 +102,18 @@ import { LoadingSpinnerComponent } from '@shared/ui/loading-spinner/loading-spin
                 </div>
               </div>
 
-              <!-- Favorite toggle -->
-              <button
-                type="button"
-                class="btn-favorite"
-                [class.btn-favorite--active]="isFav()"
-                [attr.aria-label]="isFav() ? 'Eliminar de favoritos' : 'Agregar a favoritos'"
-                (click)="toggleFavorite()"
-              >
-                {{ isFav() ? '❤️' : '🤍' }} {{ isFav() ? 'En favoritos' : 'Agregar a favoritos' }}
-              </button>
+              <!-- Favorite toggle (solo compradores) -->
+              @if (canPurchase()) {
+                <button
+                  type="button"
+                  class="btn-favorite"
+                  [class.btn-favorite--active]="isFav()"
+                  [attr.aria-label]="isFav() ? 'Eliminar de favoritos' : 'Agregar a favoritos'"
+                  (click)="toggleFavorite()"
+                >
+                  {{ isFav() ? '❤️' : '🤍' }} {{ isFav() ? 'En favoritos' : 'Agregar a favoritos' }}
+                </button>
+              }
 
               <!-- Options: presentation + roast -->
               @if (prod.presentationTypes?.length || prod.roastLevels?.length) {
@@ -130,6 +133,7 @@ import { LoadingSpinnerComponent } from '@shared/ui/loading-spinner/loading-spin
                 [maxStock]="prod.maxStock ?? 100"
                 [producerName]="prod.producerName"
                 [region]="prod.region"
+                [canPurchase]="canPurchase()"
                 (addToCart)="onAddToCart($event)"
                 (buyNow)="onBuyNow($event)"
               />
@@ -240,6 +244,12 @@ export class ProductDetailComponent {
   private readonly reviewService  = inject(ReviewService);
   private readonly cartService    = inject(CartService);
   private readonly favSvc         = inject(FavoritesService);
+  private readonly auth           = inject(AuthService);
+
+  /** Oculta acciones de compra para productores y admins. */
+  protected readonly canPurchase = computed(
+    () => !this.auth.isAuthenticated() || this.auth.isBuyer(),
+  );
 
   protected readonly product = toSignal<IProduct | undefined>(
     this.route.data.pipe(map(d => d['product'] as IProduct | undefined)),

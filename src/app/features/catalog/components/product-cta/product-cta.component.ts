@@ -1,5 +1,5 @@
 import {
-  Component, Input, Output, EventEmitter, signal, ChangeDetectionStrategy,
+  Component, Input, Output, EventEmitter, signal, ChangeDetectionStrategy, input,
 } from '@angular/core';
 import { CurrencyCopPipe } from '@shared/pipes/currency-cop.pipe';
 import { QuantityControlComponent } from '@shared/ui/quantity-control/quantity-control.component';
@@ -57,73 +57,78 @@ import { QuantityControlComponent } from '@shared/ui/quantity-control/quantity-c
       }
     </div>
 
-    <!-- Quantity -->
-    <div class="qty-row" aria-label="Seleccionar cantidad">
-      <app-quantity-control
-        [min]="1"
-        [max]="stock"
-        (quantityChange)="quantity.set($event)"
-      />
-      @if (stock > 0) {
-        <span class="qty-max">Máx. {{ stock }} disponibles</span>
-      }
-    </div>
+    <!-- Acciones de compra: solo visibles para compradores -->
+    @if (canPurchase()) {
 
-    <!-- CTA buttons: buy-now first, then add-cart, then wishlist -->
-    <div class="cta-group">
-      <button
-        class="btn-buy-now"
-        type="button"
-        [disabled]="stock === 0"
-        (click)="buyNow.emit(quantity())"
-        [attr.aria-label]="'Comprar ahora'"
-      >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
-          <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
-          <line x1="3" y1="6" x2="21" y2="6"/>
-          <path d="M16 10a4 4 0 01-8 0"/>
-        </svg>
-        <span>Comprar ahora</span>
-      </button>
-      <button
-        class="btn-add-cart"
-        type="button"
-        [class.added]="cartAdded()"
-        [disabled]="stock === 0"
-        (click)="onAddToCart()"
-        [attr.aria-label]="'Agregar al carrito'"
-      >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
-          <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-          <path d="M1 1h4l2.68 13.39a2 2 0 002 2h9.72a2 2 0 002-1.61L23 6H6"/>
-        </svg>
-        {{ cartAdded() ? '¡Agregado!' : 'Agregar al carrito' }}
-      </button>
-      <button
-        class="btn-wishlist-full"
-        type="button"
-        [class.active]="wishlistActive()"
-        (click)="toggleWishlist()"
-        [attr.aria-pressed]="wishlistActive()"
-        aria-label="Guardar en favoritos"
-      >
-        <span aria-hidden="true">{{ wishlistActive() ? '♥' : '♡' }}</span>
-        Guardar en favoritos
-      </button>
-    </div>
+      <!-- Quantity -->
+      <div class="qty-row" aria-label="Seleccionar cantidad">
+        <app-quantity-control
+          [min]="1"
+          [max]="stock"
+          (quantityChange)="quantity.set($event)"
+        />
+        @if (stock > 0) {
+          <span class="qty-max">Máx. {{ stock }} disponibles</span>
+        }
+      </div>
 
-    <!-- Guarantees: 3 column -->
-    <div class="guarantees" role="list" aria-label="Garantías del producto">
-      @for (g of GUARANTEES; track g.text) {
-        <div class="guarantee" role="listitem">
-          <div class="guarantee-icon" aria-hidden="true">{{ g.icon }}</div>
-          <div class="guarantee-text">{{ g.text }}</div>
-          <div class="guarantee-sub">{{ g.sub }}</div>
-        </div>
-      }
-    </div>
+      <!-- CTA buttons: buy-now first, then add-cart, then wishlist -->
+      <div class="cta-group">
+        <button
+          class="btn-buy-now"
+          type="button"
+          [disabled]="stock === 0"
+          (click)="buyNow.emit(quantity())"
+          [attr.aria-label]="'Comprar ahora'"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path d="M16 10a4 4 0 01-8 0"/>
+          </svg>
+          <span>Comprar ahora</span>
+        </button>
+        <button
+          class="btn-add-cart"
+          type="button"
+          [class.added]="cartAdded()"
+          [disabled]="stock === 0"
+          (click)="onAddToCart()"
+          [attr.aria-label]="'Agregar al carrito'"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+            <path d="M1 1h4l2.68 13.39a2 2 0 002 2h9.72a2 2 0 002-1.61L23 6H6"/>
+          </svg>
+          {{ cartAdded() ? '¡Agregado!' : 'Agregar al carrito' }}
+        </button>
+        <button
+          class="btn-wishlist-full"
+          type="button"
+          [class.active]="wishlistActive()"
+          (click)="toggleWishlist()"
+          [attr.aria-pressed]="wishlistActive()"
+          aria-label="Guardar en favoritos"
+        >
+          <span aria-hidden="true">{{ wishlistActive() ? '♥' : '♡' }}</span>
+          Guardar en favoritos
+        </button>
+      </div>
+
+      <!-- Guarantees: 3 column -->
+      <div class="guarantees" role="list" aria-label="Garantías del producto">
+        @for (g of GUARANTEES; track g.text) {
+          <div class="guarantee" role="listitem">
+            <div class="guarantee-icon" aria-hidden="true">{{ g.icon }}</div>
+            <div class="guarantee-text">{{ g.text }}</div>
+            <div class="guarantee-sub">{{ g.sub }}</div>
+          </div>
+        }
+      </div>
+
+    } <!-- /canPurchase -->
 
     <!-- Producer mini card -->
     @if (producerName) {
@@ -150,6 +155,9 @@ export class ProductCtaComponent {
   @Input() maxStock = 100;
   @Input() producerName = '';
   @Input() region = '';
+
+  /** Cuando false (productores/admins) oculta todas las acciones de compra. */
+  readonly canPurchase = input(true);
 
   @Output() addToCart = new EventEmitter<number>();
   @Output() buyNow    = new EventEmitter<number>();

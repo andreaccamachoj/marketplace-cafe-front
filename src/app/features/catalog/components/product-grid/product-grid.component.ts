@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IProduct } from '../../models/product.model';
 import { ProductCardComponent } from '../product-card/product-card.component';
@@ -27,6 +27,7 @@ import { SkeletonComponent } from '@shared/ui/skeleton/skeleton.component';
         @for (product of products; track product.id) {
           <app-product-card
             [product]="product"
+            [canPurchase]="canPurchase()"
             (add)="onAddToCart($event)"
             (toggleFavorite)="onToggleFavorite($event)"
           ></app-product-card>
@@ -39,6 +40,10 @@ import { SkeletonComponent } from '@shared/ui/skeleton/skeleton.component';
 export class ProductGridComponent {
   @Input() products: IProduct[] = [];
   @Input() loading = false;
+
+  /** Propagado desde la página padre; oculta botones de compra para no-compradores. */
+  readonly canPurchase = input(true);
+
   @Output() addToCart = new EventEmitter<IProduct>();
   @Output() toggleFavorite = new EventEmitter<string>();
   @Output() cardClick = new EventEmitter<string>();

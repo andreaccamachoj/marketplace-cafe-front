@@ -6,6 +6,7 @@ import { IProduct, SortBy, CatalogFilter } from '../../models/product.model';
 import { ProductService } from '../../services/product.service';
 import { CartService } from '@features/buyer/services/cart.service';
 import { FavoritesService } from '@features/buyer/services/favorites.service';
+import { AuthService } from '@core/auth/services/auth.service';
 import { LandingNavbarComponent } from '@shared/layout/landing-navbar/landing-navbar.component';
 import { HeroSectionComponent } from '../../components/hero-section/hero-section.component';
 import { FiltersBarComponent } from '../../components/filters-bar/filters-bar.component';
@@ -54,6 +55,7 @@ import { FooterComponent } from '@shared/layout/footer/footer.component';
       <app-product-grid
         [products]="products()"
         [loading]="false"
+        [canPurchase]="canPurchase()"
         (addToCart)="onAddToCart($event)"
         (toggleFavorite)="onToggleFavorite($event)"
       ></app-product-grid>
@@ -74,6 +76,15 @@ export class HomeComponent {
   private readonly productService = inject(ProductService);
   private readonly cartService    = inject(CartService);
   private readonly favSvc         = inject(FavoritesService);
+  private readonly auth           = inject(AuthService);
+
+  /**
+   * Verdadero cuando el usuario NO está autenticado (exploración libre)
+   * o está autenticado como BUYER. Productores y admins no pueden comprar.
+   */
+  protected readonly canPurchase = computed(
+    () => !this.auth.isAuthenticated() || this.auth.isBuyer(),
+  );
 
   protected readonly selectedCategory = signal<string | null>(null);
   protected readonly selectedCerts    = signal<string[]>([]);
