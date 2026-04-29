@@ -1,8 +1,8 @@
 # Plan Real Retrospectivo — World Coffee Marketplace
 ## Documento generado por auditoría comparativa post-implementación
 
-> **Fecha de auditoría:** 2026-04-29
-> **Estado del código auditado:** commit `e0ec655` (rama `feature/login`)
+> **Fecha de auditoría:** 2026-04-29 (última actualización: Fase 19)
+> **Estado del código auditado:** commit `803d352` (rama `feature/login`)
 > **Comparado contra:** `md/PLAN.md` (v2.0, 2026-04-20), `md/PROYECTO_CONTEXT.md` (Junio 2025), `md/PROJECT_PROGRESS_CONTEXT.md` (2026-04-21)
 > **Universidad:** UNAB — Maestría en Gestión, Aplicación y Desarrollo de Software
 
@@ -124,6 +124,7 @@ Tabla resumen de los cambios más importantes frente a `md/PLAN.md` v2.0 y `md/P
 | D-28 | **Acceso WCAG-AA + breakpoints 380/500/768/900/1024/1280** — fase 10 final con focus visible 3px, skip-link, `aria-live` en toasts, focus trap en modales, `_responsive.scss` con mixins. | Media | ✅ Planeado en PLAN §10 | Implementado |
 | D-29 | **CRUD completo de direcciones** — saldado en Fase 18. `AddressService` expandido con `add/update/remove`; `IAddress` ampliado con `line2?`, `department`, `zipCode?`; `IAddressPayload` añadida; `AddressCardComponent` con outputs `setDefault/edit/delete`; `AddressFormComponent` (nuevo, dumb) con 6 campos validados; sección "Mis Direcciones" integrada en el tab Perfil del buyer-dashboard. | Media | ✅ Implementado (Fase 18) | Completado |
 | D-30 | **HU-05 verificación de documentos del productor — NO implementada visualmente.** PLAN §7.6 (`UploadZoneComponent` + lista de docs `pending/approved/rejected`) no se concretó: existe `UploadZoneComponent` y `producerStatus` se ve en el header del producer-dashboard, pero **no hay UI de carga de documentos para el productor**. | Media | ⚠️ Reducción de alcance silenciosa | Pendiente |
+| D-31 | **Checkout overlay + selección de dirección en carrito** — PLAN.md §6.2 mencionaba "confirmar pedido" sin detallar el flujo de pago. La implementación (Fase 19) introdujo: (1) `CheckoutOverlayComponent` pantalla completa con instrucciones para 4 métodos de pago (Nequi, Bancolombia, Daviplata, BRE-B) y aviso de comprobante por WhatsApp; (2) `CartSummaryComponent` refactorizado con selector reactivo de dirección de entrega integrado con `AddressService`; (3) `OrderService.place()` con estado inicial `pending_verification`; (4) código de orden `WCM-YYYY-NNN` generado automáticamente; (5) `CartService.clear()` invocado al confirmar. | Alta | 🆕 Feature emergente con diseño propio — integración completa del flujo de compra sin pasarela de pagos | ✅ Implementado (Fase 19) |
 
 ---
 
@@ -1324,6 +1325,9 @@ src/
 | **DA-13** (nueva) | `ProducerProfileService` y `BuyerProfileService` cargan perfil con datos hardcoded coherentes con `SEED_USERS` | Mock pragmatico, evita backend para perfiles |
 | **DA-14** (nueva) | `app.routes.ts` mantiene aliases `/buyer`, `/producer`, `/admin` con `redirectTo` | Compatibilidad con enlaces antiguos sin romper UX |
 | **DA-15** (nueva) | `RenderMode.Server` para `/productos/:id` | Datos dinámicos por ID — evita prerenderizar 12 páginas separadas |
+| **DA-16** (nueva) | `CheckoutOverlayComponent` como dumb puro con datos de pago locales | Los 4 métodos de pago y sus colores de marca son constantes dentro del componente — desacoplamiento total del smart layer |
+| **DA-17** (nueva) | `color-mix(in srgb, var(--accent) 5%, white)` para tinte dinámico de tarjetas de pago | Una sola regla CSS maneja los 4 colores de marca sin clases por método; requiere custom property `--accent` en el elemento |
+| **DA-18** (nueva) | `selectedAddressId` inicializado sincrónicamente desde `defaultAddress()` | `signal<string>(this.addrSvc.defaultAddress()?.id ?? '')` en construcción evita un `effect()` extra y garantiza consistencia con el perfil |
 
 ### B.3 Patrones emergentes no documentados explícitamente
 
@@ -1358,6 +1362,10 @@ src/
 | 16 | 🆕 Aliases legacy `/buyer`, `/producer`, `/admin` con redirectTo | Fase 11 | Compatibilidad pragmática |
 | 17 | 🆕 6 breakpoints (380/500/768/900/1024/1280) | Fase 12 | PROYECTO_CONTEXT.md sólo pedía 3 (375/768/1280) |
 | 18 | 🆕 `withComponentInputBinding()` y `withViewTransitions()` en provideRouter | Fase 0 | Plan no profundizaba |
+| 19 | 🆕 `CheckoutOverlayComponent` con 4 métodos de pago colombianos y aviso WhatsApp | Fase 19 | PLAN.md no detallaba el flujo de pago |
+| 20 | 🆕 Selector reactivo de dirección en `CartSummaryComponent` integrado con `AddressService` | Fase 19 | Flujo de compra completo emergente |
+| 21 | 🆕 `OrderService.place()` con estado `pending_verification` y código `WCM-YYYY-NNN` | Fase 19 | Detalle de generación de pedido no planificado |
+| 22 | 🆕 `CartService.clear()` invocado al confirmar pedido | Fase 19 | Consecuencia natural del flujo de compra |
 
 ---
 
@@ -1423,34 +1431,128 @@ Tab "Mi Perfil" del buyer-dashboard muestra dos bloques: `<app-buyer-profile-for
 
 ---
 
+### Fase 19 🆕 — Checkout Overlay y Selección de Dirección en Carrito
+
+> **Commit:** `803d352 feat(buyer): checkout overlay con métodos de pago y selección de dirección en carrito` · Rama `feature/login`
+> **Saldó deuda:** D-31
+> **Prerequisito:** Fase 18 (CRUD de direcciones)
+
+#### Objetivo
+
+Implementar el flujo completo de cierre de compra sin pasarela de pagos real: cuando el comprador presiona "Proceder al pago" en el carrito, aparece un overlay de pantalla completa con instrucciones de transferencia para los cuatro métodos de pago disponibles, aviso de envío de comprobante por WhatsApp y un botón "Confirmar pedido" que registra el pedido formalmente, vacía el carrito y cierra el overlay. Además, el carrito permite seleccionar y cambiar la dirección de entrega entre las direcciones guardadas del comprador de forma reactiva.
+
+#### Entregables técnicos
+
+**Modelos** (ampliados)
+
+- `features/buyer/models/order.model.ts`
+  - `OrderStatus`: añadido `'pending_verification'` al tipo unión (7 estados en total)
+  - `ORDER_STATUS_LABELS`: añadida entrada `pending_verification: 'Pendiente de verificación'`
+
+**Servicio** (ampliado)
+
+- `features/buyer/services/order.service.ts`
+  - `IPlaceOrderPayload` — interfaz exportada: `items: { productId, name, qty, unitPrice, emoji }[]`, `total: number`, `address: string`
+  - `place(payload)` — genera `id = 'o' + Date.now()`, código de orden `WCM-YYYY-NNN` con número secuencial, status inicial `'pending_verification'`, stepper de 5 pasos comenzando en "Verificación de pago"; prepend a `_orders`
+
+**Componentes (dumb)**
+
+- `features/buyer/components/checkout-overlay/` (nuevo, 3 archivos)
+  - `checkout-overlay.component.ts`
+    - Inputs: `open = input<boolean>(false)`, `total = input<number>(0)`, `itemCount = input<number>(0)`, `selectedAddress = input<IAddress | null>(null)`, `confirming = input<boolean>(false)`
+    - Outputs: `confirmed = output<void>()`, `cancelled = output<void>()`
+    - `@HostListener('document:keydown.escape')` cierra con tecla Escape
+    - Constante local `PAYMENT_METHODS: IPaymentMethod[]` con 4 métodos (Nequi `#6C0E99`, Bancolombia `#FDBD00`, Daviplata `#E11E8E`, BRE-B `#0057A8`)
+  - `checkout-overlay.component.html`
+    - Backdrop `div.co-backdrop` (`z-index: 400`) + panel `div.co-panel` (`z-index: 401`, `role="dialog"`, `aria-modal="true"`)
+    - Header: título, subtítulo con count de ítems y total formateado, botón ✕
+    - Bloque de dirección seleccionada con borde verde
+    - Instrucción de pago ("Realiza la transferencia a uno de los siguientes métodos")
+    - Grid 2×2 de tarjetas de métodos de pago con `[style.--accent]` para colores de marca y `color-mix(in srgb, var(--accent) 5%, white)` en fondo
+    - Aviso WhatsApp con borde verde y número de contacto del vendedor
+    - Fila de total (fondo espresso, texto marfil)
+    - Footer: botón "Cancelar" (secundario) + botón "Confirmar pedido" (primario, con spinner cuando `confirming()`)
+  - `checkout-overlay.component.scss`
+    - `.co-backdrop`: `position: fixed; inset: 0; z-index: 400; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px)`
+    - `.co-panel`: `position: fixed; inset: 0; z-index: 401; overflow-y: auto; max-width: 720px; margin: auto`
+    - `.co-method-card`: tarjeta con `background: color-mix(in srgb, var(--accent) 5%, white)` y borde `color-mix(in srgb, var(--accent) 20%, transparent)`
+
+- `features/buyer/components/cart-summary/` (refactorizado)
+  - `cart-summary.component.ts`
+    - Reemplazado input `defaultAddress: IAddress | null` por `addresses = input<IAddress[]>([])` y `selectedAddressId = input<string>('')`
+    - Añadido `addressChange = output<string>()`
+    - Método `onAddressChange(event: Event): void` extrae `select.value` y emite
+  - `cart-summary.component.html`
+    - Bloque "Dirección de envío": `<select class="address-select">` con todas las direcciones + tarjeta `div.address-preview` que muestra la dirección actualmente elegida
+    - Estado vacío si no hay direcciones: mensaje con instrucción de ir a perfil
+    - Botón checkout deshabilitado con texto "Selecciona una dirección" cuando `!selectedAddressId()`
+  - `cart-summary.component.scss`
+    - Añadidos: `.address-select` (dropdown personalizado), `.address-preview` (tarjeta con fondo verde tenue), `.address-icon`, `.address-info`, `.address-label`, `.address-line`, `.address-city`, `.address-empty`
+
+**Página (smart)**
+
+- `features/buyer/pages/dashboard/buyer-dashboard.component.ts`
+  - Importa `CheckoutOverlayComponent`, `IPlaceOrderPayload`
+  - Señales nuevas: `selectedAddressId`, `selectedAddress` (computed), `checkoutOpen`, `checkoutConfirming`
+  - Handlers nuevos: `onAddressChange(id)`, `onCheckout()`, `handleConfirmOrder()`, `handleCancelCheckout()`
+  - `handleConfirmOrder()`: construye `IPlaceOrderPayload`, llama `orderSvc.place()`, llama `cartSvc.clear()`, muestra toast de éxito con latencia simulada de 700 ms, cierra overlay
+
+- `features/buyer/pages/dashboard/buyer-dashboard.component.html`
+  - `<app-cart-summary>`: binding actualizado con `[addresses]`, `[selectedAddressId]`, `(addressChange)`
+  - `<app-checkout-overlay>` añadido antes del review modal con todos sus bindings
+
+#### Decisiones arquitectónicas
+
+- **Sin pasarela de pagos**: el flujo es informativo. El comprador ve los datos de transferencia y confirma manualmente. El `OrderService` registra el pedido como `pending_verification` para que el vendedor lo gestione offline.
+- **Overlay como componente dumb**: todos los datos de métodos de pago (titulares, cuentas, colores de marca) son constantes locales dentro del componente. El componente no inyecta servicios — solo recibe `total`, `itemCount`, `selectedAddress`, `confirming` y emite `confirmed`/`cancelled`.
+- **`color-mix()` para tinte dinámico**: en lugar de definir clases SCSS por cada método de pago, se usa la propiedad CSS `--accent` asignada inline + `color-mix(in srgb, var(--accent) 5%, white)` como fondo. Esto mantiene un único bloque CSS reutilizable para las 4 tarjetas.
+- **Tecla Escape para cerrar**: `@HostListener('document:keydown.escape')` mejora la accesibilidad del overlay sin necesidad de un `FocusTrap` completo.
+- **Latencia simulada de 700 ms**: `setTimeout(..., 700)` en `handleConfirmOrder()` da feedback visual del spinner de "confirmando" antes de cerrar el overlay, imitando la respuesta de un backend real.
+- **`selectedAddressId` inicializado desde `defaultAddress`**: `signal<string>(this.addrSvc.defaultAddress()?.id ?? '')` — lectura síncrona en construcción, evita un `effect()` adicional.
+
+#### Dependencias previas
+
+Fase 18 (CRUD de direcciones — `AddressService.addresses`, `IAddress`, `IAddressPayload`), Fase 8 (buyer dashboard base), Fases 6–8 (CartService, OrderService).
+
+#### Resultado esperado
+
+1. Tab "Carrito": selector de dirección de envío (dropdown + preview) reactivo con las direcciones del perfil del comprador.
+2. Botón "Proceder al pago" deshabilitado hasta seleccionar dirección.
+3. Al hacer clic: overlay pantalla completa con instrucciones de pago (Nequi, Bancolombia, Daviplata, BRE-B) + aviso de comprobante WhatsApp + botón "Confirmar pedido".
+4. Al confirmar: pedido registrado con estado `pending_verification`, carrito vacío, toast de éxito, overlay cerrado.
+5. Tab "Pedidos": nuevo pedido visible con código `WCM-YYYY-NNN` y estado "Pendiente de verificación".
+
+---
+
 ### Funcionalidades del PLAN.md original NO implementadas (deuda silenciosa)
 
 | # | Feature plan original | Estado | ID deuda |
 |---|----------------------|--------|----------|
 | 1 | HU-05 carga de documentos del productor (`UploadZoneComponent` para cedula/RUT/cámara comercio) | ❌ No implementado | D-30 |
 | 2 | CRUD completo de direcciones (PLAN §6.5) | ✅ Implementado en Fase 18 | D-29 |
-| 3 | Cancelación de pedido desde buyer-dashboard (PLAN §6.2) | ❌ No implementado | — |
-| 4 | `BreadcrumbComponent` shared (PLAN B-06) | ❌ No implementado, breadcrumb inline en product-detail | DT-08 |
-| 5 | Directivas `scroll-spy` e `intersection-observer` (PLAN B-07) | ❌ No implementado | DT-… |
-| 6 | `shared/utils/form.utils.ts`, `date.utils.ts`, `string.utils.ts` (PLAN B-08) | ❌ No implementado | DT-09 |
-| 7 | `angular.json` con `fileReplacements` para production environments | ❌ Pendiente | DT-01 |
-| 8 | Pestaña "products" del admin con servicio propio (PLAN §8.4) | ⚠️ Mock inline | D-24 |
-| 9 | Verificación de documentos en aprobación productor con UI rica | ⚠️ Solo lista de docs sin preview | Parcial |
-| 10 | Persistencia del carrito en `localStorage` vía `TokenStorageService` (PLAN §6.2) | ❌ Solo en memoria | — |
-| 11 | NgRx Store + Effects + Selectors (PROYECTO_CONTEXT §9) | ❌ Reemplazado por Signals (ADR-002) | Decisión |
-| 12 | NgModules por feature (PROYECTO_CONTEXT §9) | ❌ Reemplazado por standalone (ADR-001) | Decisión |
-| 13 | Tests Cypress E2E (PROYECTO_CONTEXT §9) | ❌ Solo Karma/Jasmine | — |
+| 3 | Flujo de confirmación de pedido / checkout (PLAN §6.2) | ✅ Implementado en Fase 19 — overlay con 4 métodos de pago, selección de dirección reactiva, `OrderService.place()` | D-31 |
+| 4 | Cancelación de pedido desde buyer-dashboard (PLAN §6.2) | ❌ No implementado | — |
+| 5 | `BreadcrumbComponent` shared (PLAN B-06) | ❌ No implementado, breadcrumb inline en product-detail | DT-08 |
+| 6 | Directivas `scroll-spy` e `intersection-observer` (PLAN B-07) | ❌ No implementado | DT-… |
+| 7 | `shared/utils/form.utils.ts`, `date.utils.ts`, `string.utils.ts` (PLAN B-08) | ❌ No implementado | DT-09 |
+| 8 | `angular.json` con `fileReplacements` para production environments | ❌ Pendiente | DT-01 |
+| 9 | Pestaña "products" del admin con servicio propio (PLAN §8.4) | ⚠️ Mock inline | D-24 |
+| 10 | Verificación de documentos en aprobación productor con UI rica | ⚠️ Solo lista de docs sin preview | Parcial |
+| 11 | Persistencia del carrito en `localStorage` vía `TokenStorageService` (PLAN §6.2) | ❌ Solo en memoria | — |
+| 12 | NgRx Store + Effects + Selectors (PROYECTO_CONTEXT §9) | ❌ Reemplazado por Signals (ADR-002) | Decisión |
+| 13 | NgModules por feature (PROYECTO_CONTEXT §9) | ❌ Reemplazado por standalone (ADR-001) | Decisión |
+| 14 | Tests Cypress E2E (PROYECTO_CONTEXT §9) | ❌ Solo Karma/Jasmine | — |
 
 ---
 
 ## Cierre
 
-Este documento refleja el plan que **debió haberse escrito desde el inicio** para llegar al estado actual del proyecto (inicialmente auditado en commit `e0ec655`; actualizado en Fase 18 con CRUD de direcciones). Las desviaciones más significativas (sin NgModules, sin NgRx, 5 tabs en lugar de 4, autocomplete con debounce, control de compra por rol, sincronización inter-servicio Profile↔Auth, cambio de contraseña separado, edición/eliminación de reseñas, modal consolidado, navbar autocontenida) emergieron de:
+Este documento refleja el plan que **debió haberse escrito desde el inicio** para llegar al estado actual del proyecto (inicialmente auditado en commit `e0ec655`; actualizado en Fase 18 con CRUD de direcciones; actualizado en Fase 19 con checkout overlay y selección reactiva de dirección — commit `803d352`). Las desviaciones más significativas (sin NgModules, sin NgRx, 5 tabs en lugar de 4, autocomplete con debounce, control de compra por rol, sincronización inter-servicio Profile↔Auth, cambio de contraseña separado, edición/eliminación de reseñas, modal consolidado, navbar autocontenida, checkout overlay con 4 métodos de pago colombianos) emergieron de:
 
 1. **Decisiones arquitectónicas tomadas durante la implementación** (Standalone, Signals — formalizadas en ADR-001 y ADR-002 retrospectivamente)
 2. **Bugs encontrados y corregidos sobre la marcha** (cart desconectado, navbar ciega al estado de sesión, modal duplicado, producerApprovedGuard ausente)
 3. **Refactores de mejora UX** (5 tabs en cada dashboard, perfil dividido en dos formularios, autocomplete con debounce)
-4. **Reducciones de alcance silenciosas** (HU-05 documentos, cancelación de pedido — quedan como deuda controlada; CRUD de direcciones saldado en Fase 18)
+4. **Reducciones de alcance silenciosas** (HU-05 documentos, cancelación de pedido — quedan como deuda controlada; CRUD de direcciones saldado en Fase 18; checkout flow saldado en Fase 19)
 
 El proyecto cumple su propósito académico: demostrar la arquitectura frontend completa de un marketplace y trazar las decisiones asistidas por IA en ADRs versionados (4 ADRs principales) y registros de prompts en el repositorio.
 
