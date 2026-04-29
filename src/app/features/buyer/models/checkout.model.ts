@@ -7,8 +7,20 @@ export interface ICheckoutPayload {
 
 export interface IAddress {
   id: string;
-  label: string;        // 'Casa', 'Oficina'
+  label: string;        // 'Casa', 'Oficina', 'Trabajo'…
   line1: string;
+  line2?: string;
   city: string;
+  department: string;
+  zipCode?: string;
   isDefault: boolean;
+}
+
+export interface IAddressPayload {
+  label: string;
+  line1: string;
+  line2?: string;
+  city: string;
+  department: string;
+  zipCode?: string;
 }

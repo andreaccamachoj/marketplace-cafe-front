@@ -15,9 +15,9 @@ import { IAddress } from '../../models/checkout.model';
   styleUrl: './address-card.component.scss',
 })
 export class AddressCardComponent {
-  readonly address   = input.required<IAddress>();
-  readonly isDefault = input<boolean>(false);
+  readonly address = input.required<IAddress>();
 
-  readonly addressSelect = output<IAddress>();
-  readonly edit   = output<IAddress>();
+  readonly setDefault    = output<string>(); // emits id
+  readonly edit          = output<IAddress>();
+  readonly delete        = output<string>(); // emits id
 }

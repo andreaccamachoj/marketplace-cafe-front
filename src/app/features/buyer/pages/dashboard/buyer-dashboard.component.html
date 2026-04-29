@@ -402,6 +402,7 @@
         <h2 class="section-title">Mi perfil</h2>
       </div>
 
+      <!-- Datos personales + contraseña -->
       <app-buyer-profile-form
         [profile]="profile()"
         [loading]="profileSaving()"
@@ -409,6 +410,65 @@
         (save)="handleSaveProfile($event)"
         (savePassword)="handleSavePassword($event)"
       />
+
+      <!-- ── Sección: Mis Direcciones ── -->
+      <section class="pf-section pf-section--addresses" aria-labelledby="addr-section-title">
+
+        <div class="pf-section-header">
+          <div class="pf-section-icon" aria-hidden="true">📍</div>
+          <div class="pf-section-header-text">
+            <h2 id="addr-section-title" class="pf-section-title">Mis Direcciones</h2>
+            <p class="pf-section-sub">Direcciones de entrega para tus pedidos</p>
+          </div>
+          @if (!addressFormOpen()) {
+            <button
+              type="button"
+              class="btn-add-address"
+              (click)="openAddressForm()"
+              aria-label="Agregar nueva dirección"
+            >
+              ＋ Nueva dirección
+            </button>
+          }
+        </div>
+
+        <!-- Formulario de creación / edición (inline) -->
+        @if (addressFormOpen()) {
+          <app-address-form
+            [address]="editingAddress()"
+            [saving]="addressSaving()"
+            (saved)="handleSaveAddress($event)"
+            (cancelled)="closeAddressForm()"
+          />
+        }
+
+        <!-- Lista de tarjetas de dirección -->
+        @if (addresses().length > 0) {
+          <div class="addresses-grid">
+            @for (addr of addresses(); track addr.id) {
+              <app-address-card
+                [address]="addr"
+                (setDefault)="handleSetDefaultAddress($event)"
+                (edit)="openAddressForm($event)"
+                (delete)="handleDeleteAddress($event)"
+              />
+            }
+          </div>
+        } @else if (!addressFormOpen()) {
+          <div class="addresses-empty">
+            <span class="addresses-empty-icon" aria-hidden="true">📭</span>
+            <p class="addresses-empty-text">Aún no tienes direcciones guardadas.</p>
+            <button
+              type="button"
+              class="btn-add-address"
+              (click)="openAddressForm()"
+            >
+              Agregar tu primera dirección
+            </button>
+          </div>
+        }
+
+      </section>
 
       </div><!-- /tab-panel-profile -->
     }

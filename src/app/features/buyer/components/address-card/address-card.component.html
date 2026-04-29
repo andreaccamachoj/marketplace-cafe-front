@@ -1,27 +1,53 @@
-<div class="addr-card" [class.addr-card--default]="isDefault()">
+<div class="addr-card" [class.addr-card--default]="address().isDefault">
+
   <div class="addr-icon" aria-hidden="true">📍</div>
+
   <div class="addr-body">
     <div class="addr-label-row">
       <span class="addr-label">{{ address().label }}</span>
-      @if (isDefault()) {
+      @if (address().isDefault) {
         <span class="addr-badge">Principal</span>
       }
     </div>
     <div class="addr-line">{{ address().line1 }}</div>
-    <div class="addr-city">{{ address().city }}</div>
+    @if (address().line2) {
+      <div class="addr-line">{{ address().line2 }}</div>
+    }
+    <div class="addr-city">
+      {{ address().city }}@if (address().department) {, {{ address().department }}}
+    </div>
+    @if (address().zipCode) {
+      <div class="addr-zip">CP {{ address().zipCode }}</div>
+    }
   </div>
+
   <div class="addr-actions">
-    <button
-      class="btn-addr"
-      type="button"
-      (click)="addressSelect.emit(address())"
-      aria-label="Seleccionar esta dirección"
-    >Seleccionar</button>
+    @if (!address().isDefault) {
+      <button
+        class="btn-addr btn-addr--ghost"
+        type="button"
+        (click)="setDefault.emit(address().id)"
+        aria-label="Establecer {{ address().label }} como dirección principal"
+      >
+        ★ Principal
+      </button>
+    }
     <button
       class="btn-addr btn-addr--ghost"
       type="button"
       (click)="edit.emit(address())"
-      aria-label="Editar esta dirección"
-    >Editar</button>
+      aria-label="Editar dirección {{ address().label }}"
+    >
+      ✏️ Editar
+    </button>
+    <button
+      class="btn-addr btn-addr--danger"
+      type="button"
+      (click)="delete.emit(address().id)"
+      aria-label="Eliminar dirección {{ address().label }}"
+    >
+      🗑 Eliminar
+    </button>
   </div>
+
 </div>

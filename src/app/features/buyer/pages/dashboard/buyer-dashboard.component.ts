@@ -23,9 +23,12 @@ import { FavoriteProductCardComponent } from '../../components/favorite-product-
 import { ReviewCardComponent } from '../../components/review-card/review-card.component';
 import { ReviewFormModalComponent } from '../../components/review-form-modal/review-form-modal.component';
 import { BuyerProfileFormComponent } from '../../components/buyer-profile-form/buyer-profile-form.component';
+import { AddressCardComponent } from '../../components/address-card/address-card.component';
+import { AddressFormComponent } from '../../components/address-form/address-form.component';
 import { IReview, IReviewPayload } from '../../models/review.model';
 import { IFavorite } from '../../models/favorite.model';
 import { IBuyerPasswordPayload, IBuyerProfilePayload } from '../../models/buyer-profile.model';
+import { IAddress, IAddressPayload } from '../../models/checkout.model';
 
 type BuyerTab = 'cart' | 'orders' | 'favorites' | 'reviews' | 'profile';
 
@@ -44,6 +47,8 @@ type BuyerTab = 'cart' | 'orders' | 'favorites' | 'reviews' | 'profile';
     ReviewCardComponent,
     ReviewFormModalComponent,
     BuyerProfileFormComponent,
+    AddressCardComponent,
+    AddressFormComponent,
   ],
   templateUrl: './buyer-dashboard.component.html',
   styleUrl: './buyer-dashboard.component.scss',
@@ -82,6 +87,12 @@ export class BuyerDashboardComponent {
 
   /* ── Address ── */
   readonly defaultAddress = this.addrSvc.defaultAddress;
+  readonly addresses      = this.addrSvc.addresses;
+
+  /* ── Address CRUD state ── */
+  readonly addressFormOpen   = signal(false);
+  readonly editingAddress    = signal<IAddress | null>(null);
+  readonly addressSaving     = signal(false);
 
   /* ── Orders ── */
   readonly orders = this.orderSvc.orders;
@@ -258,6 +269,41 @@ export class BuyerDashboardComponent {
     // For the mock we just show a success toast.
     void payload;
     this.notify.success('Contraseña actualizada correctamente.');
+  }
+
+  /* ── Actions: address CRUD ── */
+  openAddressForm(address: IAddress | null = null): void {
+    this.editingAddress.set(address);
+    this.addressFormOpen.set(true);
+  }
+
+  closeAddressForm(): void {
+    this.addressFormOpen.set(false);
+    this.editingAddress.set(null);
+  }
+
+  handleSaveAddress(payload: IAddressPayload): void {
+    this.addressSaving.set(true);
+    const editing = this.editingAddress();
+    if (editing) {
+      this.addrSvc.update(editing.id, payload);
+      this.notify.success('Dirección actualizada correctamente.');
+    } else {
+      this.addrSvc.add(payload);
+      this.notify.success('Dirección agregada correctamente.');
+    }
+    this.addressSaving.set(false);
+    this.closeAddressForm();
+  }
+
+  handleDeleteAddress(id: string): void {
+    this.addrSvc.remove(id);
+    this.notify.success('Dirección eliminada.');
+  }
+
+  handleSetDefaultAddress(id: string): void {
+    this.addrSvc.setDefault(id);
+    this.notify.success('Dirección principal actualizada.');
   }
 
   /* ── Stats overview ── */
