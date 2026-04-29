@@ -1,6 +1,18 @@
 import { Injectable, signal } from '@angular/core';
 import { IOrder } from '../models/order.model';
 
+export interface IPlaceOrderPayload {
+  items: {
+    productId: string;
+    name: string;
+    qty: number;
+    unitPrice: number;
+    emoji: string;
+  }[];
+  total: number;
+  address: string;
+}
+
 const BUYER_ID = 'u-buyer-1';
 
 const SEED_ORDERS: IOrder[] = [
@@ -101,5 +113,41 @@ export class OrderService {
     this._orders.update(list =>
       list.map(o => (o.id === orderId ? { ...o, reviewSubmitted: true } : o)),
     );
+  }
+
+  /** Registra un nuevo pedido con estado "pendiente de verificación". */
+  place(payload: IPlaceOrderPayload): void {
+    const seq  = this._orders().length + 1;
+    const id   = `o-${Date.now()}`;
+    const year = new Date().getFullYear();
+    const date = new Date().toLocaleDateString('es-CO', {
+      day: '2-digit', month: 'short', year: 'numeric',
+    });
+
+    const newOrder: IOrder = {
+      id,
+      number: `WCM-${year}-${String(seq).padStart(3, '0')}`,
+      date,
+      status:  'pending_verification',
+      total:   payload.total,
+      address: payload.address,
+      buyerId: BUYER_ID,
+      items:   payload.items.map(i => ({
+        productId:   i.productId,
+        name:        i.name,
+        productName: i.name,
+        qty:         i.qty,
+        unitPrice:   i.unitPrice,
+        emoji:       i.emoji,
+      })),
+      steps: [
+        { label: 'Verificación de pago', done: false, active: true  },
+        { label: 'Confirmado',           done: false, active: false },
+        { label: 'Preparando',           done: false, active: false },
+        { label: 'En camino',            done: false, active: false },
+        { label: 'Entregado',            done: false, active: false },
+      ],
+    };
+    this._orders.update(list => [newOrder, ...list]);
   }
 }

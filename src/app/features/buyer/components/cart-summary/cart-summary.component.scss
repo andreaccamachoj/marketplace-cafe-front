@@ -36,7 +36,40 @@
   gap: 12px;
 }
 
-/* ── Address card ── */
+/* ── Address selector ── */
+.address-select {
+  width: 100%;
+  padding: 9px 36px 9px 12px;
+  border: 1.5px solid var(--neutral-200);
+  border-radius: var(--r-md);
+  font-size: 0.875rem;
+  font-family: var(--font-body);
+  color: var(--espresso);
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a5c42' stroke-width='1.5' stroke-linecap='round' fill='none'/%3E%3C/svg%3E") no-repeat right 12px center;
+  appearance: none;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: border-color 0.18s, box-shadow 0.18s;
+
+  &:focus {
+    outline: none;
+    border-color: var(--verde-fresco);
+    box-shadow: 0 0 0 3px rgba(74, 140, 86, 0.15);
+  }
+}
+
+/* Preview mini-card of selected address */
+.address-preview {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  background: rgba(74, 140, 86, 0.05);
+  border: 1px solid rgba(74, 140, 86, 0.15);
+  border-radius: var(--r-md);
+}
+
+/* ── Address card (legacy, kept for cart-summary internal use) ── */
 .address-card {
   display: flex;
   gap: 12px;

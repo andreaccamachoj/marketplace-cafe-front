@@ -1,4 +1,11 @@
-export type OrderStatus = 'confirmed' | 'preparing' | 'shipped' | 'delivered' | 'completed' | 'cancelled';
+export type OrderStatus =
+  | 'pending_verification'
+  | 'confirmed'
+  | 'preparing'
+  | 'shipped'
+  | 'delivered'
+  | 'completed'
+  | 'cancelled';
 
 export interface IOrderItem {
   productId: string;
@@ -29,10 +36,11 @@ export interface IOrder {
 }
 
 export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
-  confirmed:  'Confirmado',
-  preparing:  'Preparando',
-  shipped:    'En camino',
-  delivered:  'Entregado',
-  completed:  'Completado',
-  cancelled:  'Cancelado',
+  pending_verification: 'Pendiente de verificación',
+  confirmed:            'Confirmado',
+  preparing:            'Preparando',
+  shipped:              'En camino',
+  delivered:            'Entregado',
+  completed:            'Completado',
+  cancelled:            'Cancelado',
 };

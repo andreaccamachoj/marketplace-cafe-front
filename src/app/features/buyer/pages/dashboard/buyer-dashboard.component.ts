@@ -25,10 +25,12 @@ import { ReviewFormModalComponent } from '../../components/review-form-modal/rev
 import { BuyerProfileFormComponent } from '../../components/buyer-profile-form/buyer-profile-form.component';
 import { AddressCardComponent } from '../../components/address-card/address-card.component';
 import { AddressFormComponent } from '../../components/address-form/address-form.component';
+import { CheckoutOverlayComponent } from '../../components/checkout-overlay/checkout-overlay.component';
 import { IReview, IReviewPayload } from '../../models/review.model';
 import { IFavorite } from '../../models/favorite.model';
 import { IBuyerPasswordPayload, IBuyerProfilePayload } from '../../models/buyer-profile.model';
 import { IAddress, IAddressPayload } from '../../models/checkout.model';
+import { IPlaceOrderPayload } from '../../services/order.service';
 
 type BuyerTab = 'cart' | 'orders' | 'favorites' | 'reviews' | 'profile';
 
@@ -49,6 +51,7 @@ type BuyerTab = 'cart' | 'orders' | 'favorites' | 'reviews' | 'profile';
     BuyerProfileFormComponent,
     AddressCardComponent,
     AddressFormComponent,
+    CheckoutOverlayComponent,
   ],
   templateUrl: './buyer-dashboard.component.html',
   styleUrl: './buyer-dashboard.component.scss',
@@ -88,6 +91,20 @@ export class BuyerDashboardComponent {
   /* ── Address ── */
   readonly defaultAddress = this.addrSvc.defaultAddress;
   readonly addresses      = this.addrSvc.addresses;
+
+  /** Dirección actualmente seleccionada para el carrito (persiste entre visitas al tab). */
+  readonly selectedAddressId = signal<string>(
+    this.addrSvc.defaultAddress()?.id ?? '',
+  );
+
+  readonly selectedAddress = computed(() =>
+    this.addrSvc.addresses().find(a => a.id === this.selectedAddressId())
+    ?? this.addrSvc.defaultAddress(),
+  );
+
+  /* ── Checkout overlay state ── */
+  readonly checkoutOpen       = signal(false);
+  readonly checkoutConfirming = signal(false);
 
   /* ── Address CRUD state ── */
   readonly addressFormOpen   = signal(false);
@@ -354,8 +371,40 @@ export class BuyerDashboardComponent {
     this.notify.info('Cupón eliminado');
   }
 
+  onAddressChange(id: string): void {
+    this.selectedAddressId.set(id);
+  }
+
   onCheckout(): void {
-    this.notify.info('Checkout — próximamente');
+    this.checkoutOpen.set(true);
+  }
+
+  handleConfirmOrder(): void {
+    this.checkoutConfirming.set(true);
+    const addr = this.selectedAddress();
+    const payload: IPlaceOrderPayload = {
+      items: this.cartItems().map(i => ({
+        productId: i.productId,
+        name:      i.name,
+        qty:       i.qty,
+        unitPrice: i.price,
+        emoji:     i.emoji,
+      })),
+      total:   this.cartTotal(),
+      address: addr ? `${addr.line1}, ${addr.city}` : 'Dirección no especificada',
+    };
+    // Simula latencia mínima para feedback visual
+    setTimeout(() => {
+      this.orderSvc.place(payload);
+      this.cartSvc.clear();
+      this.notify.success('¡Pedido registrado! Te contactaremos para confirmar el pago.');
+      this.checkoutConfirming.set(false);
+      this.checkoutOpen.set(false);
+    }, 700);
+  }
+
+  handleCancelCheckout(): void {
+    this.checkoutOpen.set(false);
   }
 
   toggleOrder(id: string): void {

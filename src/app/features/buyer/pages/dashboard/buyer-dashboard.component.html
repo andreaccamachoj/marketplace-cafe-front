@@ -242,9 +242,11 @@
               [discount]="cartDiscount()"
               [total]="cartTotal()"
               [itemCount]="cartCount()"
-              [defaultAddress]="defaultAddress()"
+              [addresses]="addresses()"
+              [selectedAddressId]="selectedAddressId()"
               [selectedShippingId]="selectedShippingId()"
               [couponCode]="appliedCoupon()"
+              (addressChange)="onAddressChange($event)"
               (shippingChange)="onShippingChange($event)"
               (couponApply)="onCouponApply($event)"
               (couponRemove)="onCouponRemove()"
@@ -475,6 +477,17 @@
 
   </main>
 </div>
+
+<!-- Checkout overlay -->
+<app-checkout-overlay
+  [open]="checkoutOpen()"
+  [total]="cartTotal()"
+  [itemCount]="cartCount()"
+  [selectedAddress]="selectedAddress()"
+  [confirming]="checkoutConfirming()"
+  (confirmed)="handleConfirmOrder()"
+  (cancelled)="handleCancelCheckout()"
+/>
 
 <!-- Review form modal -->
 <app-review-form-modal

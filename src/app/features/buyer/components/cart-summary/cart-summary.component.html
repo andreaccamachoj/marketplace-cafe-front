@@ -4,23 +4,39 @@
     <div class="summary-head-title">📍 Dirección de envío</div>
   </div>
   <div class="summary-body">
-    @if (defaultAddress()) {
-      <div class="address-card">
-        <div class="address-icon">🏠</div>
-        <div class="address-info">
-          <div class="address-label">{{ defaultAddress()!.label }}</div>
-          <div class="address-line">{{ defaultAddress()!.line1 }}</div>
-          <div class="address-city">{{ defaultAddress()!.city }}</div>
-        </div>
-      </div>
+    @if (addresses().length > 0) {
+      <select
+        class="address-select"
+        [value]="selectedAddressId()"
+        (change)="onAddressChange($event)"
+        aria-label="Seleccionar dirección de envío"
+      >
+        @for (addr of addresses(); track addr.id) {
+          <option [value]="addr.id">
+            {{ addr.label }} — {{ addr.line1 }}, {{ addr.city }}
+          </option>
+        }
+      </select>
+      <!-- Preview de dirección seleccionada -->
+      @for (addr of addresses(); track addr.id) {
+        @if (addr.id === selectedAddressId()) {
+          <div class="address-preview">
+            <div class="address-icon">🏠</div>
+            <div class="address-info">
+              <div class="address-label">{{ addr.label }}</div>
+              <div class="address-line">{{ addr.line1 }}</div>
+              <div class="address-city">{{ addr.city }}, {{ addr.department }}</div>
+            </div>
+          </div>
+        }
+      }
     } @else {
-      <p class="address-empty">No hay dirección configurada</p>
+      <p class="address-empty">
+        No tienes direcciones guardadas. Ve a
+        <strong>Mi perfil → Mis Direcciones</strong>
+        para agregar una antes de comprar.
+      </p>
     }
-    <button
-      class="btn-change-address"
-      type="button"
-      (click)="checkoutClick.emit()"
-    >Cambiar dirección</button>
   </div>
 </div>
 
@@ -87,9 +103,17 @@
   <button
     class="btn-checkout"
     type="button"
+    [disabled]="!selectedAddressId()"
+    [attr.aria-disabled]="!selectedAddressId()"
     (click)="checkoutClick.emit()"
   >
-    <span>Proceder al pago</span>
+    <span>
+      @if (!selectedAddressId()) {
+        Selecciona una dirección
+      } @else {
+        Proceder al pago
+      }
+    </span>
   </button>
-  <div class="secure-note">🔒 Pago 100% seguro · SSL · PCI DSS</div>
+  <div class="secure-note">🔒 Transferencia bancaria segura</div>
 </div>
