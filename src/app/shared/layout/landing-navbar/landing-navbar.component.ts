@@ -11,6 +11,16 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '@core/auth/services/auth.service';
 import { CartService } from '@features/buyer/services/cart.service';
 import { Role } from '@core/auth/models/role.enum';
+import { CurrencyCopPipe } from '@shared/pipes/currency-cop.pipe';
+
+/** Sugerencia individual devuelta por el autocomplete del catálogo. */
+export interface INavSearchSuggestion {
+  id:       string;
+  name:     string;
+  producer: string;
+  emoji:    string;
+  price:    number;
+}
 
 /**
  * Barra de navegación pública de World Coffee Marketplace.
@@ -19,18 +29,20 @@ import { Role } from '@core/auth/models/role.enum';
  * (catálogo, detalle de producto, landing, etc.).
  *
  * Inputs (signal-based):
- *   showSearch  – mostrar/ocultar caja de búsqueda (default: true)
- *   showLinks   – mostrar/ocultar links de sección (default: true)
+ *   showSearch        – mostrar/ocultar caja de búsqueda (default: true)
+ *   showLinks         – mostrar/ocultar links de sección (default: true)
+ *   searchSuggestions – lista de sugerencias calculadas por el padre
  *
  * Outputs:
- *   searchChange – emite el texto cada vez que el usuario escribe
+ *   searchChange      – emite el texto cada vez que el usuario escribe
+ *   suggestionSelected – emite el id del producto cuando el usuario elige una sugerencia
  *
  * Estado de autenticación y carrito gestionados internamente via signals.
  */
 @Component({
   selector: 'app-landing-navbar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, CurrencyCopPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './landing-navbar.component.html',
   styleUrl: './landing-navbar.component.scss',
@@ -42,11 +54,13 @@ export class LandingNavbarComponent {
   private   readonly router   = inject(Router);
 
   /* ── Inputs (signal-based) ── */
-  readonly showSearch = input(true);
-  readonly showLinks  = input(true);
+  readonly showSearch        = input(true);
+  readonly showLinks         = input(true);
+  readonly searchSuggestions = input<INavSearchSuggestion[]>([]);
 
   /* ── Outputs ── */
-  readonly searchChange = output<string>();
+  readonly searchChange       = output<string>();
+  readonly suggestionSelected = output<string>();
 
   /* ── Auth computed state ── */
   protected readonly isLoggedIn  = computed(() => this.auth.isAuthenticated());
@@ -61,19 +75,39 @@ export class LandingNavbarComponent {
   protected readonly cartCount = this.cartSvc.count;
 
   /* ── Private UI state ── */
-  protected readonly searchValue  = signal('');
+  protected readonly searchValue    = signal('');
   protected readonly mobileMenuOpen = signal(false);
+  protected readonly searchFocused  = signal(false);
+
+  /** El dropdown es visible cuando hay foco en el input, al menos 3 chars y existen sugerencias. */
+  protected readonly dropdownVisible = computed(
+    () => this.searchFocused()
+       && this.searchValue().trim().length >= 3
+       && this.searchSuggestions().length > 0,
+  );
 
   /* ── Handlers ── */
   protected onSearch(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
     this.searchValue.set(value);
-    this.searchChange.emit(value.trim());
+    this.searchChange.emit(value);
   }
 
   protected clearSearch(): void {
     this.searchValue.set('');
     this.searchChange.emit('');
+  }
+
+  /** Previene que el blur del input cierre el dropdown antes de que el click se registre. */
+  protected onDropdownMousedown(event: MouseEvent): void {
+    event.preventDefault();
+  }
+
+  protected onSelectSuggestion(id: string): void {
+    this.searchValue.set('');
+    this.searchFocused.set(false);
+    this.searchChange.emit('');
+    this.suggestionSelected.emit(id);
   }
 
   /**

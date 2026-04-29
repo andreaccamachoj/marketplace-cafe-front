@@ -12,7 +12,7 @@
 
     <!-- Búsqueda -->
     @if (showSearch()) {
-      <div class="nav-search" role="search">
+      <div class="nav-search" role="search" [class.nav-search--open]="dropdownVisible()">
         <span class="nav-search-icon" aria-hidden="true">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                stroke-width="2" stroke-linecap="round">
@@ -25,9 +25,15 @@
           [value]="searchValue()"
           placeholder="Buscar café por nombre, región o productor..."
           aria-label="Buscar productos en el catálogo"
+          aria-autocomplete="list"
+          [attr.aria-expanded]="dropdownVisible()"
+          aria-controls="nav-search-listbox"
           autocomplete="off"
           (input)="onSearch($event)"
+          (focus)="searchFocused.set(true)"
+          (blur)="searchFocused.set(false)"
           (keydown.enter)="onSearchEnter()"
+          (keydown.escape)="clearSearch()"
         />
         @if (searchValue().length > 0) {
           <button
@@ -36,6 +42,34 @@
             (click)="clearSearch()"
             aria-label="Limpiar búsqueda"
           >✕</button>
+        }
+
+        <!-- ── Autocomplete dropdown ── -->
+        @if (dropdownVisible()) {
+          <ul
+            id="nav-search-listbox"
+            class="nav-search-dropdown"
+            role="listbox"
+            aria-label="Sugerencias de búsqueda"
+            (mousedown)="onDropdownMousedown($event)"
+          >
+            @for (s of searchSuggestions(); track s.id) {
+              <li role="option" aria-selected="false" class="nav-search-option">
+                <button
+                  type="button"
+                  class="nav-search-suggestion"
+                  (click)="onSelectSuggestion(s.id)"
+                >
+                  <span class="suggestion-emoji" aria-hidden="true">{{ s.emoji }}</span>
+                  <span class="suggestion-body">
+                    <span class="suggestion-name">{{ s.name }}</span>
+                    <span class="suggestion-producer">{{ s.producer }}</span>
+                  </span>
+                  <span class="suggestion-price">{{ s.price | currencyCop }}</span>
+                </button>
+              </li>
+            }
+          </ul>
         }
       </div>
     }
