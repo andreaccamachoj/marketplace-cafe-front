@@ -21,6 +21,7 @@ import { PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { ModalComponent } from '@shared/ui/modal/modal.component';
 import { IManagedProduct, ManagedProductStatus } from '../../models/managed-product.model';
+import { CategoryService } from '@features/catalog/services/category.service';
 
 type ProductUnit = '500g' | '1kg' | '5kg' | '10kg' | 'bolsa' | '250g';
 
@@ -48,6 +49,9 @@ interface ProductFormValue {
 })
 export class ProductFormModalComponent implements OnInit {
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly categorySvc = inject(CategoryService);
+
+  readonly categories = computed(() => this.categorySvc.categories());
 
   readonly mode    = input.required<'create' | 'edit' | 'view'>();
   readonly product = input<IManagedProduct | null>(null);
@@ -93,13 +97,13 @@ export class ProductFormModalComponent implements OnInit {
       if (p) {
         this.form.patchValue({
           name:          p.name,
-          origin:        '',
-          category:      p.category,
+          origin:        p.region ?? '',
+          category:      p.categoryId ?? '',
           price:         p.price,
           unit:          (p.unit as ProductUnit),
           stock:         p.stock,
           status:        p.status,
-          description:   '',
+          description:   p.description ?? '',
           certOrganico:   p.certifications.includes('organico'),
           certFairtrade:  p.certifications.includes('fairtrade'),
           certRainforest: p.certifications.includes('rainforest'),
@@ -118,9 +122,7 @@ export class ProductFormModalComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-    if (!isPlatformBrowser(this.platformId)) return;
-  }
+  ngOnInit(): void {}
 
   get nameCtrl()        { return this.form.controls.name; }
   get originCtrl()      { return this.form.controls.origin; }
@@ -160,7 +162,9 @@ export class ProductFormModalComponent implements OnInit {
 
     const payload: Partial<IManagedProduct> = {
       name:           v.name,
-      category:       v.category,
+      description:    v.description,
+      region:         v.origin,
+      categoryId:     v.category,
       price:          v.price,
       unit:           v.unit,
       stock:          v.stock,

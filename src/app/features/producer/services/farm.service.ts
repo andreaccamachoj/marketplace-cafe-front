@@ -1,130 +1,166 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { IFarm, IFarmCertification } from '../models/farm.model';
-import { ICertification } from '../models/certification.model';
+import { ICertification, CertificationType } from '../models/certification.model';
 
-const SEED_FARM: IFarm = {
-  id: 'f1',
-  name: 'Finca La Esperanza',
-  municipality: 'Pitalito',
-  department: 'Huila, Colombia',
-  altitude: '1.780 msnm',
-  area: '12,5 hectáreas',
-  mainVariety: 'Caturra · Castillo',
-  process: 'Lavado · Natural',
-  description:
-    'Ubicada en el corazón del Macizo Colombiano, Finca La Esperanza es una propiedad familiar con más de 30 años de tradición cafetera. Cultivamos café bajo sombra de guamos y plátanos, con prácticas agroecológicas que protegen las fuentes hídricas y la biodiversidad nativa. Nuestro proceso de beneficio húmedo y secado en cama africana garantiza una taza limpia con notas de frutos rojos, chocolate y panela.',
-  certifications: [
-    {
-      id: 'c1',
-      icon: '🌿',
-      iconBg: 'var(--verde-light)',
-      name: 'Café Orgánico Certificado',
-      body: 'BioLatina · Certificado hasta dic 2026',
-      validUntil: 'Dic 2026',
-      status: 'valid',
-    },
-    {
-      id: 'c2',
-      icon: '⚖️',
-      iconBg: 'var(--amber-light)',
-      name: 'Fairtrade Internacional',
-      body: 'FLO-CERT GmbH · Vence en 3 meses',
-      validUntil: 'Sep 2025',
-      status: 'expiring',
-    },
-    {
-      id: 'c3',
-      icon: '🌊',
-      iconBg: 'var(--blue-light)',
-      name: 'Rainforest Alliance',
-      body: 'Rainforest Alliance · Certificado hasta ago 2026',
-      validUntil: 'Ago 2026',
-      status: 'valid',
-    },
-  ],
-  metrics: {
-    annualProduction: '240 sacos',
-    yieldPerHa: '19,2 sacos',
-    process: 'Lavado · Natural',
-    harvestSeason: 'Sep – Dic',
-    treeCount: '8.400',
-    cuppingScore: '87 puntos SCA',
-  },
-  profileStatus: {
-    status: 'approved',
-    approvedBy: 'Admin WCMP',
-    approvalDate: '15 ene 2025',
-    verifiedDocs: 3,
-  },
+interface BackendFarm {
+  id: string;
+  name: string;
+  municipality: string;
+  department: string;
+  altitudeMasl: number | null;
+  areaHectares: number | null;
+  mainVariety: string | null;
+  process: string | null;
+  description: string | null;
+  treeCount: number | null;
+  harvestSeason: string | null;
+  annualProductionSacos: number | null;
+  yieldPerHa: number | null;
+  cuppingScore: number | null;
+}
+
+interface BackendCert {
+  id: string;
+  farmId: string;
+  certificationId: number | null;
+  issuer: string | null;
+  expiryDate: string | null;
+  status: string | null;
+  notes: string | null;
+}
+
+const EMPTY_FARM: IFarm = {
+  id: '', name: '', municipality: '', department: '', altitude: '',
+  area: '', mainVariety: '', process: '', description: '',
+  certifications: [],
+  metrics: { annualProduction: '', yieldPerHa: '', process: '', harvestSeason: '', treeCount: '', cuppingScore: '' },
+  profileStatus: { status: 'pending', approvedBy: '', approvalDate: '', verifiedDocs: 0 },
 };
+
+function mapFarm(b: BackendFarm): IFarm {
+  const fmt = (n: number | null, suffix = '') =>
+    n != null ? n.toLocaleString('es-CO') + (suffix ? ' ' + suffix : '') : '';
+  return {
+    id:          b.id,
+    name:        b.name,
+    municipality: b.municipality,
+    department:  b.department,
+    altitude:    fmt(b.altitudeMasl, 'msnm'),
+    area:        fmt(b.areaHectares, 'hectáreas'),
+    mainVariety: b.mainVariety ?? '',
+    process:     b.process ?? '',
+    description: b.description ?? '',
+    certifications: [],
+    metrics: {
+      annualProduction: fmt(b.annualProductionSacos, 'sacos'),
+      yieldPerHa:       fmt(b.yieldPerHa, 'sacos'),
+      process:          b.process ?? '',
+      harvestSeason:    b.harvestSeason ?? '',
+      treeCount:        fmt(b.treeCount),
+      cuppingScore:     b.cuppingScore != null ? b.cuppingScore + ' puntos SCA' : '',
+    },
+    profileStatus: EMPTY_FARM.profileStatus,
+  };
+}
+
+function parseColNum(s: string): number {
+  return parseFloat(s.replace(/\./g, '').replace(',', '.').replace(/[^\d.]/g, '')) || 0;
+}
+
+const CERT_ICONS: Record<string, string> = {
+  'organic': '🌿', 'utz': '✅', 'fair-trade': '⚖️', 'rainforest': '🌊',
+  'bird-friendly': '🐦', 'direct-trade': '🤝', 'shade-grown': '🌳', 'other': '🏅',
+};
+const CERT_BG: Record<string, string> = {
+  'organic': 'var(--verde-light)', 'utz': 'var(--verde-light)', 'fair-trade': 'var(--amber-light)',
+  'rainforest': 'var(--blue-light, #E0F2F8)', 'bird-friendly': 'var(--verde-light)',
+  'direct-trade': 'var(--marfil-light)', 'shade-grown': 'var(--verde-light)', 'other': 'var(--marfil-light)',
+};
+
+function mapBackendCert(b: BackendCert): IFarmCertification {
+  const parts = (b.notes ?? '').split('|');
+  const type = parts[0] ?? 'other';
+  const name = parts[1] ?? type;
+  const expiry = b.expiryDate
+    ? new Date(b.expiryDate).toLocaleDateString('es-CO', { month: 'short', year: 'numeric' })
+    : '';
+  return {
+    id:         b.id,
+    icon:       CERT_ICONS[type] ?? '🏅',
+    iconBg:     CERT_BG[type] ?? 'var(--marfil-light)',
+    name,
+    body:       `${b.issuer ?? ''} · Vence ${expiry}`,
+    validUntil: expiry,
+    status:     b.status === 'approved' ? 'valid' : 'expiring',
+  };
+}
 
 @Injectable({ providedIn: 'root' })
 export class FarmService {
-  private readonly _farm = signal<IFarm>(SEED_FARM);
+  private readonly http = inject(HttpClient);
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly _farm = signal<IFarm>(EMPTY_FARM);
 
   readonly farm = this._farm.asReadonly();
-
   readonly certifications = computed(() => this._farm().certifications ?? []);
 
+  constructor() {
+    if (!isPlatformBrowser(this.platformId)) return;
+    this.http.get<BackendFarm>('/producer/farm').subscribe({
+      next:  b => this._farm.set(mapFarm(b)),
+      error: () => {},
+    });
+    this.http.get<BackendCert[]>('/producer/farm/certifications').subscribe({
+      next:  list => this._farm.update(f => ({ ...f, certifications: list.map(mapBackendCert) })),
+      error: () => {},
+    });
+  }
+
   updateFarm(data: Partial<IFarm>): void {
-    this._farm.update(f => ({ ...f, ...data }));
+    const current = this._farm();
+    const body = {
+      name:          data.name ?? current.name,
+      municipality:  data.municipality ?? current.municipality,
+      department:    data.department ?? current.department,
+      altitudeMasl:  parseColNum(data.altitude ?? current.altitude),
+      areaHectares:  parseColNum(data.area ?? current.area),
+      mainVariety:   data.mainVariety ?? current.mainVariety,
+      process:       data.process ?? current.process,
+      description:   data.description ?? current.description,
+    };
+    this.http.patch<BackendFarm>('/producer/farm', body).subscribe({
+      next: b => this._farm.update(f => ({ ...mapFarm(b), certifications: f.certifications })),
+    });
   }
 
   addCertification(cert: Omit<ICertification, 'id'>): void {
-    const id = 'cert-' + Date.now();
-    const farmCert: IFarmCertification = {
-      id,
-      icon:       this.certTypeToIcon(cert.type),
-      iconBg:     this.certTypeToIconBg(cert.type),
+    this.http.post<BackendCert>('/producer/farm/certifications', {
+      type:       cert.type,
       name:       cert.name,
-      body:       `${cert.issuer} · Vence ${this.formatDate(cert.expiryDate)}`,
-      validUntil: this.formatDate(cert.expiryDate),
-      status:     cert.status === 'vigente' ? 'valid' : 'expiring',
-    };
-    this._farm.update(f => ({
-      ...f,
-      certifications: [...(f.certifications ?? []), farmCert],
-    }));
+      issuer:     cert.issuer,
+      expiryDate: cert.expiryDate,
+    }).subscribe({
+      next: saved => this._farm.update(f => ({
+        ...f, certifications: [...(f.certifications ?? []), mapBackendCert(saved)],
+      })),
+    });
   }
 
   removeCertification(id: string): void {
-    this._farm.update(f => ({
-      ...f,
-      certifications: (f.certifications ?? []).filter(c => c.id !== id),
-    }));
+    this.http.delete(`/producer/farm/certifications/${id}`).subscribe({
+      next: () => this._farm.update(f => ({
+        ...f, certifications: (f.certifications ?? []).filter(c => c.id !== id),
+      })),
+    });
   }
 
-  private certTypeToIcon(type: ICertification['type']): string {
-    const map: Record<ICertification['type'], string> = {
-      'organic':       '🌿',
-      'utz':           '✅',
-      'fair-trade':    '⚖️',
-      'rainforest':    '🌊',
-      'bird-friendly': '🐦',
-      'direct-trade':  '🤝',
-      'shade-grown':   '🌳',
-      'other':         '🏅',
-    };
-    return map[type];
+  private certTypeToIcon(type: CertificationType): string {
+    return CERT_ICONS[type] ?? '🏅';
   }
 
-  private certTypeToIconBg(type: ICertification['type']): string {
-    const map: Record<ICertification['type'], string> = {
-      'organic':       'var(--verde-light)',
-      'utz':           'var(--verde-light)',
-      'fair-trade':    'var(--amber-light)',
-      'rainforest':    'var(--blue-light, #E0F2F8)',
-      'bird-friendly': 'var(--verde-light)',
-      'direct-trade':  'var(--marfil-light)',
-      'shade-grown':   'var(--verde-light)',
-      'other':         'var(--marfil-light)',
-    };
-    return map[type];
-  }
-
-  private formatDate(isoDate: string): string {
-    if (!isoDate) return '';
-    const d = new Date(isoDate);
-    return d.toLocaleDateString('es-CO', { month: 'short', year: 'numeric' });
+  private certTypeToIconBg(type: CertificationType): string {
+    return CERT_BG[type] ?? 'var(--marfil-light)';
   }
 }

@@ -1,96 +1,36 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { IManagedProduct } from '../models/managed-product.model';
 
-const SEED_PRODUCTS: IManagedProduct[] = [
-  {
-    id: 'pp1',
-    emoji: '🫘',
-    name: 'Café Especial Huila',
-    category: 'Grano entero',
-    unit: '500g',
-    status: 'active',
-    price: 48000,
-    stock: 85,
-    certifications: ['organico', 'fairtrade'],
-    rating: 4.9,
-    reviewCount: 128,
-    salesCount: 320,
-  },
-  {
-    id: 'pp2',
-    emoji: '🌸',
-    name: 'San Agustín Washed',
-    category: 'Grano entero',
-    unit: '500g',
-    status: 'active',
-    price: 64000,
-    stock: 18,
-    certifications: ['organico', 'fairtrade'],
-    rating: 5.0,
-    reviewCount: 42,
-    salesCount: 110,
-  },
-  {
-    id: 'pp3',
-    emoji: '🌿',
-    name: 'Nariño Natural',
-    category: 'Tostado oscuro',
-    unit: '500g',
-    status: 'active',
-    price: 52000,
-    stock: 6,
-    certifications: ['organico', 'rainforest'],
-    rating: 4.8,
-    reviewCount: 63,
-    salesCount: 175,
-  },
-  {
-    id: 'pp4',
-    emoji: '🏔️',
-    name: 'Blend Sierra Nevada',
-    category: 'Molido',
-    unit: '500g',
-    status: 'active',
-    price: 38000,
-    stock: 72,
-    certifications: ['rainforest'],
-    rating: 4.7,
-    reviewCount: 74,
-    salesCount: 210,
-  },
-  {
-    id: 'pp5',
-    emoji: '✨',
-    name: 'Cauca Geisha',
-    category: 'Grano entero',
-    unit: '250g',
-    status: 'draft',
-    price: 98000,
-    stock: 12,
-    certifications: ['organico'],
-    rating: 0,
-    reviewCount: 0,
-    salesCount: 0,
-  },
-  {
-    id: 'pp6',
-    emoji: '🖤',
-    name: 'Tostado Oscuro',
-    category: 'Tostado oscuro',
-    unit: '500g',
-    status: 'inactive',
-    price: 35000,
-    stock: 0,
-    certifications: ['fairtrade'],
-    rating: 4.4,
-    reviewCount: 28,
-    salesCount: 80,
-  },
-];
+
+function mapProduct(b: Record<string, unknown>): IManagedProduct {
+  return {
+    id:             String(b['id']),
+    emoji:          String(b['emoji'] ?? '🫘'),
+    name:           String(b['name'] ?? ''),
+    description:    b['description'] ? String(b['description']) : '',
+    region:         b['region'] ? String(b['region']) : '',
+    category:       String(b['categoryName'] ?? ''),
+    categoryId:     b['categoryId'] ? String(b['categoryId']) : undefined,
+    unit:           String(b['unit'] ?? '500g'),
+    status:         (['active','inactive','draft'].includes(String(b['status']?.toString().toLowerCase()))
+                      ? String(b['status']?.toString().toLowerCase())
+                      : 'draft') as 'active' | 'inactive' | 'draft',
+    price:          Number(b['price'] ?? 0),
+    stock:          Number(b['stock'] ?? 0),
+    certifications: [],
+    rating:         Number(b['rating'] ?? 0),
+    reviewCount:    Number(b['reviewCount'] ?? 0),
+    salesCount:     Number(b['soldCount'] ?? 0),
+  };
+}
 
 @Injectable({ providedIn: 'root' })
 export class ProducerProductService {
-  private readonly _products = signal<IManagedProduct[]>(SEED_PRODUCTS);
+  private readonly http = inject(HttpClient);
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly _products = signal<IManagedProduct[]>([]);
 
   readonly products = this._products.asReadonly();
 
@@ -102,43 +42,46 @@ export class ProducerProductService {
     () => this._products().filter(p => p.status === 'draft').length,
   );
 
+  constructor() {
+    if (!isPlatformBrowser(this.platformId)) return;
+    this.http.get<Record<string, unknown>[]>('/producer/products').subscribe({
+      next: list => this._products.set(list.map(mapProduct)),
+    });
+  }
+
   add(data: Partial<IManagedProduct>): void {
-    const newProduct: IManagedProduct = {
-      id:             'pp-' + Date.now(),
-      emoji:          '🫘',
-      name:           data.name ?? 'Nuevo producto',
-      category:       data.category ?? '',
-      unit:           data.unit ?? '500g',
-      status:         data.status ?? 'draft',
-      price:          data.price ?? 0,
-      stock:          data.stock ?? 0,
-      certifications: data.certifications ?? [],
-      rating:         0,
-      reviewCount:    0,
-      salesCount:     0,
-    };
-    this._products.update(list => [...list, newProduct]);
+    this.http.post<Record<string, unknown>>('/producer/products', {
+      categoryId:  data.categoryId ?? null,
+      name:        data.name,
+      description: data.description ?? '',
+      price:       data.price ?? 0,
+      unit:        data.unit ?? '500g',
+      region:      data.region ?? '',
+      emoji:       data.emoji ?? '🫘',
+    }).subscribe({ next: p => this._products.update(list => [...list, mapProduct(p)]) });
   }
 
   update(id: string, data: Partial<IManagedProduct>): void {
-    this._products.update(list =>
-      list.map(p => (p.id === id ? { ...p, ...data } : p)),
-    );
+    const current = this._products().find(p => p.id === id);
+    this.http.put<Record<string, unknown>>(`/producer/products/${id}`, {
+      name:        data.name,
+      description: data.description ?? current?.description ?? '',
+      price:       data.price,
+      unit:        data.unit,
+      region:      data.region ?? current?.region ?? '',
+      emoji:       data.emoji ?? current?.emoji ?? '🫘',
+      categoryId:  data.categoryId ?? current?.categoryId ?? null,
+    }).subscribe({ next: p => this._products.update(list => list.map(x => x.id === id ? mapProduct(p) : x)) });
   }
 
   toggleStatus(id: string): void {
-    this._products.update(list =>
-      list.map(p => {
-        if (p.id !== id) return p;
-        const next =
-          p.status === 'active'
-            ? 'inactive'
-            : p.status === 'inactive'
-              ? 'active'
-              : 'active'; // draft -> active
-        return { ...p, status: next };
-      }),
-    );
+    const current = this._products().find(p => p.id === id);
+    if (!current) return;
+    if (current.status === 'active') {
+      this.http.post(`/producer/products/${id}/archive`, {}).subscribe({
+        next: () => this._products.update(list => list.map(p => p.id === id ? { ...p, status: 'inactive' as const } : p)),
+      });
+    }
   }
 
   remove(id: string): void {

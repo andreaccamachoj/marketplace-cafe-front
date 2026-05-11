@@ -1,5 +1,7 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { IUser } from '../models/user.model';
 import { ILoginCredentials, IRegisterPayload } from '../models/auth-response.model';
 import { Role } from '../models/role.enum';
@@ -7,122 +9,51 @@ import { ProducerStatus } from '../models/producer-status.enum';
 import { TokenStorageService } from './token-storage.service';
 import { NotificationService } from '../../services/notification.service';
 
-interface ISeedUser {
-  id: string;
-  email: string;
-  password: string;
-  fullName: string;
-  phone: string;
-  roles: Role[];
-  status: 'active';
-  producerStatus?: ProducerStatus;
-  producerProfileId?: string;
-  createdAt: string;
-}
-
-const SEED_USERS: ISeedUser[] = [
-  {
-    id: 'u1',
-    email: 'buyer@wcm.co',
-    password: 'Cafe#2025',
-    fullName: 'Ana Compradora',
-    phone: '3001112233',
-    roles: [Role.BUYER],
-    status: 'active',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'u2',
-    email: 'producer@wcm.co',
-    password: 'Cafe#2025',
-    fullName: 'Carlos Productor',
-    phone: '3004445566',
-    roles: [Role.PRODUCER],
-    status: 'active',
-    producerStatus: ProducerStatus.APPROVED,
-    producerProfileId: 'p1',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'u3',
-    email: 'admin@wcm.co',
-    password: 'Cafe#2025',
-    fullName: 'Admin WCM',
-    phone: '3007778899',
-    roles: [Role.ADMIN],
-    status: 'active',
-    createdAt: new Date().toISOString(),
-  },
-];
+interface BackendTokens { accessToken: string; refreshToken: string; }
+interface BackendUser { id: string; email: string; fullName: string; phone?: string; status: string; producerStatus?: string; createdAt: string; }
+interface JwtPayload { sub: string; email: string; role: string; }
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+  private readonly http    = inject(HttpClient);
   private readonly storage = inject(TokenStorageService);
   private readonly router  = inject(Router);
   private readonly notify  = inject(NotificationService);
 
-  readonly currentUser = signal<IUser | null>(this.storage.getUser<IUser>());
-  readonly isAuthenticated = computed(() => this.currentUser() !== null);
-  readonly currentRole     = computed(() => this.currentUser()?.roles[0] ?? null);
+  readonly currentUser        = signal<IUser | null>(this.storage.getUser<IUser>());
+  readonly isAuthenticated    = computed(() => this.currentUser() !== null);
+  readonly currentRole        = computed(() => this.currentUser()?.roles[0] ?? null);
   readonly isProducerApproved = computed(
     () => this.currentUser()?.producerStatus === ProducerStatus.APPROVED,
   );
-
-  /**
-   * Verdadero solo para compradores autenticados.
-   * Productores y admins no pueden realizar compras.
-   */
   readonly isBuyer = computed(() => this.currentRole() === Role.BUYER);
 
   async login(credentials: ILoginCredentials): Promise<void> {
-    const found = SEED_USERS.find(
-      u => u.email === credentials.email && u.password === credentials.password,
+    const tokens = await firstValueFrom(
+      this.http.post<BackendTokens>('/auth/login', credentials),
     );
-    if (!found) throw new Error('Credenciales inválidas');
-
-    const user: IUser = {
-      id:               found.id,
-      email:            found.email,
-      fullName:         found.fullName,
-      phone:            found.phone,
-      roles:            found.roles,
-      status:           found.status,
-      producerStatus:   found.producerStatus,
-      producerProfileId: found.producerProfileId,
-      createdAt:        found.createdAt,
-    };
-
-    this.storage.setToken('mock-jwt-token');
-    this.storage.setUser(user);
-    this.currentUser.set(user);
-
-    await this.navigateByRole(user.roles[0]);
+    await this.handleAuthTokens(tokens);
   }
 
   async register(payload: IRegisterPayload): Promise<void> {
-    const exists = SEED_USERS.some(u => u.email === payload.email);
-    if (exists) throw new Error('El correo ya está registrado');
-
-    const role = payload.role === 'producer' ? Role.PRODUCER : Role.BUYER;
-    const user: IUser = {
-      id:             `u${Date.now()}`,
-      email:          payload.email,
-      fullName:       payload.fullName,
-      phone:          payload.phone,
-      roles:          [role],
-      status:         'active',
-      producerStatus: role === Role.PRODUCER ? ProducerStatus.PENDING : undefined,
-      createdAt:      new Date().toISOString(),
-    };
-
-    this.storage.setToken('mock-jwt-token');
-    this.storage.setUser(user);
-    this.currentUser.set(user);
-    await this.navigateByRole(role);
+    const url = payload.role === 'producer'
+      ? '/auth/register/producer'
+      : '/auth/register/buyer';
+    const tokens = await firstValueFrom(
+      this.http.post<BackendTokens>(url, {
+        email:    payload.email,
+        password: payload.password,
+        fullName: payload.fullName,
+        phone:    payload.phone,
+      }),
+    );
+    await this.handleAuthTokens(tokens);
   }
 
   async recoverPassword(email: string): Promise<void> {
-    await Promise.resolve();
+    await firstValueFrom(
+      this.http.post('/auth/password-reset/request', { email }),
+    );
     this.notify.info(`Si el correo ${email} existe, recibirás un enlace de recuperación.`);
   }
 
@@ -132,11 +63,7 @@ export class AuthService {
     this.router.navigate(['/auth/login']);
   }
 
-  /**
-   * Actualiza campos del usuario en sesión y persiste en storage.
-   * Usado por servicios de perfil para mantener navbar sincronizada.
-   */
-  updateProfile(patch: { fullName?: string; phone?: string }): void {
+  updateProfile(patch: { fullName?: string; phone?: string; producerStatus?: ProducerStatus }): void {
     this.currentUser.update(u => (u ? { ...u, ...patch } : u));
     const updated = this.currentUser();
     if (updated) this.storage.setUser(updated);
@@ -144,6 +71,37 @@ export class AuthService {
 
   hasRole(role: Role): boolean {
     return this.currentUser()?.roles.includes(role) ?? false;
+  }
+
+  private async handleAuthTokens(tokens: BackendTokens): Promise<void> {
+    this.storage.setToken(tokens.accessToken);
+    const jwt = this.decodeJwt(tokens.accessToken);
+    const backendUser = await firstValueFrom(
+      this.http.get<BackendUser>('/auth/me'),
+    );
+    const user: IUser = {
+      id:             jwt.sub,
+      email:          backendUser.email,
+      fullName:       backendUser.fullName,
+      phone:          backendUser.phone,
+      roles:          [jwt.role.toLowerCase() as Role],
+      status:         this.mapStatus(backendUser.status),
+      producerStatus: backendUser.producerStatus as ProducerStatus | undefined,
+      createdAt:      backendUser.createdAt,
+    };
+    this.storage.setUser(user);
+    this.currentUser.set(user);
+    await this.navigateByRole(user.roles[0]);
+  }
+
+  private decodeJwt(token: string): JwtPayload {
+    const b64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    return JSON.parse(atob(b64)) as JwtPayload;
+  }
+
+  private mapStatus(status: string): 'active' | 'inactive' | 'suspended' {
+    if (status === 'banned') return 'suspended';
+    return status as 'active' | 'inactive';
   }
 
   private async navigateByRole(role: Role): Promise<void> {

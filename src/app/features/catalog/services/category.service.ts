@@ -1,24 +1,29 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { ICategory } from '../models/category.model';
 
-const SEED_CATEGORIES: ICategory[] = [
-  { id: '1', name: 'Café de Origen', description: 'Variedad pura de una sola región' },
-  { id: '2', name: 'Blend', description: 'Mezcla de diferentes variedades' },
-  { id: '3', name: 'Decafeinado', description: 'Café sin cafeína' },
-  { id: '4', name: 'Especiales', description: 'Ediciones limitadas y microlotes' },
-];
-
 @Injectable({ providedIn: 'root' })
 export class CategoryService {
-  private readonly categories = signal<ICategory[]>(SEED_CATEGORIES);
-  readonly count = computed(() => this.categories().length);
+  private readonly http = inject(HttpClient);
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly _categories = signal<ICategory[]>([]);
+  readonly categories = this._categories.asReadonly();
+  readonly count = computed(() => this._categories().length);
+
+  constructor() {
+    if (!isPlatformBrowser(this.platformId)) return;
+    this.http.get<ICategory[]>('/catalog/categories').subscribe({
+      next: list => this._categories.set(list),
+    });
+  }
 
   list(): Observable<ICategory[]> {
-    return of(this.categories());
+    return of(this._categories());
   }
 
   getById(id: string): Observable<ICategory | undefined> {
-    return of(this.categories().find(c => c.id === id));
+    return of(this._categories().find(c => c.id === id));
   }
 }

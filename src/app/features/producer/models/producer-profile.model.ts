@@ -7,6 +7,7 @@ export interface IProducerProfile {
   department: string;
   bio: string;
   avatarInitials: string;
+  status?: string;
 }
 
 export interface IProducerProfilePayload {

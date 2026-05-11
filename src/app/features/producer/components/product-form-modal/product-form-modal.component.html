@@ -54,13 +54,9 @@
           [class.field-input--error]="hasError(categoryCtrl)"
         >
           <option value="" disabled>Seleccionar categoría</option>
-          <option value="Grano entero">Grano entero</option>
-          <option value="Molido">Molido</option>
-          <option value="Tostado oscuro">Tostado oscuro</option>
-          <option value="Tostado medio">Tostado medio</option>
-          <option value="Tostado claro">Tostado claro</option>
-          <option value="Descafeinado">Descafeinado</option>
-          <option value="Instantáneo">Instantáneo</option>
+          @for (cat of categories(); track cat.id) {
+            <option [value]="cat.id">{{ cat.name }}</option>
+          }
         </select>
         @if (hasError(categoryCtrl)) {
           <span class="field-error" role="alert">{{ getError(categoryCtrl) }}</span>
