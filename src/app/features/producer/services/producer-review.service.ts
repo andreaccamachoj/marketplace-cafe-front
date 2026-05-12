@@ -1,92 +1,40 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { IProducerReview, IProducerReviewGroup } from '../models/producer-review.model';
-
-const SEED_REVIEWS: IProducerReview[] = [
-  {
-    id: 'pr1',
-    productId: '1',
-    productName: 'Café Especial Huila',
-    productEmoji: '🫘',
-    buyerName: 'María García',
-    buyerInitials: 'MG',
-    rating: 5,
-    comment: '¡Excelente café! Notas increíbles de frutos rojos y chocolate. Llegó muy bien empacado y fresco.',
-    date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-    isVerifiedPurchase: true,
-    helpfulCount: 8,
-  },
-  {
-    id: 'pr2',
-    productId: '1',
-    productName: 'Café Especial Huila',
-    productEmoji: '🫘',
-    buyerName: 'Juan Rodríguez',
-    buyerInitials: 'JR',
-    rating: 4,
-    comment: 'Muy buen café, el proceso lavado se nota. Quizás una presentación de 1 kg sería ideal para los que lo consumimos diario.',
-    date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-    isVerifiedPurchase: true,
-    helpfulCount: 3,
-  },
-  {
-    id: 'pr3',
-    productId: '5',
-    productName: 'Café Tolima Natural',
-    productEmoji: '🌺',
-    buyerName: 'Laura Martínez',
-    buyerInitials: 'LM',
-    rating: 5,
-    comment: 'El proceso natural se siente desde que abres el paquete. Frutas tropicales increíbles. Lo recomiendo totalmente.',
-    date: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
-    isVerifiedPurchase: true,
-    helpfulCount: 12,
-    producerReply: '¡Muchas gracias Laura! Nos alegra que hayas disfrutado el proceso natural. Fue una cosecha especial este año. ¡Hasta pronto!',
-    producerReplyDate: new Date(Date.now() - 13 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: 'pr4',
-    productId: '1',
-    productName: 'Café Especial Huila',
-    productEmoji: '🫘',
-    buyerName: 'Pedro López',
-    buyerInitials: 'PL',
-    rating: 3,
-    comment: 'El café tiene buen sabor, pero el tiempo de envío fue más largo de lo esperado. Espero mejore la logística.',
-    date: new Date(Date.now() - 21 * 24 * 60 * 60 * 1000).toISOString(),
-    isVerifiedPurchase: true,
-    helpfulCount: 1,
-  },
-  {
-    id: 'pr5',
-    productId: '5',
-    productName: 'Café Tolima Natural',
-    productEmoji: '🌺',
-    buyerName: 'Carolina Herrera',
-    buyerInitials: 'CH',
-    rating: 5,
-    comment: 'Un café muy especial, perfecto para V60 y Chemex. Se convirtió en mi favorito de la semana.',
-    date: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-    isVerifiedPurchase: true,
-    helpfulCount: 6,
-  },
-];
 
 function calcAvgRating(reviews: IProducerReview[]): number {
   if (!reviews.length) return 0;
-  const sum = reviews.reduce((acc, r) => acc + r.rating, 0);
-  return Math.round((sum / reviews.length) * 10) / 10;
+  return Math.round((reviews.reduce((s, r) => s + r.rating, 0) / reviews.length) * 10) / 10;
+}
+
+function mapReview(b: Record<string, unknown>): IProducerReview {
+  return {
+    id: String(b['id']),
+    productId: String(b['productId']),
+    productName: String(b['productName'] ?? 'Producto'),
+    productEmoji: String(b['productEmoji'] ?? '☕'),
+    buyerName: 'Comprador',
+    buyerInitials: 'C',
+    rating: Number(b['rating'] ?? 0),
+    comment: String(b['body'] ?? b['comment'] ?? ''),
+    date: String(b['createdAt'] ?? '').split('T')[0],
+    isVerifiedPurchase: Boolean(b['isVerifiedPurchase']),
+    helpfulCount: Number(b['helpfulCount'] ?? 0),
+    producerReply: b['producerReply'] ? String(b['producerReply']) : undefined,
+  };
 }
 
 @Injectable({ providedIn: 'root' })
 export class ProducerReviewService {
-  private readonly _reviews = signal<IProducerReview[]>(SEED_REVIEWS);
+  private readonly http = inject(HttpClient);
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly _reviews = signal<IProducerReview[]>([]);
 
   readonly reviews = this._reviews.asReadonly();
-
-  readonly totalReviews   = computed(() => this._reviews().length);
+  readonly totalReviews    = computed(() => this._reviews().length);
   readonly globalAvgRating = computed(() => calcAvgRating(this._reviews()));
 
-  /** Reviews grouped and sorted by product for display. */
   readonly reviewGroups = computed<IProducerReviewGroup[]>(() => {
     const map = new Map<string, IProducerReview[]>();
     for (const r of this._reviews()) {
@@ -104,13 +52,19 @@ export class ProducerReviewService {
     }));
   });
 
+  constructor() {
+    if (!isPlatformBrowser(this.platformId)) return;
+    this.http.get<Record<string, unknown>[]>('/producer/reviews').subscribe({
+      next: list => this._reviews.set(list.map(mapReview)),
+    });
+  }
+
   reply(reviewId: string, text: string): void {
-    this._reviews.update(list =>
-      list.map(r =>
-        r.id === reviewId
+    this.http.post(`/reviews/${reviewId}/reply`, { body: text.trim() }).subscribe({
+      next: () => this._reviews.update(list =>
+        list.map(r => r.id === reviewId
           ? { ...r, producerReply: text.trim(), producerReplyDate: new Date().toISOString() }
-          : r,
-      ),
-    );
+          : r)),
+    });
   }
 }

@@ -16,6 +16,7 @@ import { ProducerApprovalService } from '../../services/producer-approval.servic
 import { AdminUserService } from '../../services/admin-user.service';
 import { AdminCategoryService } from '../../services/admin-category.service';
 import { AdminActivityService } from '../../services/admin-activity.service';
+import { AdminProductService, IAdminProduct } from '../../services/admin-product.service';
 
 import { IProducerApproval } from '../../models/producer-approval.model';
 import { IAdminCategory } from '../../models/admin-category.model';
@@ -32,25 +33,6 @@ import { ActivityFeedItemComponent } from '../../components/activity-feed-item/a
 type AdminTab = 'overview' | 'users' | 'products' | 'producers' | 'categories';
 type ProducerFilter = 'all' | 'pending' | 'approved' | 'rejected';
 
-/* Inline product data for the products tab (view-only) */
-interface IAdminProduct {
-  id: string;
-  emoji: string;
-  name: string;
-  category: string;
-  producer: string;
-  price: number;
-  stock: number;
-  status: 'active' | 'inactive' | 'pending';
-}
-
-const PRODUCTS_DATA: IAdminProduct[] = [
-  { id: 'p1', emoji: '☕', name: 'Geisha Washed', category: 'Especial', producer: 'Finca La Esperanza', price: 58000, stock: 35, status: 'active' },
-  { id: 'p2', emoji: '🫘', name: 'Tabi Natural', category: 'Microlote', producer: 'Café del Huila', price: 42000, stock: 60, status: 'active' },
-  { id: 'p3', emoji: '🌿', name: 'Caturra Honey', category: 'Honey Process', producer: 'Sierra Nevada Beans', price: 36000, stock: 80, status: 'pending' },
-  { id: 'p4', emoji: '🍂', name: 'Bourbon Natural', category: 'Natural', producer: 'Cafés del Eje', price: 29000, stock: 0, status: 'inactive' },
-  { id: 'p5', emoji: '🏔', name: 'Castillo Washed', category: 'Lavado', producer: 'Nariño Select', price: 32000, stock: 45, status: 'active' },
-];
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -79,6 +61,7 @@ export class AdminDashboardComponent {
   private readonly userSvc      = inject(AdminUserService);
   private readonly categorySvc  = inject(AdminCategoryService);
   private readonly activitySvc  = inject(AdminActivityService);
+  private readonly productSvc   = inject(AdminProductService);
   protected readonly auth       = inject(AuthService);
   protected readonly notify     = inject(NotificationService);
 
@@ -96,7 +79,7 @@ export class AdminDashboardComponent {
   protected readonly allUsers       = computed(() => this.userSvc.all());
   protected readonly allCategories  = computed(() => this.categorySvc.all());
   protected readonly recentActivity = computed(() => this.activitySvc.recent());
-  protected readonly products       = signal<IAdminProduct[]>(PRODUCTS_DATA);
+  protected readonly products       = computed(() => this.productSvc.all());
 
   /* ── Admin name ── */
   protected readonly adminName = computed(() =>
@@ -309,5 +292,13 @@ export class AdminDashboardComponent {
     if (!cat) return;
     this.categorySvc.remove(id);
     this.notify.success(`Categoría "${cat.name}" eliminada.`);
+  }
+
+  /* ── Product actions ── */
+  handleActivateProduct(id: string): void {
+    const product = this.products().find((p: IAdminProduct) => p.id === id);
+    if (!product) return;
+    this.productSvc.activate(id);
+    this.notify.success(`Producto "${product.name}" activado.`);
   }
 }
