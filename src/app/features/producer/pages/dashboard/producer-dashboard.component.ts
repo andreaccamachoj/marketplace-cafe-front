@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  OnInit,
   computed,
   inject,
   signal,
@@ -51,7 +52,7 @@ import { ProducerReviewCardComponent } from '../../components/producer-review-ca
   templateUrl: './producer-dashboard.component.html',
   styleUrl: './producer-dashboard.component.scss',
 })
-export class ProducerDashboardComponent {
+export class ProducerDashboardComponent implements OnInit {
   protected readonly auth          = inject(AuthService);
   protected readonly notify        = inject(NotificationService);
   protected readonly productSvc    = inject(ProducerProductService);
@@ -272,5 +273,9 @@ export class ProducerDashboardComponent {
   handleReply(payload: IProducerReplyPayload): void {
     this.reviewSvc.reply(payload.reviewId, payload.text);
     this.notify.success('Respuesta publicada.');
+  }
+
+  ngOnInit(): void {
+    this.productSvc.load();
   }
 }

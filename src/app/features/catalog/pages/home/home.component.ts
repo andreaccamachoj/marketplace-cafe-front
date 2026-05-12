@@ -1,5 +1,5 @@
 import {
-  Component, inject, computed, signal, ChangeDetectionStrategy,
+  Component, OnInit, inject, computed, signal, ChangeDetectionStrategy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -81,7 +81,7 @@ import { FooterComponent } from '@shared/layout/footer/footer.component';
   `,
   styleUrl: './home.component.scss',
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
   private readonly productService = inject(ProductService);
   private readonly cartService    = inject(CartService);
   private readonly favSvc         = inject(FavoritesService);
@@ -184,6 +184,10 @@ export class HomeComponent {
 
   protected isFavorite(productId: string): boolean {
     return this.favSvc.isFavorite(productId);
+  }
+
+  ngOnInit(): void {
+    this.productService.load();
   }
 
   protected scrollToCatalog(): void {
