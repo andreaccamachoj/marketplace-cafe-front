@@ -86,9 +86,15 @@ export class CartService {
 
   applyCoupon(code: string): boolean {
     this.http.post<BackendCart>('/cart/coupon', { code }).subscribe({
-      next: c => { this.applyCart(c); this._couponCode.set(code); this._couponDiscount.set(0.1); },
+      next: c => { this.applyCart(c); this._couponDiscount.set(0.1); },
     });
     return true;
+  }
+
+  removeCoupon(): void {
+    this.http.delete<BackendCart>('/cart/coupon').subscribe({
+      next: c => { this.applyCart(c); this._couponDiscount.set(0); },
+    });
   }
 
   clear(): void {
@@ -100,5 +106,7 @@ export class CartService {
   private applyCart(cart: BackendCart): void {
     this._items.set((cart.items ?? []).map(mapItem));
     if (cart.shippingOptionId) this._shippingOptionId.set(cart.shippingOptionId);
+    this._couponCode.set(cart.couponCode ?? null);
+    if (!cart.couponCode) this._couponDiscount.set(0);
   }
 }
