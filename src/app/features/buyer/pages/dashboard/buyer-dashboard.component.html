@@ -280,7 +280,7 @@
             [order]="order"
             [expanded]="expandedOrder() === order.id"
             (orderToggle)="toggleOrder($event)"
-            (reviewClick)="openCreateReview($event, '', $event)"
+            (reviewClick)="openCreateReviewFromOrder($event)"
           />
         }
 

@@ -1,6 +1,7 @@
 import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { Observable, map } from 'rxjs';
 import { IReview, IReviewPayload } from '../models/review.model';
 import { IOrder } from '../models/order.model';
 
@@ -55,19 +56,20 @@ export class ReviewService {
     buyer: { id: string; name: string; initials: string },
     productName: string,
     productImageUrl: string,
-  ): void {
-    this.http.post<BackendReview>('/reviews', {
+  ): Observable<IReview> {
+    return this.http.post<BackendReview>('/reviews', {
       productId: payload.productId,
-      orderId: payload.orderId,
+      orderId: payload.orderId || null,
       rating: payload.rating,
-      title: payload.title,
-      body: payload.body,
-    }).subscribe({
-      next: r => {
+      title: payload.title || null,
+      body: payload.body || null,
+    }).pipe(
+      map(r => {
         const mapped = { ...mapBuyerReview(r), productName, productImageUrl, buyerName: buyer.name, buyerInitials: buyer.initials };
         this._reviews.update(list => [...list, mapped]);
-      },
-    });
+        return mapped;
+      }),
+    );
   }
 
   update(id: string, changes: Pick<IReview, 'rating' | 'title' | 'body'>): void {

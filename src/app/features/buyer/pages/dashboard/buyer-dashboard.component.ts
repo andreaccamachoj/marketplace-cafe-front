@@ -190,19 +190,28 @@ export class BuyerDashboardComponent {
   });
 
   /* ── Review modal state ── */
-  readonly reviewModalOpen    = signal(false);
-  readonly reviewModalMode    = signal<'create' | 'edit'>('create');
-  readonly reviewModalProduct = signal('');
-  readonly reviewModalOrderId = signal('');
-  readonly selectedReview     = signal<IReview | null>(null);
+  readonly reviewModalOpen      = signal(false);
+  readonly reviewModalMode      = signal<'create' | 'edit'>('create');
+  readonly reviewModalProduct   = signal('');
+  readonly reviewModalOrderId   = signal('');
+  readonly reviewModalProductId = signal('');
+  readonly selectedReview       = signal<IReview | null>(null);
 
   openCreateReview(productId: string, productName: string, orderId: string): void {
-    void productId;
+    this.reviewModalProductId.set(productId);
     this.selectedReview.set(null);
     this.reviewModalMode.set('create');
     this.reviewModalProduct.set(productName);
     this.reviewModalOrderId.set(orderId);
     this.reviewModalOpen.set(true);
+  }
+
+  openCreateReviewFromOrder(orderId: string): void {
+    const order = this.orderSvc.all().find(o => o.id === orderId);
+    if (!order?.items?.length) return;
+    const reviewed = new Set(this.reviewSvc.all().map(r => r.productId));
+    const item = order.items.find(i => !reviewed.has(i.productId)) ?? order.items[0];
+    this.openCreateReview(item.productId, item.productName, orderId);
   }
 
   openEditReview(review: IReview): void {
@@ -217,21 +226,21 @@ export class BuyerDashboardComponent {
   }
 
   handleSaveReview(payload: IReviewPayload): void {
+    this.closeReviewModal();
     if (this.reviewModalMode() === 'create') {
       this.reviewSvc.add(
         {
           ...payload,
-          productId: payload.productId
-            || (this.reviewableProducts().find(
-              p => p.productName === this.reviewModalProduct(),
-            )?.productId ?? ''),
-          orderId: payload.orderId || this.reviewModalOrderId(),
+          productId: this.reviewModalProductId(),
+          orderId: this.reviewModalOrderId(),
         },
         { id: this.BUYER_ID, name: 'Comprador Demo', initials: 'CD' },
         this.reviewModalProduct(),
         '',
-      );
-      this.notify.success('Reseña publicada correctamente');
+      ).subscribe({
+        next: () => this.notify.success('Reseña publicada correctamente'),
+        error: () => this.notify.error('Error al publicar la reseña'),
+      });
     } else {
       const rev = this.selectedReview();
       if (rev) {
@@ -243,7 +252,6 @@ export class BuyerDashboardComponent {
       }
       this.notify.success('Reseña actualizada correctamente');
     }
-    this.closeReviewModal();
   }
 
   handleDeleteReview(id: string): void {
