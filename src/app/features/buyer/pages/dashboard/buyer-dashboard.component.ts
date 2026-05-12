@@ -399,17 +399,23 @@ export class BuyerDashboardComponent {
         unitPrice: i.price,
         emoji:     i.emoji,
       })),
-      total:   this.cartTotal(),
-      address: addr ? `${addr.line1}, ${addr.city}` : 'Dirección no especificada',
+      total:     this.cartTotal(),
+      address:   addr ? `${addr.line1}, ${addr.city}` : 'Dirección no especificada',
+      addressId: addr?.id,
     };
-    // Simula latencia mínima para feedback visual
-    setTimeout(() => {
-      this.orderSvc.place(payload);
-      this.cartSvc.clear();
-      this.notify.success('¡Pedido registrado! Te contactaremos para confirmar el pago.');
-      this.checkoutConfirming.set(false);
-      this.checkoutOpen.set(false);
-    }, 700);
+    this.orderSvc.place(payload).subscribe({
+      next: () => {
+        this.cartSvc.clear();
+        this.orderSvc.load();
+        this.notify.success('¡Pedido registrado! Te contactaremos para confirmar el pago.');
+        this.checkoutConfirming.set(false);
+        this.checkoutOpen.set(false);
+      },
+      error: () => {
+        this.notify.error('No se pudo registrar el pedido. Intenta de nuevo.');
+        this.checkoutConfirming.set(false);
+      },
+    });
   }
 
   handleCancelCheckout(): void {

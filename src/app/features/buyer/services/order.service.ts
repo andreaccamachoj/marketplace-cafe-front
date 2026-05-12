@@ -1,6 +1,7 @@
 import { Injectable, PLATFORM_ID, inject, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { Observable, map } from 'rxjs';
 import { IOrder, IOrderItem, IOrderStep, OrderStatus } from '../models/order.model';
 import { AddressService } from './address.service';
 
@@ -21,8 +22,12 @@ interface BackendOrder {
   id: string;
   code: string;
   status: string;
+  subtotal: number;
+  shippingAmount: number;
+  discountAmount: number;
   totalAmount: number;
   shippingAddressSnapshot: string | null;
+  shippingOptionId: string | null;
   buyerId: string;
   createdAt: string;
   items: {
@@ -32,6 +37,7 @@ interface BackendOrder {
     productEmojiSnapshot: string | null;
     quantity: number;
     unitPriceSnapshot: number;
+    subtotal: number;
   }[] | null;
 }
 
@@ -58,10 +64,11 @@ function mapOrder(b: BackendOrder): IOrder {
   }));
   const items: IOrderItem[] = (b.items ?? []).map(i => ({
     productId: i.productId,
-    name: i.productNameSnapshot,
-    productName: i.productNameSnapshot,
+    name: i.productNameSnapshot || 'Producto',
+    productName: i.productNameSnapshot || 'Producto',
     qty: i.quantity,
     unitPrice: i.unitPriceSnapshot,
+    subtotal: i.subtotal ?? i.unitPriceSnapshot * i.quantity,
     emoji: i.productEmojiSnapshot ?? '☕',
   }));
   const dateStr = b.createdAt
@@ -72,8 +79,12 @@ function mapOrder(b: BackendOrder): IOrder {
     number: b.code ?? b.id,
     date: dateStr,
     status,
+    subtotal: b.subtotal ?? 0,
+    shippingAmount: b.shippingAmount ?? 0,
+    discountAmount: b.discountAmount ?? 0,
     total: b.totalAmount,
     address: b.shippingAddressSnapshot ?? '',
+    shippingOptionId: b.shippingOptionId ?? null,
     buyerId: b.buyerId,
     items,
     steps,
@@ -92,6 +103,11 @@ export class OrderService {
 
   constructor() {
     if (!isPlatformBrowser(this.platformId)) return;
+    this.load();
+  }
+
+  load(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
     this.http.get<BackendOrder[]>('/orders').subscribe({ next: list => this._orders.set(list.map(mapOrder)) });
   }
 
@@ -109,16 +125,19 @@ export class OrderService {
     );
   }
 
-  place(payload: IPlaceOrderPayload): void {
-    const addressId = payload.addressId ?? this.addrSvc.defaultAddress()?.id;
-    if (!addressId) return;
-    this.http.post<BackendOrder>('/orders', {
+  place(payload: IPlaceOrderPayload): Observable<IOrder> {
+    const addressId = payload.addressId ?? this.addrSvc.defaultAddress()?.id ?? '';
+    return this.http.post<BackendOrder>('/orders', {
       addressId,
       shippingOptionId: 'standard',
       paymentMethodCode: 'transfer',
       notes: null,
-    }).subscribe({
-      next: order => this._orders.update(list => [mapOrder(order), ...list]),
-    });
+    }).pipe(
+      map(order => {
+        const mapped = mapOrder(order);
+        this._orders.update(list => [mapped, ...list]);
+        return mapped;
+      }),
+    );
   }
 }
