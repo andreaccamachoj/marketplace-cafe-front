@@ -1,49 +1,47 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { AuthService } from '@core/auth/services/auth.service';
 import { ICartItem } from '../models/cart.model';
 import { SHIPPING_OPTIONS } from '../models/shipping.model';
 
-const SEED_CART_ITEMS: ICartItem[] = [
-  {
-    id: 'c1',
-    productId: 'p1',
-    name: 'Geisha Washed',
-    producer: 'Finca La Esperanza',
-    price: 58000,
-    qty: 2,
-    emoji: '☕',
-    organic: true,
-    fairTrade: true,
-    maxStock: 35,
-  },
-  {
-    id: 'c2',
-    productId: 'p2',
-    name: 'Tabi Natural',
-    producer: 'Café del Huila',
-    price: 42000,
-    qty: 1,
-    emoji: '🫘',
-    organic: false,
-    fairTrade: true,
-    maxStock: 60,
-  },
-  {
-    id: 'c3',
-    productId: 'p3',
-    name: 'Caturra Honey',
-    producer: 'Sierra Nevada Beans',
-    price: 36000,
-    qty: 3,
-    emoji: '🌿',
-    organic: true,
-    fairTrade: false,
-    maxStock: 80,
-  },
-];
+interface BackendCartItem {
+  id: string;
+  productId: string;
+  productName: string;
+  producerName: string;
+  price: number;
+  quantity: number;
+  emoji: string;
+  maxStock: number;
+}
+
+interface BackendCart {
+  id: string;
+  items: BackendCartItem[];
+  couponCode: string | null;
+  shippingOptionId: string | null;
+}
+
+function mapItem(b: BackendCartItem): ICartItem {
+  return {
+    id: b.id, productId: b.productId,
+    name: b.productName ?? 'Producto',
+    producer: b.producerName ?? '',
+    price: b.price, qty: b.quantity,
+    emoji: b.emoji ?? '☕',
+    organic: false, fairTrade: false,
+    maxStock: b.maxStock ?? 99,
+  };
+}
 
 @Injectable({ providedIn: 'root' })
 export class CartService {
-  private readonly _items = signal<ICartItem[]>(SEED_CART_ITEMS);
+  private readonly http = inject(HttpClient);
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly auth = inject(AuthService);
+
+  private readonly _items = signal<ICartItem[]>([]);
   private readonly _couponCode = signal<string | null>(null);
   private readonly _couponDiscount = signal<number>(0);
   private readonly _shippingOptionId = signal<string>('standard');
@@ -61,50 +59,46 @@ export class CartService {
   readonly discount = computed(() => Math.round(this.subtotal() * this._couponDiscount()));
   readonly total = computed(() => this.subtotal() + this.shipping() - this.discount());
 
+  constructor() {
+    if (!isPlatformBrowser(this.platformId)) return;
+    this.http.get<BackendCart>('/cart').subscribe({ next: c => this.applyCart(c) });
+  }
+
   add(item: Omit<ICartItem, 'qty'>): void {
-    this._items.update(list => {
-      const existing = list.find(i => i.id === item.id);
-      if (existing) {
-        return list.map(i =>
-          i.id === item.id
-            ? { ...i, qty: Math.min(i.qty + 1, i.maxStock) }
-            : i,
-        );
-      }
-      return [...list, { ...item, qty: 1 }];
-    });
+    if (this.auth.isAuthenticated() && !this.auth.isBuyer()) return;
+    this.http.post<BackendCart>('/cart/items', {
+      productId: item.productId, quantity: 1, unitPriceSnapshot: item.price,
+    }).subscribe({ next: c => this.applyCart(c) });
   }
 
   remove(id: string): void {
-    this._items.update(list => list.filter(i => i.id !== id));
+    this.http.delete<BackendCart>(`/cart/items/${id}`).subscribe({ next: c => this.applyCart(c) });
   }
 
   updateQty(id: string, qty: number): void {
-    this._items.update(list =>
-      list.map(i => {
-        if (i.id !== id) return i;
-        const clamped = Math.max(1, Math.min(qty, i.maxStock));
-        return { ...i, qty: clamped };
-      }),
-    );
+    this.http.patch<BackendCart>(`/cart/items/${id}`, { quantity: qty }).subscribe({ next: c => this.applyCart(c) });
   }
 
   selectShipping(optionId: string): void {
     this._shippingOptionId.set(optionId);
+    this.http.patch<BackendCart>('/cart/shipping', { shippingOptionId: optionId }).subscribe({ next: c => this.applyCart(c) });
   }
 
   applyCoupon(code: string): boolean {
-    if (code.toUpperCase() === 'CAFE10') {
-      this._couponCode.set(code);
-      this._couponDiscount.set(0.1);
-      return true;
-    }
-    return false;
+    this.http.post<BackendCart>('/cart/coupon', { code }).subscribe({
+      next: c => { this.applyCart(c); this._couponCode.set(code); this._couponDiscount.set(0.1); },
+    });
+    return true;
   }
 
   clear(): void {
-    this._items.set([]);
-    this._couponCode.set(null);
-    this._couponDiscount.set(0);
+    this.http.delete('/cart').subscribe({
+      next: () => { this._items.set([]); this._couponCode.set(null); this._couponDiscount.set(0); },
+    });
+  }
+
+  private applyCart(cart: BackendCart): void {
+    this._items.set((cart.items ?? []).map(mapItem));
+    if (cart.shippingOptionId) this._shippingOptionId.set(cart.shippingOptionId);
   }
 }

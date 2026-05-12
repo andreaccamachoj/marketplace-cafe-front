@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
   signal,
 } from '@angular/core';
@@ -93,9 +94,17 @@ export class BuyerDashboardComponent {
   readonly addresses      = this.addrSvc.addresses;
 
   /** Dirección actualmente seleccionada para el carrito (persiste entre visitas al tab). */
-  readonly selectedAddressId = signal<string>(
-    this.addrSvc.defaultAddress()?.id ?? '',
-  );
+  readonly selectedAddressId = signal<string>('');
+
+  constructor() {
+    // Sync selectedAddressId with the default address once addresses load from HTTP
+    effect(() => {
+      if (!this.selectedAddressId()) {
+        const def = this.addrSvc.defaultAddress();
+        if (def) this.selectedAddressId.set(def.id);
+      }
+    });
+  }
 
   readonly selectedAddress = computed(() =>
     this.addrSvc.addresses().find(a => a.id === this.selectedAddressId())
