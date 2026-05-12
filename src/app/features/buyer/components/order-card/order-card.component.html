@@ -6,7 +6,7 @@
     <div class="order-date">{{ order().date }}</div>
     <div class="order-spacer"></div>
     <span class="status-badge" [ngClass]="'status-' + order().status">
-      {{ getStatusLabel() }}
+      {{ statusLabels[order().status] }}
     </span>
     <div class="order-total">${{ order().total | number:'1.0-0' }}</div>
   </div>
