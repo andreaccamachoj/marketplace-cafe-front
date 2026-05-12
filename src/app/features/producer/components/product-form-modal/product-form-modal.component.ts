@@ -22,6 +22,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { ModalComponent } from '@shared/ui/modal/modal.component';
 import { IManagedProduct, ManagedProductStatus } from '../../models/managed-product.model';
 import { CategoryService } from '@features/catalog/services/category.service';
+import { CertificationService } from '@features/catalog/services/certification.service';
 
 type ProductUnit = '500g' | '1kg' | '5kg' | '10kg' | 'bolsa' | '250g';
 
@@ -34,9 +35,6 @@ interface ProductFormValue {
   stock: FormControl<number>;
   status: FormControl<ManagedProductStatus>;
   description: FormControl<string>;
-  certOrganico: FormControl<boolean>;
-  certFairtrade: FormControl<boolean>;
-  certRainforest: FormControl<boolean>;
 }
 
 @Component({
@@ -50,8 +48,11 @@ interface ProductFormValue {
 export class ProductFormModalComponent implements OnInit {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly categorySvc = inject(CategoryService);
+  private readonly certificationSvc = inject(CertificationService);
 
   readonly categories = computed(() => this.categorySvc.categories());
+  readonly availableCertifications = computed(() => this.certificationSvc.certifications());
+  readonly selectedCertCodes = signal<string[]>([]);
 
   readonly mode    = input.required<'create' | 'edit' | 'view'>();
   readonly product = input<IManagedProduct | null>(null);
@@ -61,17 +62,14 @@ export class ProductFormModalComponent implements OnInit {
   readonly saved  = output<Partial<IManagedProduct>>();
 
   readonly form = new FormGroup<ProductFormValue>({
-    name:         new FormControl<string>('', { nonNullable: true, validators: [Validators.required, Validators.minLength(3), Validators.maxLength(100)] }),
-    origin:       new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
-    category:     new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
-    price:        new FormControl<number>(0,  { nonNullable: true, validators: [Validators.required, Validators.min(1000), Validators.max(10_000_000)] }),
-    unit:         new FormControl<ProductUnit>('500g', { nonNullable: true, validators: [Validators.required] }),
-    stock:        new FormControl<number>(0,  { nonNullable: true, validators: [Validators.required, Validators.min(0), Validators.max(9999)] }),
-    status:       new FormControl<ManagedProductStatus>('draft', { nonNullable: true, validators: [Validators.required] }),
-    description:  new FormControl<string>('', { nonNullable: true, validators: [Validators.maxLength(500)] }),
-    certOrganico:   new FormControl<boolean>(false, { nonNullable: true }),
-    certFairtrade:  new FormControl<boolean>(false, { nonNullable: true }),
-    certRainforest: new FormControl<boolean>(false, { nonNullable: true }),
+    name:        new FormControl<string>('', { nonNullable: true, validators: [Validators.required, Validators.minLength(3), Validators.maxLength(100)] }),
+    origin:      new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
+    category:    new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
+    price:       new FormControl<number>(0,  { nonNullable: true, validators: [Validators.required, Validators.min(1000), Validators.max(10_000_000)] }),
+    unit:        new FormControl<ProductUnit>('500g', { nonNullable: true, validators: [Validators.required] }),
+    stock:       new FormControl<number>(0,  { nonNullable: true, validators: [Validators.required, Validators.min(0), Validators.max(9999)] }),
+    status:      new FormControl<ManagedProductStatus>('draft', { nonNullable: true, validators: [Validators.required] }),
+    description: new FormControl<string>('', { nonNullable: true, validators: [Validators.maxLength(500)] }),
   });
 
   readonly modalTitle = computed(() => {
@@ -96,20 +94,19 @@ export class ProductFormModalComponent implements OnInit {
 
       if (p) {
         this.form.patchValue({
-          name:          p.name,
-          origin:        p.region ?? '',
-          category:      p.categoryId ?? '',
-          price:         p.price,
-          unit:          (p.unit as ProductUnit),
-          stock:         p.stock,
-          status:        p.status,
-          description:   p.description ?? '',
-          certOrganico:   p.certifications.includes('organico'),
-          certFairtrade:  p.certifications.includes('fairtrade'),
-          certRainforest: p.certifications.includes('rainforest'),
+          name:        p.name,
+          origin:      p.region ?? '',
+          category:    p.categoryId ?? '',
+          price:       p.price,
+          unit:        (p.unit as ProductUnit),
+          stock:       p.stock,
+          status:      p.status,
+          description: p.description ?? '',
         });
+        this.selectedCertCodes.set([...(p.certifications ?? [])]);
       } else {
         this.form.reset();
+        this.selectedCertCodes.set([]);
       }
 
       if (m === 'view') {
@@ -133,6 +130,16 @@ export class ProductFormModalComponent implements OnInit {
   get statusCtrl()      { return this.form.controls.status; }
   get descriptionCtrl() { return this.form.controls.description; }
 
+  isCertSelected(code: string): boolean {
+    return this.selectedCertCodes().includes(code);
+  }
+
+  toggleCert(code: string): void {
+    this.selectedCertCodes.update(codes =>
+      codes.includes(code) ? codes.filter(c => c !== code) : [...codes, code]
+    );
+  }
+
   hasError(ctrl: AbstractControl | null): boolean {
     return !!ctrl && ctrl.invalid && ctrl.touched;
   }
@@ -155,10 +162,6 @@ export class ProductFormModalComponent implements OnInit {
     }
 
     const v = this.form.getRawValue();
-    const certs: ('organico' | 'fairtrade' | 'rainforest')[] = [];
-    if (v.certOrganico)   certs.push('organico');
-    if (v.certFairtrade)  certs.push('fairtrade');
-    if (v.certRainforest) certs.push('rainforest');
 
     const payload: Partial<IManagedProduct> = {
       name:           v.name,
@@ -169,7 +172,7 @@ export class ProductFormModalComponent implements OnInit {
       unit:           v.unit,
       stock:          v.stock,
       status:         v.status,
-      certifications: certs,
+      certifications: this.selectedCertCodes(),
     };
 
     this.saved.emit(payload);

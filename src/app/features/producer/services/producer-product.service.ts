@@ -19,7 +19,7 @@ function mapProduct(b: Record<string, unknown>): IManagedProduct {
                       : 'draft') as 'active' | 'inactive' | 'draft',
     price:          Number(b['price'] ?? 0),
     stock:          Number(b['stock'] ?? 0),
-    certifications: [],
+    certifications: Array.isArray(b['certificationCodes']) ? (b['certificationCodes'] as string[]) : [],
     rating:         Number(b['rating'] ?? 0),
     reviewCount:    Number(b['reviewCount'] ?? 0),
     salesCount:     Number(b['soldCount'] ?? 0),
@@ -44,6 +44,12 @@ export class ProducerProductService {
 
   constructor() {
     if (!isPlatformBrowser(this.platformId)) return;
+    this.load();
+  }
+
+  load(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    this._products.set([]);
     this.http.get<Record<string, unknown>[]>('/producer/products').subscribe({
       next: list => this._products.set(list.map(mapProduct)),
     });
@@ -58,6 +64,9 @@ export class ProducerProductService {
       unit:        data.unit ?? '500g',
       region:      data.region ?? '',
       emoji:       data.emoji ?? '🫘',
+      stock:       data.stock ?? 0,
+      status:      data.status ?? 'draft',
+      certifications: data.certifications ?? [],
     }).subscribe({ next: p => this._products.update(list => [...list, mapProduct(p)]) });
   }
 
@@ -71,6 +80,9 @@ export class ProducerProductService {
       region:      data.region ?? current?.region ?? '',
       emoji:       data.emoji ?? current?.emoji ?? '🫘',
       categoryId:  data.categoryId ?? current?.categoryId ?? null,
+      stock:       data.stock ?? current?.stock ?? 0,
+      status:        data.status ?? current?.status ?? 'draft',
+      certifications: data.certifications ?? current?.certifications ?? [],
     }).subscribe({ next: p => this._products.update(list => list.map(x => x.id === id ? mapProduct(p) : x)) });
   }
 

@@ -12,7 +12,7 @@ export interface IManagedProduct {
   status: ManagedProductStatus;
   price: number;
   stock: number;
-  certifications: ('organico' | 'fairtrade' | 'rainforest')[];
+  certifications: string[];
   rating: number;
   reviewCount: number;
   salesCount: number;
