@@ -50,6 +50,11 @@ export class ProducerOrderService {
 
   constructor() {
     if (!isPlatformBrowser(this.platformId)) return;
+    this.load();
+  }
+
+  load(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
     this.http.get<Record<string, unknown>[]>('/producer/orders').subscribe({
       next: list => this._orders.set(list.map(mapOrder)),
     });
