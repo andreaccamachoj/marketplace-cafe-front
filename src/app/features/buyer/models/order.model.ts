@@ -13,6 +13,7 @@ export interface IOrderItem {
   productName: string;
   qty: number;
   unitPrice: number;
+  subtotal: number;
   emoji: string;
 }
 
@@ -27,8 +28,12 @@ export interface IOrder {
   number: string;
   date: string;
   status: OrderStatus;
+  subtotal: number;
+  shippingAmount: number;
+  discountAmount: number;
   total: number;
   address: string;
+  shippingOptionId: string | null;
   buyerId: string;
   items: IOrderItem[];
   steps: IOrderStep[];
