@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, map, of } from 'rxjs';
 import {
   IProduct, CatalogFilter, SortBy,
-  ICuppingAttribute, IFlavorNote,
+  ICuppingAttribute, IFlavorNote, Certification,
 } from '../models/product.model';
 
 interface BackendProduct {
@@ -27,6 +27,7 @@ interface BackendProduct {
   presentations: { presentation: string }[] | null;
   flavorNotes: { name: string; icon: string; intensity: number }[] | null;
   cupping: { score: number; aroma: number; flavor: number; body: number; finish: number } | null;
+  certificationCodes: string[] | null;
 }
 
 function mapBackendProduct(b: BackendProduct): IProduct {
@@ -51,7 +52,7 @@ function mapBackendProduct(b: BackendProduct): IProduct {
     rating: b.rating ?? 0, reviewCount: b.reviewCount ?? 0, stock: b.stock ?? 0,
     soldCount:       b.soldCount,
     images:          (b.images ?? []).sort((a, x) => a.displayOrder - x.displayOrder).map(i => i.imageUrl),
-    certifications:  [],
+    certifications:  (b.certificationCodes ?? []) as Certification[],
     region:          b.region ?? '',
     emoji:           b.emoji ?? undefined,
     originalPrice:   b.originalPrice ?? undefined,
@@ -88,11 +89,17 @@ export class ProductService {
 
     if (filter?.category) {
       const q = filter.category.toLowerCase();
-      result = result.filter(p => p.category.toLowerCase().includes(q));
+      result = result.filter(p => p.category.toLowerCase() === q);
     }
     if (filter?.certs && filter.certs.length > 0) {
       result = result.filter(p =>
-        filter.certs!.some(c => p.certifications.includes(c as 'ORGANIC' | 'FAIRTRADE' | 'RAINFOREST'))
+        filter.certs!.some(c => p.certifications.includes(c as Certification))
+      );
+    }
+    if (filter?.presentation) {
+      const pres = filter.presentation.toLowerCase();
+      result = result.filter(p =>
+        p.presentationTypes?.some(pt => pt.toLowerCase() === pres)
       );
     }
     if (filter?.query) {

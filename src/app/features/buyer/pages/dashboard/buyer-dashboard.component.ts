@@ -19,7 +19,7 @@ import { FavoritesService } from '../../services/favorites.service';
 import { BuyerProfileService } from '../../services/buyer-profile.service';
 import { CartItemRowComponent } from '../../components/cart-item-row/cart-item-row.component';
 import { CartSummaryComponent } from '../../components/cart-summary/cart-summary.component';
-import { OrderCardComponent } from '../../components/order-card/order-card.component';
+import { OrderCardComponent, ReviewClickEvent } from '../../components/order-card/order-card.component';
 import { FavoriteProductCardComponent } from '../../components/favorite-product-card/favorite-product-card.component';
 import { ReviewCardComponent } from '../../components/review-card/review-card.component';
 import { ReviewFormModalComponent } from '../../components/review-form-modal/review-form-modal.component';
@@ -151,10 +151,10 @@ export class BuyerDashboardComponent {
   });
 
   /* ── Reviews ── */
-  private readonly BUYER_ID = 'u-buyer-1';
+  private readonly buyerId = computed(() => this.auth.currentUser()?.id ?? '');
 
   readonly myReviews = computed(() =>
-    this.reviewSvc.all().filter(r => r.buyerId === this.BUYER_ID),
+    this.reviewSvc.all().filter(r => r.buyerId === this.buyerId()),
   );
 
   readonly avgRating = computed(() => {
@@ -166,6 +166,10 @@ export class BuyerDashboardComponent {
       ) / 10
     );
   });
+
+  readonly reviewedProductIds = computed(() =>
+    this.reviewSvc.all().map(r => r.productId)
+  );
 
   readonly reviewableProducts = computed(() => {
     const delivered = this.orderSvc.all().filter(
@@ -206,12 +210,8 @@ export class BuyerDashboardComponent {
     this.reviewModalOpen.set(true);
   }
 
-  openCreateReviewFromOrder(orderId: string): void {
-    const order = this.orderSvc.all().find(o => o.id === orderId);
-    if (!order?.items?.length) return;
-    const reviewed = new Set(this.reviewSvc.all().map(r => r.productId));
-    const item = order.items.find(i => !reviewed.has(i.productId)) ?? order.items[0];
-    this.openCreateReview(item.productId, item.productName, orderId);
+  onOrderReviewClick(event: ReviewClickEvent): void {
+    this.openCreateReview(event.productId, event.productName, event.orderId);
   }
 
   openEditReview(review: IReview): void {
@@ -234,7 +234,11 @@ export class BuyerDashboardComponent {
           productId: this.reviewModalProductId(),
           orderId: this.reviewModalOrderId(),
         },
-        { id: this.BUYER_ID, name: 'Comprador Demo', initials: 'CD' },
+        {
+          id:       this.buyerId(),
+          name:     this.auth.currentUser()?.fullName ?? 'Comprador',
+          initials: (this.auth.currentUser()?.fullName ?? 'C').charAt(0).toUpperCase(),
+        },
         this.reviewModalProduct(),
         '',
       ).subscribe({
@@ -255,7 +259,7 @@ export class BuyerDashboardComponent {
   }
 
   handleDeleteReview(id: string): void {
-    this.reviewSvc.remove(id, this.BUYER_ID);
+    this.reviewSvc.remove(id, this.buyerId());
     this.notify.success('Reseña eliminada');
   }
 

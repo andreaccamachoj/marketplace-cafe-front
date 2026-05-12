@@ -1,13 +1,29 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, computed } from '@angular/core';
 import { NgClass } from '@angular/common';
+import { ProductService } from '../../services/product.service';
+import { Certification } from '../../models/product.model';
 
-interface IProducer {
+interface IProducerCard {
   name: string;
   region: string;
   avatar: string;
   avatarBg: string;
   certs: { label: string; cls: string }[];
 }
+
+const CERT_CONFIG: Record<Certification, { label: string; cls: string }> = {
+  ORGANIC:    { label: 'Orgánico',   cls: 'badge-org'  },
+  FAIRTRADE:  { label: 'Fairtrade',  cls: 'badge-fair' },
+  RAINFOREST: { label: 'Rainforest', cls: 'badge-rain' },
+};
+
+const AVATARS   = ['👨‍🌾', '👩‍🌾', '👨‍🌾', '👩‍🌾'];
+const AVATAR_BGS = [
+  'rgba(74,140,86,.12)',
+  'rgba(192,120,32,.12)',
+  'rgba(26,107,138,.12)',
+  'rgba(153,120,93,.15)',
+];
 
 @Component({
   selector: 'app-producers-section',
@@ -26,7 +42,7 @@ interface IProducer {
           </p>
         </div>
         <div class="producers-grid">
-          @for (p of producers; track p.name) {
+          @for (p of producers(); track p.name) {
             <div class="producer-card">
               <div class="producer-avatar" [style.background]="p.avatarBg">{{ p.avatar }}</div>
               <div class="producer-name">{{ p.name }}</div>
@@ -46,30 +62,30 @@ interface IProducer {
   styleUrl: './producers-section.component.scss',
 })
 export class ProducersSectionComponent {
-  protected readonly producers: IProducer[] = [
-    {
-      name: 'Finca La Esperanza', region: 'Huila, Colombia',
-      avatar: '👨‍🌾', avatarBg: 'rgba(74,140,86,.12)',
-      certs: [{ label: 'Orgánico', cls: 'badge-org' }, { label: 'Fairtrade', cls: 'badge-fair' }],
-    },
-    {
-      name: 'Coop. Nariño Verde', region: 'Nariño, Colombia',
-      avatar: '👩‍🌾', avatarBg: 'rgba(192,120,32,.12)',
-      certs: [{ label: 'Orgánico', cls: 'badge-org' }, { label: 'Rainforest', cls: 'badge-rain' }],
-    },
-    {
-      name: 'Sierra Nevada Farms', region: 'Magdalena, Colombia',
-      avatar: '👨‍🌾', avatarBg: 'rgba(26,107,138,.12)',
-      certs: [{ label: 'Rainforest', cls: 'badge-rain' }],
-    },
-    {
-      name: 'Coop. Eje Cafetero', region: 'Quindío, Colombia',
-      avatar: '👩‍🌾', avatarBg: 'rgba(153,120,93,.15)',
-      certs: [
-        { label: 'Orgánico',   cls: 'badge-org'  },
-        { label: 'Fairtrade',  cls: 'badge-fair' },
-        { label: 'Rainforest', cls: 'badge-rain' },
-      ],
-    },
-  ];
+  private readonly productSvc = inject(ProductService);
+
+  protected readonly producers = computed<IProducerCard[]>(() => {
+    const seen = new Map<string, IProducerCard>();
+    let idx = 0;
+
+    for (const product of this.productSvc.list()) {
+      if (!product.producerName || seen.has(product.producerName)) continue;
+
+      const certSet = new Set<Certification>(product.certifications);
+      const certs = Array.from(certSet)
+        .filter(c => CERT_CONFIG[c])
+        .map(c => CERT_CONFIG[c]);
+
+      seen.set(product.producerName, {
+        name:     product.producerName,
+        region:   product.region || 'Colombia',
+        avatar:   AVATARS[idx % AVATARS.length],
+        avatarBg: AVATAR_BGS[idx % AVATAR_BGS.length],
+        certs,
+      });
+      idx++;
+    }
+
+    return Array.from(seen.values()).slice(0, 8);
+  });
 }

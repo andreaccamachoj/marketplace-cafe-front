@@ -38,12 +38,10 @@
       >
         Ver detalle <span class="expand-arrow" aria-hidden="true">▼</span>
       </button>
-      @if (order().status === 'delivered' && !order().reviewSubmitted) {
-        <button
-          class="btn-order-action btn-review"
-          type="button"
-          (click)="onReviewClick()"
-        >⭐ Dejar reseña</button>
+      @if (isDelivered()) {
+        <span class="btn-order-action btn-review-hint" aria-hidden="true">
+          ⭐ Expande para reseñar
+        </span>
       }
     </div>
   </div>
@@ -59,6 +57,9 @@
       <div class="order-detail-items">
         <div class="order-detail-item order-detail-item--header">
           <span>Producto</span><span>Cant.</span><span>Precio unit.</span><span>Subtotal</span>
+          @if (isDelivered()) {
+            <span>Reseña</span>
+          }
         </div>
         @for (item of order().items; track item.productId) {
           <div class="order-detail-item">
@@ -66,6 +67,20 @@
             <span>{{ item.qty }}</span>
             <span>${{ item.unitPrice | number:'1.0-0' }}</span>
             <span>${{ item.subtotal | number:'1.0-0' }}</span>
+            @if (isDelivered()) {
+              <span>
+                @if (canReviewItem(item.productId)) {
+                  <button
+                    type="button"
+                    class="btn-review-item"
+                    (click)="onItemReviewClick(item.productId, item.name)"
+                    [attr.aria-label]="'Reseñar ' + item.name"
+                  >✏️ Reseñar</button>
+                } @else {
+                  <span class="review-done" aria-label="Ya reseñado">✓ Reseñado</span>
+                }
+              </span>
+            }
           </div>
         }
       </div>

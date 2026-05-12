@@ -8,6 +8,8 @@ import { Subject, timer } from 'rxjs';
 import { debounce, distinctUntilChanged, map, share } from 'rxjs/operators';
 import { IProduct, SortBy, CatalogFilter } from '../../models/product.model';
 import { ProductService } from '../../services/product.service';
+import { CategoryService } from '../../services/category.service';
+import { CertificationService } from '../../services/certification.service';
 import { CartService } from '@features/buyer/services/cart.service';
 import { FavoritesService } from '@features/buyer/services/favorites.service';
 import { AuthService } from '@core/auth/services/auth.service';
@@ -51,12 +53,17 @@ import { FooterComponent } from '@shared/layout/footer/footer.component';
 
     <!-- Filtros + Catálogo -->
     <app-filters-bar
+      [categories]="categorySvc.categories()"
+      [certifications]="certSvc.certifications()"
+      [presentations]="presentations()"
       [selectedCategory]="selectedCategory()"
       [selectedCerts]="selectedCerts()"
+      [selectedPresentation]="selectedPresentation()"
       [sortBy]="sortBy()"
       [resultCount]="products().length"
       (categoryChange)="onCategoryChange($event)"
       (certChange)="onCertChange($event)"
+      (presentationChange)="onPresentationChange($event)"
       (sortChange)="onSortChange($event)"
     ></app-filters-bar>
 
@@ -87,6 +94,8 @@ export class HomeComponent implements OnInit {
   private readonly favSvc         = inject(FavoritesService);
   private readonly auth           = inject(AuthService);
   private readonly router         = inject(Router);
+  protected readonly categorySvc  = inject(CategoryService);
+  protected readonly certSvc      = inject(CertificationService);
 
   /**
    * Verdadero cuando el usuario NO está autenticado (exploración libre)
@@ -96,9 +105,20 @@ export class HomeComponent implements OnInit {
     () => !this.auth.isAuthenticated() || this.auth.isBuyer(),
   );
 
-  protected readonly selectedCategory = signal<string | null>(null);
-  protected readonly selectedCerts    = signal<string[]>([]);
-  protected readonly sortBy           = signal<SortBy>('relevance');
+  protected readonly selectedCategory    = signal<string | null>(null);
+  protected readonly selectedCerts       = signal<string[]>([]);
+  protected readonly selectedPresentation = signal<string | null>(null);
+  protected readonly sortBy              = signal<SortBy>('relevance');
+
+  protected readonly presentations = computed<string[]>(() => {
+    const seen = new Set<string>();
+    for (const p of this.productService.list()) {
+      for (const pt of p.presentationTypes ?? []) {
+        if (pt) seen.add(pt);
+      }
+    }
+    return Array.from(seen).sort();
+  });
 
   // ── Search: debounced pipeline ──────────────────────────────────────────────
   // Raw keystrokes land here; consumers use debouncedQuery$ below.
@@ -141,17 +161,19 @@ export class HomeComponent implements OnInit {
 
   protected readonly products = computed<IProduct[]>(() => {
     const filter: CatalogFilter = {
-      category: this.selectedCategory(),
-      certs:    this.selectedCerts(),
-      sort:     this.sortBy(),
-      query:    this.searchQuery() || undefined,
+      category:     this.selectedCategory(),
+      certs:        this.selectedCerts(),
+      presentation: this.selectedPresentation(),
+      sort:         this.sortBy(),
+      query:        this.searchQuery() || undefined,
     };
     return this.productService.list(filter);
   });
 
-  protected onCategoryChange(cat: string | null): void { this.selectedCategory.set(cat); }
-  protected onCertChange(certs: string[]): void        { this.selectedCerts.set(certs); }
-  protected onSortChange(sort: SortBy): void           { this.sortBy.set(sort); }
+  protected onCategoryChange(cat: string | null): void     { this.selectedCategory.set(cat); }
+  protected onCertChange(certs: string[]): void            { this.selectedCerts.set(certs); }
+  protected onPresentationChange(pres: string | null): void { this.selectedPresentation.set(pres); }
+  protected onSortChange(sort: SortBy): void               { this.sortBy.set(sort); }
 
   /** Recibe cada tecla desde la navbar y la introduce en el pipeline debounced. */
   protected onSearchChange(q: string): void {

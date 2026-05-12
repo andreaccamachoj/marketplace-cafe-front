@@ -25,12 +25,11 @@
   <div style="text-align:center">
     <select
       [class]="statusSelectClass()"
-      [value]="order().status"
       aria-label="Cambiar estado del pedido"
       (change)="onStatusChange($event)"
     >
       @for (s of statusFlow; track s) {
-        <option [value]="s" [disabled]="isDisabled(s)">
+        <option [value]="s" [disabled]="isDisabled(s)" [selected]="s === order().status">
           {{ statusLabels[s] }}
         </option>
       }

@@ -16,7 +16,9 @@ function mapOrder(b: Record<string, unknown>): IReceivedOrder {
   const status = (() => {
     const s = String(b['status'] ?? '').toLowerCase();
     const valid: ReceivedOrderStatus[] = ['confirmed', 'preparing', 'shipped', 'delivered'];
-    return valid.includes(s as ReceivedOrderStatus) ? s as ReceivedOrderStatus : 'confirmed';
+    if (valid.includes(s as ReceivedOrderStatus)) return s as ReceivedOrderStatus;
+    if (s === 'pending_verification') return 'confirmed' as ReceivedOrderStatus;
+    return 'delivered' as ReceivedOrderStatus;
   })();
   const createdAt = String(b['createdAt'] ?? '');
   const date = createdAt

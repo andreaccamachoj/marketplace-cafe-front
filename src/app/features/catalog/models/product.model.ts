@@ -66,6 +66,7 @@ export type SortBy = 'relevance' | 'price-asc' | 'price-desc' | 'rating' | 'newe
 export interface CatalogFilter {
   category?: string | null;
   certs?: string[];
+  presentation?: string | null;
   query?: string;
   sort?: SortBy;
 }

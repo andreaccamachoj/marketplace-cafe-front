@@ -33,7 +33,9 @@ export class ReviewFormModalComponent implements OnInit {
   readonly closed = output<void>();
   readonly saved  = output<IReviewPayload>();
 
-  protected readonly hoverRating = signal(0);
+  protected readonly hoverRating    = signal(0);
+  protected readonly selectedRating = signal(0);
+  protected readonly displayRating  = computed(() => this.hoverRating() || this.selectedRating());
 
   protected readonly form = new FormGroup({
     rating: new FormControl<number>(0, {
@@ -57,9 +59,6 @@ export class ReviewFormModalComponent implements OnInit {
       ],
     }),
   });
-
-  protected readonly selectedRating = computed(() => this.form.get('rating')?.value ?? 0);
-  protected readonly displayRating  = computed(() => this.hoverRating() || this.selectedRating());
   protected readonly bodyLength     = computed(() => this.form.get('body')?.value?.length ?? 0);
 
   protected readonly modalTitle = computed(() =>
@@ -71,12 +70,14 @@ export class ReviewFormModalComponent implements OnInit {
   private readonly _ = effect(() => {
     const rev = this.review();
     if (rev) {
+      this.selectedRating.set(rev.rating);
       this.form.patchValue({
         rating: rev.rating,
         title:  rev.title,
         body:   rev.body,
       });
     } else {
+      this.selectedRating.set(0);
       this.form.reset({ rating: 0, title: '', body: '' });
     }
   });
@@ -97,13 +98,15 @@ export class ReviewFormModalComponent implements OnInit {
   }
 
   protected onStarClick(n: number): void {
+    this.selectedRating.set(n);
     this.form.get('rating')?.setValue(n);
     this.form.get('rating')?.markAsDirty();
   }
 
   protected onClose(): void {
-    this.form.reset({ rating: 0, title: '', body: '' });
+    this.selectedRating.set(0);
     this.hoverRating.set(0);
+    this.form.reset({ rating: 0, title: '', body: '' });
     this.closed.emit();
   }
 

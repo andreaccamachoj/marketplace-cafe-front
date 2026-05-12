@@ -279,8 +279,9 @@
           <app-order-card
             [order]="order"
             [expanded]="expandedOrder() === order.id"
+            [reviewedProductIds]="reviewedProductIds()"
             (orderToggle)="toggleOrder($event)"
-            (reviewClick)="openCreateReviewFromOrder($event)"
+            (reviewClick)="onOrderReviewClick($event)"
           />
         }
 

@@ -64,10 +64,10 @@ export class CartService {
     this.http.get<BackendCart>('/cart').subscribe({ next: c => this.applyCart(c) });
   }
 
-  add(item: Omit<ICartItem, 'qty'>): void {
+  add(item: Omit<ICartItem, 'qty'>, quantity = 1): void {
     if (this.auth.isAuthenticated() && !this.auth.isBuyer()) return;
     this.http.post<BackendCart>('/cart/items', {
-      productId: item.productId, quantity: 1, unitPriceSnapshot: item.price,
+      productId: item.productId, quantity, unitPriceSnapshot: item.price,
     }).subscribe({ next: c => this.applyCart(c) });
   }
 

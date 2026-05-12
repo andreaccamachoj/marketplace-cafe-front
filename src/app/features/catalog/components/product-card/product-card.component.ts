@@ -1,8 +1,9 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, input } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { IProduct } from '../../models/product.model';
 import { CurrencyCopPipe } from '@shared/pipes/currency-cop.pipe';
+import { FavoritesService } from '@features/buyer/services/favorites.service';
 
 @Component({
   selector: 'app-product-card',
@@ -32,11 +33,11 @@ import { CurrencyCopPipe } from '@shared/pipes/currency-cop.pipe';
           <button
             type="button"
             class="card-wishlist"
-            [class.active]="isFav"
-            [attr.aria-label]="(isFav ? 'Quitar de' : 'Agregar a') + ' lista de deseos'"
-            [attr.aria-pressed]="isFav"
+            [class.active]="isFav()"
+            [attr.aria-label]="(isFav() ? 'Quitar de' : 'Agregar a') + ' lista de deseos'"
+            [attr.aria-pressed]="isFav()"
             (click)="onToggleFavorite()"
-          >{{ isFav ? '♥' : '♡' }}</button>
+          >{{ isFav() ? '♥' : '♡' }}</button>
         }
       </div>
 
@@ -82,10 +83,13 @@ import { CurrencyCopPipe } from '@shared/pipes/currency-cop.pipe';
             type="button"
             class="btn-add-cart"
             [class.added]="inCart"
-            [attr.aria-label]="(inCart ? 'Ya en carrito' : 'Agregar al carrito') + ': ' + product.name"
+            [disabled]="product.stock === 0"
+            [attr.aria-label]="product.stock === 0 ? 'Sin stock: ' + product.name : (inCart ? 'Ya en carrito' : 'Agregar al carrito') + ': ' + product.name"
             (click)="onAdd()"
           >
-            @if (inCart) {
+            @if (product.stock === 0) {
+              <span>Sin stock</span>
+            } @else if (inCart) {
               <span>✓ En carrito</span>
             } @else {
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -104,9 +108,10 @@ import { CurrencyCopPipe } from '@shared/pipes/currency-cop.pipe';
   styleUrl: './product-card.component.scss',
 })
 export class ProductCardComponent {
+  private readonly favSvc = inject(FavoritesService);
+
   @Input({ required: true }) product!: IProduct;
   @Input() inCart = false;
-  @Input() isFav  = false;
 
   /** Controla si se muestran acciones de compra (carrito, favoritos).
    *  Verdadero para compradores y usuarios no autenticados; falso para productores/admins. */
@@ -115,7 +120,12 @@ export class ProductCardComponent {
   @Output() add            = new EventEmitter<IProduct>();
   @Output() toggleFavorite = new EventEmitter<string>();
 
-  protected onAdd(): void { this.add.emit(this.product); }
+  protected isFav(): boolean { return this.favSvc.isFavorite(this.product.id); }
+
+  protected onAdd(): void {
+    if (this.product.stock === 0) return;
+    this.add.emit(this.product);
+  }
   protected onToggleFavorite(): void { this.toggleFavorite.emit(this.product.id); }
 
   protected starsHtml(rating: number): string {
@@ -132,6 +142,7 @@ export class ProductCardComponent {
   }
 
   protected stockClass(): string {
+    if (this.product.stock === 0) return 'stock-out';
     const pct = this.stockPct();
     if (pct > 60) return 'stock-high';
     if (pct > 20) return 'stock-medium';
@@ -139,6 +150,7 @@ export class ProductCardComponent {
   }
 
   protected stockLabel(): string {
+    if (this.product.stock === 0) return 'Sin stock';
     const pct = this.stockPct();
     if (pct > 60) return `Stock disponible (${pct}%)`;
     if (pct > 20) return `Stock limitado (${pct}%)`;

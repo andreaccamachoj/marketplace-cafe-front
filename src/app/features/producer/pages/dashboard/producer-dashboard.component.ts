@@ -147,6 +147,7 @@ export class ProducerDashboardComponent implements OnInit {
 
   setTab(tab: 'products' | 'orders' | 'farm' | 'profile' | 'reviews'): void {
     this.activeTab.set(tab);
+    if (tab === 'orders') this.orderSvc.load();
   }
 
   onSearchInput(event: Event): void {

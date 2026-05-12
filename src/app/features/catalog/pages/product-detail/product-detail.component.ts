@@ -305,19 +305,17 @@ export class ProductDetailComponent {
   protected onAddToCart(qty: number): void {
     const prod = this.product();
     if (!prod) return;
-    for (let i = 0; i < qty; i++) {
-      this.cartService.add({
-        id:        prod.id,
-        productId: prod.id,
-        name:      prod.name,
-        producer:  prod.producerName,
-        price:     prod.price,
-        emoji:     prod.emoji ?? '☕',
-        organic:   prod.certifications.includes('ORGANIC'),
-        fairTrade: prod.certifications.includes('FAIRTRADE'),
-        maxStock:  prod.maxStock ?? prod.stock,
-      });
-    }
+    this.cartService.add({
+      id:        prod.id,
+      productId: prod.id,
+      name:      prod.name,
+      producer:  prod.producerName,
+      price:     prod.price,
+      emoji:     prod.emoji ?? '☕',
+      organic:   prod.certifications.includes('ORGANIC'),
+      fairTrade: prod.certifications.includes('FAIRTRADE'),
+      maxStock:  prod.maxStock ?? prod.stock,
+    }, qty);
   }
 
   protected onBuyNow(qty: number): void {
