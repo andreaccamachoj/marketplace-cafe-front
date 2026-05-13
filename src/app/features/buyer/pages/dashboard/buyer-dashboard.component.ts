@@ -100,8 +100,8 @@ export class BuyerDashboardComponent implements OnInit {
   constructor() {
     effect(() => {
       if (!this.selectedAddressId()) {
-        const def = this.addrSvc.defaultAddress();
-        if (def) this.selectedAddressId.set(def.id);
+        const first = this.addrSvc.defaultAddress() ?? this.addrSvc.addresses()[0] ?? null;
+        if (first) this.selectedAddressId.set(first.id);
       }
     }, { allowSignalWrites: true });
   }
