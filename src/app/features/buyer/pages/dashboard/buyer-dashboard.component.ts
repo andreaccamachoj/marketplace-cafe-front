@@ -98,13 +98,12 @@ export class BuyerDashboardComponent implements OnInit {
   readonly selectedAddressId = signal<string>('');
 
   constructor() {
-    // Sync selectedAddressId with the default address once addresses load from HTTP
     effect(() => {
       if (!this.selectedAddressId()) {
         const def = this.addrSvc.defaultAddress();
         if (def) this.selectedAddressId.set(def.id);
       }
-    });
+    }, { allowSignalWrites: true });
   }
 
   readonly selectedAddress = computed(() =>

@@ -7,12 +7,11 @@
     @if (addresses().length > 0) {
       <select
         class="address-select"
-        [value]="selectedAddressId()"
         (change)="onAddressChange($event)"
         aria-label="Seleccionar dirección de envío"
       >
         @for (addr of addresses(); track addr.id) {
-          <option [value]="addr.id">
+          <option [value]="addr.id" [selected]="addr.id === selectedAddressId()">
             {{ addr.label }} — {{ addr.line1 }}, {{ addr.city }}
           </option>
         }
