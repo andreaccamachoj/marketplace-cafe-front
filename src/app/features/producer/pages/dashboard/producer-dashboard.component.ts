@@ -126,19 +126,38 @@ export class ProducerDashboardComponent implements OnInit {
   /* ── Reviews from service ── */
   readonly reviewGroups = this.reviewSvc.reviewGroups;
 
-  /* ── Stats (mock) ── */
-  readonly monthlySales  = signal(912000);
-  readonly avgRating     = signal(4.8);
-  readonly reviewCount   = signal(127);
+  /* ── Stats (real) ── */
+  readonly avgRating   = computed(() => this.reviewSvc.globalAvgRating());
+  readonly reviewCount = computed(() => this.reviewSvc.totalReviews());
+
+  readonly monthlySales = computed(() => {
+    const now = new Date();
+    return this.orderSvc.orders()
+      .filter(o => {
+        if (!o.createdAt) return false;
+        const d = new Date(o.createdAt);
+        return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+      })
+      .reduce((sum, o) => sum + o.total, 0);
+  });
 
   readonly monthlySalesFormatted = computed(() => {
     const v = this.monthlySales();
-    if (v >= 1000000) return (v / 1000000).toFixed(1).replace('.', ',') + 'M';
-    if (v >= 1000)    return (v / 1000).toFixed(0) + 'K';
+    if (v >= 1_000_000) return (v / 1_000_000).toFixed(1).replace('.', ',') + 'M';
+    if (v >= 1_000)     return (v / 1_000).toFixed(0) + 'K';
     return v.toLocaleString('es-CO');
   });
 
-  readonly semesterSales = computed(() => '$5,4M');
+  readonly semesterSales = computed(() => {
+    const cutoff = new Date();
+    cutoff.setMonth(cutoff.getMonth() - 6);
+    const total = this.orderSvc.orders()
+      .filter(o => o.createdAt && new Date(o.createdAt) >= cutoff)
+      .reduce((sum, o) => sum + o.total, 0);
+    if (total >= 1_000_000) return '$' + (total / 1_000_000).toFixed(1).replace('.', ',') + 'M';
+    if (total >= 1_000)     return '$' + (total / 1_000).toFixed(0) + 'K';
+    return '$' + total.toLocaleString('es-CO');
+  });
 
   /* ── Actions: sidebar / tabs ── */
   toggleSidebar(): void {

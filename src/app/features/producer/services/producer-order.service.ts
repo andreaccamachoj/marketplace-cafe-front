@@ -31,6 +31,7 @@ function mapOrder(b: Record<string, unknown>): IReceivedOrder {
     buyerInitials: 'C',
     buyerCity: '',
     date,
+    createdAt,
     items,
     total: Number(b['totalAmount'] ?? 0),
     shipping: String(b['shippingOptionId'] ?? 'standard'),

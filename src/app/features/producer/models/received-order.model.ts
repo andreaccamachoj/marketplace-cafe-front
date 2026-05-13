@@ -27,6 +27,7 @@ export interface IReceivedOrder {
   buyerInitials: string;
   buyerCity: string;
   date: string;
+  createdAt?: string;
   items: IReceivedOrderItem[];
   total: number;
   shipping: string;
