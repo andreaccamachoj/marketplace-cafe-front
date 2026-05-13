@@ -22,7 +22,7 @@ interface BackendReview {
 function mapReview(r: BackendReview): IReview {
   const buyerName = r.buyerName ?? 'Comprador';
   const initials  = r.buyerInitials
-    ?? buyerName.split(' ').filter(w => w).map(w => w[0].toUpperCase()).slice(0, 2).join('') || 'C';
+    ?? (buyerName.split(' ').filter(w => w).map(w => w[0].toUpperCase()).slice(0, 2).join('') || 'C');
   return {
     id:                 r.id,
     productId:          r.productId,
