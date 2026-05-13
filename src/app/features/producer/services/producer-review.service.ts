@@ -9,19 +9,24 @@ function calcAvgRating(reviews: IProducerReview[]): number {
 }
 
 function mapReview(b: Record<string, unknown>): IProducerReview {
+  const buyerName = String(b['buyerName'] ?? 'Comprador');
+  const initials  = b['buyerInitials']
+    ? String(b['buyerInitials'])
+    : buyerName.split(' ').filter(w => w).map(w => w[0].toUpperCase()).slice(0, 2).join('') || 'C';
   return {
-    id: String(b['id']),
-    productId: String(b['productId']),
-    productName: String(b['productName'] ?? 'Producto'),
-    productEmoji: String(b['productEmoji'] ?? '☕'),
-    buyerName: 'Comprador',
-    buyerInitials: 'C',
-    rating: Number(b['rating'] ?? 0),
-    comment: String(b['body'] ?? b['comment'] ?? ''),
-    date: String(b['createdAt'] ?? '').split('T')[0],
+    id:                 String(b['id']),
+    productId:          String(b['productId']),
+    productName:        String(b['productName'] ?? 'Producto'),
+    productEmoji:       String(b['productEmoji'] ?? '☕'),
+    buyerName,
+    buyerInitials:      initials,
+    rating:             Number(b['rating'] ?? 0),
+    comment:            String(b['body'] ?? b['comment'] ?? ''),
+    date:               String(b['createdAt'] ?? '').split('T')[0],
     isVerifiedPurchase: Boolean(b['isVerifiedPurchase']),
-    helpfulCount: Number(b['helpfulCount'] ?? 0),
-    producerReply: b['producerReply'] ? String(b['producerReply']) : undefined,
+    helpfulCount:       Number(b['helpfulCount'] ?? 0),
+    producerReply:      b['producerReply'] ? String(b['producerReply']) : undefined,
+    producerReplyDate:  b['producerReplyDate'] ? String(b['producerReplyDate']) : undefined,
   };
 }
 
@@ -54,6 +59,10 @@ export class ProducerReviewService {
 
   constructor() {
     if (!isPlatformBrowser(this.platformId)) return;
+    this.load();
+  }
+
+  load(): void {
     this.http.get<Record<string, unknown>[]>('/producer/reviews').subscribe({
       next: list => this._reviews.set(list.map(mapReview)),
     });

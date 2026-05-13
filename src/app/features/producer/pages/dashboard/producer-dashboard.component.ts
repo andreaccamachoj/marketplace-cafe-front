@@ -280,5 +280,6 @@ export class ProducerDashboardComponent implements OnInit {
   ngOnInit(): void {
     this.productSvc.load();
     this.orderSvc.load();
+    this.reviewSvc.load();
   }
 }
