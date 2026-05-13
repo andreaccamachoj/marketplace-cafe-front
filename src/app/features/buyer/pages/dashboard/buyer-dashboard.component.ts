@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  OnInit,
   computed,
   effect,
   inject,
@@ -57,7 +58,7 @@ type BuyerTab = 'cart' | 'orders' | 'favorites' | 'reviews' | 'profile';
   templateUrl: './buyer-dashboard.component.html',
   styleUrl: './buyer-dashboard.component.scss',
 })
-export class BuyerDashboardComponent {
+export class BuyerDashboardComponent implements OnInit {
   protected readonly router      = inject(Router);
   private readonly auth          = inject(AuthService);
   protected readonly notify      = inject(NotificationService);
@@ -297,16 +298,26 @@ export class BuyerDashboardComponent {
 
   handleSaveProfile(payload: IBuyerProfilePayload): void {
     this.profileSaving.set(true);
-    this.profileSvc.update(payload);
-    this.profileSaving.set(false);
-    this.notify.success('Perfil actualizado correctamente');
+    this.profileSvc.update(payload).subscribe({
+      next: () => {
+        this.notify.success('Perfil actualizado correctamente');
+        this.profileSaving.set(false);
+      },
+      error: () => this.profileSaving.set(false),
+    });
   }
 
   handleSavePassword(payload: IBuyerPasswordPayload): void {
-    // In a real app this would call an auth endpoint.
-    // For the mock we just show a success toast.
-    void payload;
-    this.notify.success('Contraseña actualizada correctamente.');
+    this.passwordSaving.set(true);
+    this.auth.changePassword(payload.currentPassword, payload.newPassword).subscribe({
+      next: () => {
+        this.notify.success('Contraseña actualizada correctamente.');
+        this.passwordSaving.set(false);
+      },
+      error: () => {
+        this.passwordSaving.set(false);
+      },
+    });
   }
 
   /* ── Actions: address CRUD ── */
@@ -436,6 +447,10 @@ export class BuyerDashboardComponent {
 
   toggleOrder(id: string): void {
     this.expandedOrder.update(v => (v === id ? null : id));
+  }
+
+  ngOnInit(): void {
+    this.favSvc.load();
   }
 
   logout(): void {

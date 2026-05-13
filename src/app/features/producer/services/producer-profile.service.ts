@@ -1,6 +1,7 @@
 import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { Observable, map } from 'rxjs';
 import { IProducerProfile, IProducerProfilePayload } from '../models/producer-profile.model';
 import { AuthService } from '@core/auth/services/auth.service';
 import { ProducerStatus } from '@core/auth/models/producer-status.enum';
@@ -29,19 +30,21 @@ export class ProducerProfileService {
     });
   }
 
-  update(payload: IProducerProfilePayload): void {
+  update(payload: IProducerProfilePayload): Observable<IProducerProfile> {
     const avatarInitials = payload.fullName
       .split(' ')
-      .map(n => n[0] ?? '')
+      .filter(n => n.length > 0)
+      .map(n => n[0])
       .join('')
       .toUpperCase()
       .slice(0, 2);
 
-    this.http.patch<IProducerProfile>('/profile/producer', { ...payload, avatarInitials }).subscribe({
-      next: p => {
+    return this.http.patch<IProducerProfile>('/profile/producer', { ...payload, avatarInitials }).pipe(
+      map(p => {
         this._profile.set(p);
         this.auth.updateProfile({ fullName: payload.fullName, phone: payload.phone });
-      },
-    });
+        return p;
+      }),
+    );
   }
 }

@@ -63,7 +63,7 @@
 
       <!-- Grid de métodos de pago -->
       <div class="co-methods-grid">
-        @for (method of paymentMethods; track method.id) {
+        @for (method of paymentMethods(); track method.id) {
           <div class="co-method-card" [style.--accent]="method.accentColor">
             <div class="co-method-header">
               <span class="co-method-emoji" aria-hidden="true">{{ method.emoji }}</span>

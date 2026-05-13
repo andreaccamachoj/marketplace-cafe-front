@@ -9,59 +9,7 @@ import {
 } from '@angular/core';
 import { DecimalPipe, isPlatformBrowser } from '@angular/common';
 import { IAddress } from '../../models/checkout.model';
-
-interface IPaymentMethod {
-  id: string;
-  name: string;
-  emoji: string;
-  accentColor: string;
-  lines: { label: string; value: string }[];
-}
-
-const PAYMENT_METHODS: IPaymentMethod[] = [
-  {
-    id: 'nequi',
-    name: 'Nequi',
-    emoji: '📱',
-    accentColor: '#6C0E99',
-    lines: [
-      { label: 'Número',   value: '314 865 4210' },
-      { label: 'Titular',  value: 'World Coffee Marketplace SAS' },
-    ],
-  },
-  {
-    id: 'bancolombia',
-    name: 'Bancolombia',
-    emoji: '🏦',
-    accentColor: '#FDBD00',
-    lines: [
-      { label: 'Cuenta de ahorros', value: '421-654321-12' },
-      { label: 'NIT',               value: '900.542.310-7' },
-      { label: 'Titular',           value: 'World Coffee Marketplace SAS' },
-    ],
-  },
-  {
-    id: 'daviplata',
-    name: 'Daviplata',
-    emoji: '💜',
-    accentColor: '#E11E8E',
-    lines: [
-      { label: 'Número',  value: '314 865 4210' },
-      { label: 'Titular', value: 'World Coffee Marketplace SAS' },
-    ],
-  },
-  {
-    id: 'breb',
-    name: 'BRE-B',
-    emoji: '⚡',
-    accentColor: '#0057A8',
-    lines: [
-      { label: 'Alias',   value: 'wcm.pagos' },
-      { label: 'Banco',   value: 'Bancolombia · BRE-B' },
-      { label: 'Titular', value: 'World Coffee Marketplace SAS' },
-    ],
-  },
-];
+import { PaymentMethodService } from '../../services/payment-method.service';
 
 const WHATSAPP_NUMBER = '+57 314 865 4210';
 
@@ -83,9 +31,10 @@ export class CheckoutOverlayComponent {
   readonly confirmed = output<void>();
   readonly cancelled = output<void>();
 
-  private readonly platformId = inject(PLATFORM_ID);
+  private readonly platformId      = inject(PLATFORM_ID);
+  private readonly paymentMethodSvc = inject(PaymentMethodService);
 
-  protected readonly paymentMethods = PAYMENT_METHODS;
+  protected readonly paymentMethods = this.paymentMethodSvc.paymentMethods;
   protected readonly whatsappNumber = WHATSAPP_NUMBER;
 
   /** Cerrar con Escape (solo cuando el overlay está visible). */

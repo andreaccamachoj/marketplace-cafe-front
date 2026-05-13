@@ -255,19 +255,20 @@ export class ProducerDashboardComponent implements OnInit {
   /* ── Actions: producer profile ── */
   handleSaveProfile(payload: IProducerProfilePayload): void {
     this.profileLoading.set(true);
-    // Mock async — simulate a brief API call delay.
-    setTimeout(() => {
-      this.profileSvc.update(payload);
-      this.profileLoading.set(false);
-      this.notify.success('Perfil actualizado correctamente.');
-    }, 600);
+    this.profileSvc.update(payload).subscribe({
+      next: () => {
+        this.notify.success('Perfil actualizado correctamente.');
+        this.profileLoading.set(false);
+      },
+      error: () => this.profileLoading.set(false),
+    });
   }
 
   handleSavePassword(payload: IProducerPasswordPayload): void {
-    // In a real app this would call an auth endpoint.
-    // For the mock we just show a success toast.
-    void payload;
-    this.notify.success('Contraseña actualizada correctamente.');
+    this.auth.changePassword(payload.currentPassword, payload.newPassword).subscribe({
+      next: () => this.notify.success('Contraseña actualizada correctamente.'),
+      error: () => {},
+    });
   }
 
   /* ── Actions: reviews ── */

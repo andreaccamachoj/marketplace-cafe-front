@@ -1,7 +1,7 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
+import { Observable, firstValueFrom } from 'rxjs';
 import { IUser } from '../models/user.model';
 import { ILoginCredentials, IRegisterPayload } from '../models/auth-response.model';
 import { Role } from '../models/role.enum';
@@ -67,6 +67,10 @@ export class AuthService {
     this.currentUser.update(u => (u ? { ...u, ...patch } : u));
     const updated = this.currentUser();
     if (updated) this.storage.setUser(updated);
+  }
+
+  changePassword(oldPassword: string, newPassword: string): Observable<void> {
+    return this.http.patch<void>('/auth/me/password', { oldPassword, newPassword });
   }
 
   hasRole(role: Role): boolean {

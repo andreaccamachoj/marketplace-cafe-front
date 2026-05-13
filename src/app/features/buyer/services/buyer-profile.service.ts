@@ -1,6 +1,7 @@
 import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { Observable, map } from 'rxjs';
 import { IBuyerProfile, IBuyerProfilePayload } from '../models/buyer-profile.model';
 
 const EMPTY_PROFILE: IBuyerProfile = {
@@ -22,16 +23,17 @@ export class BuyerProfileService {
     this.http.get<IBuyerProfile>('/profile/buyer').subscribe(p => this._profile.set(p));
   }
 
-  update(payload: IBuyerProfilePayload): void {
+  update(payload: IBuyerProfilePayload): Observable<IBuyerProfile> {
     const avatarInitials = payload.fullName
       .split(' ')
-      .map(n => n[0] ?? '')
+      .filter(n => n.length > 0)
+      .map(n => n[0])
       .join('')
       .toUpperCase()
       .slice(0, 2);
 
-    this.http.patch<IBuyerProfile>('/profile/buyer', { ...payload, avatarInitials }).subscribe({
-      next: p => this._profile.set(p),
-    });
+    return this.http.patch<IBuyerProfile>('/profile/buyer', { ...payload, avatarInitials }).pipe(
+      map(p => { this._profile.set(p); return p; }),
+    );
   }
 }
