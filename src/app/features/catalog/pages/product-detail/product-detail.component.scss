@@ -365,6 +365,41 @@
   margin: 0 0 12px;
 }
 
+.review-producer-reply {
+  margin: 10px 0 6px;
+  padding: 10px 14px;
+  border-left: 3px solid var(--cafe-claro, #a07850);
+  background: rgba(160, 120, 80, 0.06);
+  border-radius: 0 8px 8px 0;
+
+  .reply-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+
+  .reply-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--cafe-oscuro, #3b2410);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .reply-date {
+    font-size: 0.7rem;
+    color: rgba(55, 38, 23, 0.5);
+  }
+
+  .reply-body {
+    margin: 0;
+    font-size: 0.82rem;
+    color: rgba(55, 38, 23, 0.8);
+    line-height: 1.5;
+  }
+}
+
 .review-helpful {
   display: flex;
   align-items: center;

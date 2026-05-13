@@ -206,6 +206,17 @@ import { LoadingSpinnerComponent } from '@shared/ui/loading-spinner/loading-spin
                     }
                   </div>
                   <p class="review-text">{{ review.comment }}</p>
+                  @if (review.producerReply) {
+                    <div class="review-producer-reply">
+                      <div class="reply-header">
+                        <span class="reply-label">🌿 Respuesta del productor</span>
+                        @if (review.producerReplyDate) {
+                          <span class="reply-date">{{ review.producerReplyDate }}</span>
+                        }
+                      </div>
+                      <p class="reply-body">{{ review.producerReply }}</p>
+                    </div>
+                  }
                   <div class="review-helpful">
                     <button class="btn-helpful" type="button">
                       👍 Útil ({{ review.helpfulCount }})

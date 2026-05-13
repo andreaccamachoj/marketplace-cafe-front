@@ -7,25 +7,34 @@ interface BackendReview {
   id: string;
   productId: string;
   buyerId: string;
+  buyerName?: string;
+  buyerInitials?: string;
   rating: number;
   title: string | null;
   body: string | null;
   isVerifiedPurchase: boolean;
   helpfulCount: number;
   createdAt: string;
+  producerReply?: string;
+  producerReplyDate?: string;
 }
 
 function mapReview(r: BackendReview): IReview {
+  const buyerName = r.buyerName ?? 'Comprador';
+  const initials  = r.buyerInitials
+    ?? buyerName.split(' ').filter(w => w).map(w => w[0].toUpperCase()).slice(0, 2).join('') || 'C';
   return {
-    id: r.id,
-    productId: r.productId,
-    userName: 'Comprador',
-    userInitials: 'C',
-    rating: r.rating,
-    comment: r.body ?? r.title ?? '',
-    date: r.createdAt?.split('T')[0] ?? '',
+    id:                 r.id,
+    productId:          r.productId,
+    userName:           buyerName,
+    userInitials:       initials,
+    rating:             r.rating,
+    comment:            r.body ?? r.title ?? '',
+    date:               r.createdAt?.split('T')[0] ?? '',
     isVerifiedPurchase: r.isVerifiedPurchase,
-    helpfulCount: r.helpfulCount,
+    helpfulCount:       r.helpfulCount,
+    producerReply:      r.producerReply,
+    producerReplyDate:  r.producerReplyDate?.split('T')[0],
   };
 }
 

@@ -8,4 +8,6 @@ export interface IReview {
   date: string;
   isVerifiedPurchase: boolean;
   helpfulCount: number;
+  producerReply?: string;
+  producerReplyDate?: string;
 }
