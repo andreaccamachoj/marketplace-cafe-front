@@ -1,6 +1,7 @@
 import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { Observable, map, of, switchMap } from 'rxjs';
 import { IManagedProduct } from '../models/managed-product.model';
 
 
@@ -55,7 +56,7 @@ export class ProducerProductService {
     });
   }
 
-  add(data: Partial<IManagedProduct>): void {
+  add(data: Partial<IManagedProduct>, coverFile?: File | null): void {
     this.http.post<Record<string, unknown>>('/producer/products', {
       categoryId:  data.categoryId ?? null,
       name:        data.name,
@@ -67,10 +68,12 @@ export class ProducerProductService {
       stock:       data.stock ?? 0,
       status:      data.status ?? 'draft',
       certifications: data.certifications ?? [],
-    }).subscribe({ next: p => this._products.update(list => [...list, mapProduct(p)]) });
+    }).pipe(
+      switchMap(p => this.attachCover(mapProduct(p), coverFile)),
+    ).subscribe({ next: product => this._products.update(list => [...list, product]) });
   }
 
-  update(id: string, data: Partial<IManagedProduct>): void {
+  update(id: string, data: Partial<IManagedProduct>, coverFile?: File | null): void {
     const current = this._products().find(p => p.id === id);
     this.http.put<Record<string, unknown>>(`/producer/products/${id}`, {
       name:        data.name,
@@ -83,7 +86,23 @@ export class ProducerProductService {
       stock:       data.stock ?? current?.stock ?? 0,
       status:        data.status ?? current?.status ?? 'draft',
       certifications: data.certifications ?? current?.certifications ?? [],
-    }).subscribe({ next: p => this._products.update(list => list.map(x => x.id === id ? mapProduct(p) : x)) });
+    }).pipe(
+      switchMap(p => this.attachCover(mapProduct(p), coverFile)),
+    ).subscribe({ next: product => this._products.update(list => list.map(x => x.id === id ? product : x)) });
+  }
+
+  uploadCover(id: string, file: File): Observable<IManagedProduct> {
+    const form = new FormData();
+    form.append('file', file);
+    return this.http.post<Record<string, unknown>>(`/producer/products/${id}/cover`, form).pipe(map(mapProduct));
+  }
+
+  deleteCover(id: string): Observable<IManagedProduct> {
+    return this.http.delete<Record<string, unknown>>(`/producer/products/${id}/cover`).pipe(map(mapProduct));
+  }
+
+  private attachCover(product: IManagedProduct, coverFile?: File | null): Observable<IManagedProduct> {
+    return coverFile ? this.uploadCover(product.id, coverFile) : of(product);
   }
 
   toggleStatus(id: string): void {

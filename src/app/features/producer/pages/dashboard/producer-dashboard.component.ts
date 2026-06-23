@@ -71,6 +71,7 @@ export class ProducerDashboardComponent implements OnInit {
   readonly productModalOpen = signal(false);
   readonly productModalMode = signal<'create' | 'edit' | 'view'>('create');
   readonly selectedProduct  = signal<IManagedProduct | null>(null);
+  readonly pendingCoverFile = signal<File | null>(null);
 
   /* ── Farm edit modal state ── */
   readonly farmEditOpen = signal(false);
@@ -201,16 +202,18 @@ export class ProducerDashboardComponent implements OnInit {
   }
 
   handleSaveProduct(data: Partial<IManagedProduct>): void {
+    const coverFile = this.pendingCoverFile();
     if (this.productModalMode() === 'create') {
-      this.productSvc.add(data);
+      this.productSvc.add(data, coverFile);
       this.notify.success('Producto creado correctamente.');
     } else {
       const current = this.selectedProduct();
       if (current) {
-        this.productSvc.update(current.id, data);
+        this.productSvc.update(current.id, data, coverFile);
         this.notify.success('Producto actualizado correctamente.');
       }
     }
+    this.pendingCoverFile.set(null);
     this.closeProductModal();
   }
 
