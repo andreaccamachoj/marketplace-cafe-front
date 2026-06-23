@@ -18,7 +18,11 @@ import { FavoritesService } from '@features/buyer/services/favorites.service';
       <!-- Área imagen / ilustración -->
       <div class="card-img" [style.background]="product.bg || 'rgba(74,140,86,.08)'">
         <div class="card-img-bg"></div>
-        <div class="card-img-illustration" aria-hidden="true">{{ product.emoji || '☕' }}</div>
+        @if (product.coverImageUrl) {
+          <img class="card-cover-img" [src]="product.coverImageUrl" [alt]="product.name" />
+        } @else {
+          <div class="card-img-illustration" aria-hidden="true">{{ product.emoji || '☕' }}</div>
+        }
         <div class="card-img-region">📍 {{ product.region }}</div>
 
         <!-- Badges certificación — arriba izquierda -->

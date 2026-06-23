@@ -43,6 +43,7 @@ export interface IProduct {
   certifications: Certification[];
   region: string;
   emoji?: string;
+  coverImageUrl?: string;
   bg?: string;
   // Detail-page fields (optional for backwards compat with card)
   originalPrice?: number;

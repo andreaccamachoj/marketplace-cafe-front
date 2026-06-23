@@ -19,6 +19,7 @@ interface BackendProduct {
   unit: string | null;
   region: string | null;
   emoji: string | null;
+  coverImageUrl: string | null;
   soldCount: number;
   rating: number;
   reviewCount: number;
@@ -55,6 +56,7 @@ function mapBackendProduct(b: BackendProduct): IProduct {
     certifications:  (b.certificationCodes ?? []) as Certification[],
     region:          b.region ?? '',
     emoji:           b.emoji ?? undefined,
+    coverImageUrl:   b.coverImageUrl ?? undefined,
     originalPrice:   b.originalPrice ?? undefined,
     discountPercent: b.discountPercent ?? undefined,
     presentationTypes: (b.presentations ?? []).map(p => p.presentation),

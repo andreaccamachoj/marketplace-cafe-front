@@ -9,6 +9,7 @@ function mapProduct(b: Record<string, unknown>): IManagedProduct {
   return {
     id:             String(b['id']),
     emoji:          String(b['emoji'] ?? '🫘'),
+    coverImageUrl:  b['coverImageUrl'] ? String(b['coverImageUrl']) : undefined,
     name:           String(b['name'] ?? ''),
     description:    b['description'] ? String(b['description']) : '',
     region:         b['region'] ? String(b['region']) : '',
