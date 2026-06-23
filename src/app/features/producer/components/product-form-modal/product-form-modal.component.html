@@ -159,6 +159,29 @@
         </div>
       </div>
 
+      <!-- Imagen de portada — full width -->
+      <div class="form-field form-field--full">
+        <span class="field-label">Imagen de portada (opcional)</span>
+        @if (coverPreviewUrl()) {
+          <img class="cover-preview" [src]="coverPreviewUrl()" alt="Vista previa de la portada" />
+        }
+        @if (!isViewMode()) {
+          <input
+            class="field-input"
+            type="file"
+            accept="image/png,image/jpeg"
+            (change)="onCoverSelected($event)"
+          />
+          <span class="field-hint">PNG, JPG o JPEG · máx. 2 MB · recomendado 1200×800 px</span>
+          @if (coverFile()) {
+            <button type="button" class="btn-cancel" (click)="removeCover()">Quitar imagen</button>
+          }
+          @if (coverError()) {
+            <span class="field-error" role="alert">{{ coverError() }}</span>
+          }
+        }
+      </div>
+
       <!-- Descripción — full width -->
       <div class="form-field form-field--full">
         <label class="field-label" for="pf-desc">Descripción (opcional)</label>

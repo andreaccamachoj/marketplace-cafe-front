@@ -60,6 +60,14 @@ export class ProductFormModalComponent implements OnInit {
 
   readonly closed = output<void>();
   readonly saved  = output<Partial<IManagedProduct>>();
+  readonly coverSelected = output<File | null>();
+
+  private static readonly MAX_COVER_BYTES = 2 * 1024 * 1024;
+  private static readonly ALLOWED_COVER_TYPES = ['image/png', 'image/jpeg'];
+
+  readonly coverFile       = signal<File | null>(null);
+  readonly coverPreviewUrl = signal<string | null>(null);
+  readonly coverError      = signal<string | null>(null);
 
   readonly form = new FormGroup<ProductFormValue>({
     name:        new FormControl<string>('', { nonNullable: true, validators: [Validators.required, Validators.minLength(3), Validators.maxLength(100)] }),
@@ -109,6 +117,8 @@ export class ProductFormModalComponent implements OnInit {
         this.selectedCertCodes.set([]);
       }
 
+      this.removeCover();
+
       if (m === 'view') {
         this.form.disable();
         this.isReadonly.set(true);
@@ -138,6 +148,55 @@ export class ProductFormModalComponent implements OnInit {
     this.selectedCertCodes.update(codes =>
       codes.includes(code) ? codes.filter(c => c !== code) : [...codes, code]
     );
+  }
+
+  onCoverSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files && input.files.length > 0 ? input.files[0] : null;
+    this.coverError.set(null);
+    if (!file) {
+      return;
+    }
+    if (!ProductFormModalComponent.ALLOWED_COVER_TYPES.includes(file.type)) {
+      this.coverError.set('Formato no permitido. Usa PNG, JPG o JPEG.');
+      this.clearCoverSelection(input);
+      return;
+    }
+    if (file.size > ProductFormModalComponent.MAX_COVER_BYTES) {
+      this.coverError.set('La imagen supera el tamaño máximo de 2 MB.');
+      this.clearCoverSelection(input);
+      return;
+    }
+    this.setPreview(file);
+    this.coverFile.set(file);
+  }
+
+  removeCover(): void {
+    this.revokePreview();
+    this.coverFile.set(null);
+    this.coverPreviewUrl.set(null);
+    this.coverError.set(null);
+  }
+
+  private clearCoverSelection(input: HTMLInputElement): void {
+    input.value = '';
+    this.revokePreview();
+    this.coverFile.set(null);
+    this.coverPreviewUrl.set(null);
+  }
+
+  private setPreview(file: File): void {
+    this.revokePreview();
+    if (isPlatformBrowser(this.platformId)) {
+      this.coverPreviewUrl.set(URL.createObjectURL(file));
+    }
+  }
+
+  private revokePreview(): void {
+    const prev = this.coverPreviewUrl();
+    if (prev && isPlatformBrowser(this.platformId)) {
+      URL.revokeObjectURL(prev);
+    }
   }
 
   hasError(ctrl: AbstractControl | null): boolean {
@@ -175,11 +234,13 @@ export class ProductFormModalComponent implements OnInit {
       certifications: this.selectedCertCodes(),
     };
 
+    this.coverSelected.emit(this.coverFile());
     this.saved.emit(payload);
   }
 
   onClose(): void {
     this.form.reset();
+    this.removeCover();
     this.closed.emit();
   }
 }
