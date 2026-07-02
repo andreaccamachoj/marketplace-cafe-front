@@ -67,7 +67,7 @@ import { LoadingSpinnerComponent } from '@shared/ui/loading-spinner/loading-spin
             <!-- Left: sticky gallery -->
             <div class="gallery-col">
               <app-product-gallery
-                [images]="prod.images"
+                [images]="galleryImages()"
                 [productName]="prod.name"
                 [emoji]="prod.emoji || '☕'"
                 [certifications]="prod.certifications"
@@ -266,6 +266,13 @@ export class ProductDetailComponent {
     this.route.data.pipe(map(d => d['product'] as IProduct | undefined)),
     { initialValue: undefined }
   );
+
+  /** Portada (coverImageUrl) primero; si no hay, usa las imágenes existentes. */
+  protected readonly galleryImages = computed<string[]>(() => {
+    const prod = this.product();
+    if (!prod) return [];
+    return prod.coverImageUrl ? [prod.coverImageUrl, ...prod.images] : prod.images;
+  });
 
   protected readonly reviews = toSignal(
     this.route.data.pipe(
