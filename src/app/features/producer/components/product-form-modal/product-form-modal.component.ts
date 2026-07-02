@@ -8,6 +8,7 @@ import {
   input,
   output,
   signal,
+  untracked,
 } from '@angular/core';
 import {
   AbstractControl,
@@ -117,7 +118,7 @@ export class ProductFormModalComponent implements OnInit {
         this.selectedCertCodes.set([]);
       }
 
-      this.removeCover();
+      untracked(() => this.removeCover());
 
       if (m === 'view') {
         this.form.disable();

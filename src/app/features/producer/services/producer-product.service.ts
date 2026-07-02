@@ -2,6 +2,7 @@ import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map, of, switchMap } from 'rxjs';
+import { NotificationService } from '@core/services/notification.service';
 import { IManagedProduct } from '../models/managed-product.model';
 
 
@@ -32,6 +33,7 @@ function mapProduct(b: Record<string, unknown>): IManagedProduct {
 export class ProducerProductService {
   private readonly http = inject(HttpClient);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly notify = inject(NotificationService);
   private readonly _products = signal<IManagedProduct[]>([]);
 
   readonly products = this._products.asReadonly();
@@ -71,7 +73,10 @@ export class ProducerProductService {
       certifications: data.certifications ?? [],
     }).pipe(
       switchMap(p => this.attachCover(mapProduct(p), coverFile)),
-    ).subscribe({ next: product => this._products.update(list => [...list, product]) });
+    ).subscribe({
+      next: product => this._products.update(list => [...list, product]),
+      error: () => this.notify.error('No se pudo guardar el producto o subir la imagen.'),
+    });
   }
 
   update(id: string, data: Partial<IManagedProduct>, coverFile?: File | null): void {
@@ -89,7 +94,10 @@ export class ProducerProductService {
       certifications: data.certifications ?? current?.certifications ?? [],
     }).pipe(
       switchMap(p => this.attachCover(mapProduct(p), coverFile)),
-    ).subscribe({ next: product => this._products.update(list => list.map(x => x.id === id ? product : x)) });
+    ).subscribe({
+      next: product => this._products.update(list => list.map(x => x.id === id ? product : x)),
+      error: () => this.notify.error('No se pudo actualizar el producto o subir la imagen.'),
+    });
   }
 
   uploadCover(id: string, file: File): Observable<IManagedProduct> {
