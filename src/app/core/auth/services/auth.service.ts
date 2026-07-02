@@ -20,13 +20,19 @@ export class AuthService {
   private readonly router  = inject(Router);
   private readonly notify  = inject(NotificationService);
 
-  readonly currentUser        = signal<IUser | null>(this.storage.getUser<IUser>());
+  readonly currentUser        = signal<IUser | null>(null);
   readonly isAuthenticated    = computed(() => this.currentUser() !== null);
   readonly currentRole        = computed(() => this.currentUser()?.roles[0] ?? null);
   readonly isProducerApproved = computed(
     () => this.currentUser()?.producerStatus === ProducerStatus.APPROVED,
   );
   readonly isBuyer = computed(() => this.currentRole() === Role.BUYER);
+
+  constructor() {
+    // Sin auto-login: cada arranque de la app comienza sin sesión y descarta
+    // cualquier token/usuario persistido de una sesión previa.
+    this.storage.clear();
+  }
 
   async login(credentials: ILoginCredentials): Promise<void> {
     const tokens = await firstValueFrom(
