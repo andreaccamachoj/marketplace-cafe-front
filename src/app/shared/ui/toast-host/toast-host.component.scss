@@ -1,0 +1,28 @@
+.toast-host {
+  position: fixed;
+  bottom: var(--sp-6);
+  right: var(--sp-6);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  pointer-events: none; /* let clicks through the empty area */
+
+  /* Each toast is its own pointer target */
+  > * {
+    pointer-events: all;
+  }
+}
+
+@media (max-width: 480px) {
+  .toast-host {
+    bottom: var(--sp-4);
+    right: var(--sp-3);
+    left: var(--sp-3);
+
+    app-toast {
+      max-width: 100%;
+      min-width: auto;
+    }
+  }
+}

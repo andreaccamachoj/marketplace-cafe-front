@@ -1,0 +1,122 @@
+.section-sus {
+  background: var(--espresso, #372617);
+  padding: 80px 24px;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 70% at 100% 50%, rgba(74,140,86,.1) 0%, transparent 60%);
+    pointer-events: none;
+  }
+}
+
+.sus-inner {
+  max-width: var(--max-w, 1280px);
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 56px;
+}
+
+.section-eyebrow {
+  display: inline-block;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  color: var(--verde-fresco, #4a8c56);
+}
+
+.section-title {
+  font-family: var(--font-display, 'Playfair Display', serif);
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--marfil, #e4dcd1);
+  margin: 0;
+}
+
+.section-desc {
+  margin: 14px auto 0;
+  font-size: 0.9375rem;
+  line-height: 1.75;
+  max-width: 540px;
+  color: rgba(205,196,181,.55);
+}
+
+.sus-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+
+  @media (max-width: 1024px) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 700px)  { grid-template-columns: 1fr; }
+}
+
+.sus-card {
+  background: rgba(205,196,181,.06);
+  border: 1px solid rgba(205,196,181,.1);
+  border-radius: var(--r-lg, 16px);
+  padding: 32px 28px;
+  transition: background 0.2s, border-color 0.2s;
+
+  &:hover {
+    background: rgba(205,196,181,.1);
+    border-color: rgba(205,196,181,.2);
+  }
+}
+
+.sus-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+
+  &-green { background: rgba(74,140,86,.2); }
+  &-amber { background: rgba(192,120,32,.18); }
+  &-earth { background: rgba(153,120,93,.18); }
+}
+
+.sus-card-title {
+  font-family: var(--font-display, 'Playfair Display', serif);
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--marfil, #e4dcd1);
+  margin-bottom: 10px;
+}
+
+.sus-card-desc {
+  font-size: 0.875rem;
+  color: rgba(205,196,181,.5);
+  line-height: 1.7;
+  font-weight: 300;
+}
+
+.sus-num {
+  font-family: var(--font-display, 'Playfair Display', serif);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--verde-fresco, #4a8c56);
+  margin-top: 18px;
+}
+
+.sus-num-label {
+  font-size: 0.75rem;
+  color: rgba(205,196,181,.4);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}

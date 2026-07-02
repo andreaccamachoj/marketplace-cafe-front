@@ -1,0 +1,30 @@
+.panel-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+.panel-layout__body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.panel-layout__main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  background: var(--neutral-50, #f9fafb);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .panel-layout__body {
+    flex-direction: column;
+  }
+
+  .panel-layout__main {
+    order: -1; /* Content first on mobile */
+  }
+}

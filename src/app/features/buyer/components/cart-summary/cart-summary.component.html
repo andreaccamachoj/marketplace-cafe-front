@@ -1,0 +1,118 @@
+<!-- 1. Dirección de envío -->
+<div class="summary-card">
+  <div class="summary-head">
+    <div class="summary-head-title">📍 Dirección de envío</div>
+  </div>
+  <div class="summary-body">
+    @if (addresses().length > 0) {
+      <select
+        class="address-select"
+        (change)="onAddressChange($event)"
+        aria-label="Seleccionar dirección de envío"
+      >
+        @for (addr of addresses(); track addr.id) {
+          <option [value]="addr.id" [selected]="addr.id === selectedAddressId()">
+            {{ addr.label }} — {{ addr.line1 }}, {{ addr.city }}
+          </option>
+        }
+      </select>
+      <!-- Preview de dirección seleccionada -->
+      @for (addr of addresses(); track addr.id) {
+        @if (addr.id === selectedAddressId()) {
+          <div class="address-preview">
+            <div class="address-icon">🏠</div>
+            <div class="address-info">
+              <div class="address-label">{{ addr.label }}</div>
+              <div class="address-line">{{ addr.line1 }}</div>
+              <div class="address-city">{{ addr.city }}, {{ addr.department }}</div>
+            </div>
+          </div>
+        }
+      }
+    } @else {
+      <p class="address-empty">
+        No tienes direcciones guardadas. Ve a
+        <strong>Mi perfil → Mis Direcciones</strong>
+        para agregar una antes de comprar.
+      </p>
+    }
+  </div>
+</div>
+
+<!-- 2. Método de envío -->
+<div class="summary-card">
+  <div class="summary-head">
+    <div class="summary-head-title">🚚 Método de envío</div>
+  </div>
+  <div class="summary-body">
+    <app-shipping-selector
+      [options]="shippingOptions"
+      [selected]="selectedShippingId()"
+      (selectedChange)="shippingChange.emit($event)"
+    />
+  </div>
+</div>
+
+<!-- 3. Cupón de descuento -->
+<div class="summary-card">
+  <div class="summary-head">
+    <div class="summary-head-title">🏷 Cupón de descuento</div>
+  </div>
+  <div class="summary-body">
+    <app-coupon-input
+      [appliedCoupon]="couponCode()"
+      [discountAmount]="discount()"
+      (apply)="couponApply.emit($event)"
+      (remove)="couponRemove.emit()"
+    />
+  </div>
+</div>
+
+<!-- 4. Resumen del pedido -->
+<div class="summary-card">
+  <div class="summary-head">
+    <div class="summary-head-title">💰 Resumen del pedido</div>
+  </div>
+  <div class="summary-body">
+    <div class="summary-row">
+      <span class="summary-label">Subtotal ({{ itemCount() }} productos)</span>
+      <span class="summary-value">${{ subtotal() | number:'1.0-0' }}</span>
+    </div>
+    <div class="summary-row">
+      <span class="summary-label">Envío</span>
+      @if (shipping() > 0) {
+        <span class="summary-value">${{ shipping() | number:'1.0-0' }}</span>
+      } @else {
+        <span class="summary-value shipping-free-label">Gratis</span>
+      }
+    </div>
+    @if (discount() > 0) {
+      <div class="summary-row">
+        <span class="summary-label">Descuento</span>
+        <span class="summary-value discount-value">−${{ discount() | number:'1.0-0' }}</span>
+      </div>
+    }
+    <div class="summary-sep"></div>
+    <div class="summary-row">
+      <span class="summary-total-label">Total</span>
+      <span class="summary-total-value">${{ total() | number:'1.0-0' }}</span>
+    </div>
+  </div>
+
+  <button
+    class="btn-checkout"
+    type="button"
+    [disabled]="!selectedAddressId()"
+    [attr.aria-disabled]="!selectedAddressId()"
+    (click)="checkoutClick.emit()"
+  >
+    <span>
+      @if (!selectedAddressId()) {
+        Selecciona una dirección
+      } @else {
+        Proceder al pago
+      }
+    </span>
+  </button>
+  <div class="secure-note">🔒 Transferencia bancaria segura</div>
+</div>

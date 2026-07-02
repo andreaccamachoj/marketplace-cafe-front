@@ -1,0 +1,98 @@
+.rejection-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rejection-text {
+  font-size: 0.9375rem;
+  color: var(--espresso);
+  line-height: 1.5;
+
+  strong {
+    font-weight: 700;
+  }
+}
+
+.rejection-textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid rgba(55, 38, 23, 0.18);
+  border-radius: var(--r-md);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--espresso);
+  resize: vertical;
+  transition: border-color 0.15s;
+  background: #fff;
+
+  &:focus {
+    outline: none;
+    border-color: var(--espresso);
+  }
+
+  &.invalid {
+    border-color: var(--error);
+  }
+}
+
+.error-hint {
+  font-size: 0.75rem;
+  color: var(--error);
+  margin-top: -6px;
+}
+
+.char-count {
+  font-size: 0.75rem;
+  color: var(--cafe-claro);
+  text-align: right;
+  margin-top: -6px;
+}
+
+.rejection-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 20px;
+  border-top: 1px solid rgba(55, 38, 23, 0.07);
+}
+
+.btn-cancel {
+  padding: 9px 18px;
+  border-radius: var(--r-md);
+  border: 1.5px solid rgba(55, 38, 23, 0.15);
+  background: none;
+  color: var(--cafe-medio);
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: all 0.15s;
+
+  &:hover {
+    border-color: var(--espresso);
+    color: var(--espresso);
+  }
+}
+
+.btn-confirm {
+  padding: 9px 18px;
+  border-radius: var(--r-md);
+  background: var(--error);
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: all 0.15s;
+
+  &:hover:not(:disabled) {
+    background: #6b1818;
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}

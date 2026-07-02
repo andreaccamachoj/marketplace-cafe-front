@@ -1,0 +1,132 @@
+/* ── Base ─────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  border: 2px solid transparent;
+  border-radius: var(--r-md);
+  font-family: var(--font-body, 'Mulish', sans-serif);
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    opacity var(--transition-fast);
+  text-decoration: none;
+  white-space: nowrap;
+  line-height: 1;
+
+  &:focus-visible {
+    outline: 2px solid var(--espresso);
+    outline-offset: 3px;
+  }
+
+  &:disabled,
+  &--loading {
+    opacity: 0.55;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  &--block {
+    width: 100%;
+  }
+}
+
+/* ── Sizes ───────────────────────────────────────────────── */
+.btn--sm {
+  padding: var(--sp-1) var(--sp-3);
+  font-size: 0.8125rem;
+  min-height: 32px;
+}
+
+.btn--md {
+  padding: var(--sp-2) var(--sp-5);
+  font-size: 0.9375rem;
+  min-height: 44px;
+}
+
+.btn--lg {
+  padding: var(--sp-3) var(--sp-7);
+  font-size: 1rem;
+  min-height: 52px;
+}
+
+/* ── Variants ────────────────────────────────────────────── */
+.btn--primary {
+  background: var(--espresso);
+  color: var(--white, #fff);
+  border-color: var(--espresso);
+
+  &:hover:not(:disabled) {
+    background: var(--cafe-oscuro, #5c3d2e);
+    border-color: var(--cafe-oscuro, #5c3d2e);
+  }
+}
+
+.btn--secondary {
+  background: transparent;
+  color: var(--espresso);
+  border-color: var(--espresso);
+
+  &:hover:not(:disabled) {
+    background: rgba(55, 38, 23, 0.06);
+  }
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--neutral-700, #374151);
+  border-color: transparent;
+
+  &:hover:not(:disabled) {
+    background: var(--neutral-100, #f3f4f6);
+  }
+}
+
+.btn--danger {
+  background: var(--error, #dc2626);
+  color: var(--white, #fff);
+  border-color: var(--error, #dc2626);
+
+  &:hover:not(:disabled) {
+    background: #b91c1c;
+    border-color: #b91c1c;
+  }
+}
+
+.btn--success {
+  background: var(--verde-selva, #2e7d32);
+  color: var(--white, #fff);
+  border-color: var(--verde-selva, #2e7d32);
+
+  &:hover:not(:disabled) {
+    background: #1b5e20;
+    border-color: #1b5e20;
+  }
+}
+
+/* ── Icon slots ──────────────────────────────────────────── */
+.btn__icon {
+  font-size: 1em;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+/* ── Loading spinner ─────────────────────────────────────── */
+.btn__spinner {
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: btn-spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes btn-spin {
+  to { transform: rotate(360deg); }
+}

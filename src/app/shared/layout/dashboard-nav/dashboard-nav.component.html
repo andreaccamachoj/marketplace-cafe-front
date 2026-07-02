@@ -1,0 +1,73 @@
+<nav class="dn-nav" role="navigation" aria-label="Dashboard navigation">
+  <div class="dn-inner">
+
+    <!-- Hamburger (mobile only) -->
+    <button
+      class="dn-menu-btn"
+      type="button"
+      aria-label="Abrir menú"
+      (click)="onHamburgerClick()"
+    >
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <path d="M2 5h16M2 10h16M2 15h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+
+    <!-- Logo -->
+    <a class="dn-logo" routerLink="/" aria-label="World Coffee Marketplace — inicio">
+      <div class="dn-logo-icon" aria-hidden="true">☕</div>
+      <div>
+        <div class="dn-logo-name">World Coffee</div>
+        <div class="dn-logo-sub">Marketplace</div>
+      </div>
+    </a>
+
+    <!-- Separator -->
+    <div class="dn-sep" aria-hidden="true"></div>
+
+    <!-- Page title -->
+    @if (pageTitle()) {
+      <span class="dn-page-title">{{ pageTitle() }}</span>
+    }
+
+    <!-- Spacer -->
+    <div class="dn-spacer"></div>
+
+    <!-- Right section -->
+    <div class="dn-right">
+
+      <!-- Catalog link -->
+      <a class="dn-cat-btn" routerLink="/">
+        Ver catálogo
+      </a>
+
+      <!-- Notification bell -->
+      <button class="dn-notif" type="button" aria-label="Notificaciones">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+
+      <!-- Avatar -->
+      <div
+        class="dn-avatar"
+        [style.background]="avatarColor()"
+        aria-hidden="true"
+      >
+        {{ userInitials() }}
+      </div>
+
+      <!-- User info -->
+      <div>
+        <div class="dn-user-name">{{ auth.currentUser()?.fullName }}</div>
+        <div class="dn-user-role">{{ roleLabel() }}</div>
+      </div>
+
+      <!-- Logout -->
+      <button class="dn-logout" type="button" (click)="logout()">
+        Salir
+      </button>
+
+    </div>
+  </div>
+</nav>

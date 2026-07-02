@@ -1,0 +1,271 @@
+<app-modal
+  [open]="open()"
+  title="Editar información de la finca"
+  size="xl"
+  (closed)="onClose()"
+>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+    <!-- ── Sección 1: Información básica ── -->
+    <div class="form-section">
+      <h3 class="form-section-title">Información básica</h3>
+      <div class="form-grid">
+
+        <!-- Nombre -->
+        <div class="form-field">
+          <label class="field-label" for="fe-name">Nombre de la finca</label>
+          <input
+            id="fe-name"
+            class="field-input"
+            type="text"
+            formControlName="name"
+            placeholder="Ej. Finca La Esperanza"
+            [class.field-input--error]="hasError(nameCtrl)"
+          />
+          @if (hasError(nameCtrl)) {
+            <span class="field-error" role="alert">{{ getError(nameCtrl) }}</span>
+          }
+        </div>
+
+        <!-- Municipio -->
+        <div class="form-field">
+          <label class="field-label" for="fe-municipality">Municipio</label>
+          <input
+            id="fe-municipality"
+            class="field-input"
+            type="text"
+            formControlName="municipality"
+            placeholder="Ej. Pitalito"
+            [class.field-input--error]="hasError(municipalityCtrl)"
+          />
+          @if (hasError(municipalityCtrl)) {
+            <span class="field-error" role="alert">{{ getError(municipalityCtrl) }}</span>
+          }
+        </div>
+
+        <!-- Departamento -->
+        <div class="form-field">
+          <label class="field-label" for="fe-dept">Departamento</label>
+          <input
+            id="fe-dept"
+            class="field-input"
+            type="text"
+            formControlName="department"
+            placeholder="Ej. Huila"
+            [class.field-input--error]="hasError(departmentCtrl)"
+          />
+          @if (hasError(departmentCtrl)) {
+            <span class="field-error" role="alert">{{ getError(departmentCtrl) }}</span>
+          }
+        </div>
+
+        <!-- País -->
+        <div class="form-field">
+          <label class="field-label" for="fe-country">País</label>
+          <input
+            id="fe-country"
+            class="field-input"
+            type="text"
+            formControlName="country"
+            placeholder="Colombia"
+            [class.field-input--error]="hasError(countryCtrl)"
+          />
+          @if (hasError(countryCtrl)) {
+            <span class="field-error" role="alert">{{ getError(countryCtrl) }}</span>
+          }
+        </div>
+
+        <!-- Altitud -->
+        <div class="form-field">
+          <label class="field-label" for="fe-altitude">Altitud</label>
+          <input
+            id="fe-altitude"
+            class="field-input"
+            type="text"
+            formControlName="altitude"
+            placeholder="Ej. 1.780 msnm"
+            [class.field-input--error]="hasError(altitudeCtrl)"
+          />
+          @if (hasError(altitudeCtrl)) {
+            <span class="field-error" role="alert">{{ getError(altitudeCtrl) }}</span>
+          }
+        </div>
+
+        <!-- Área -->
+        <div class="form-field">
+          <label class="field-label" for="fe-area">Área de cultivo</label>
+          <input
+            id="fe-area"
+            class="field-input"
+            type="text"
+            formControlName="area"
+            placeholder="Ej. 12,5 hectáreas"
+            [class.field-input--error]="hasError(areaCtrl)"
+          />
+          @if (hasError(areaCtrl)) {
+            <span class="field-error" role="alert">{{ getError(areaCtrl) }}</span>
+          }
+        </div>
+
+        <!-- Variedad principal -->
+        <div class="form-field">
+          <label class="field-label" for="fe-variety">Variedad principal</label>
+          <input
+            id="fe-variety"
+            class="field-input"
+            type="text"
+            formControlName="mainVariety"
+            placeholder="Ej. Caturra · Castillo"
+            [class.field-input--error]="hasError(mainVarietyCtrl)"
+          />
+          @if (hasError(mainVarietyCtrl)) {
+            <span class="field-error" role="alert">{{ getError(mainVarietyCtrl) }}</span>
+          }
+        </div>
+
+        <!-- Proceso -->
+        <div class="form-field">
+          <label class="field-label" for="fe-process">Proceso de beneficio</label>
+          <select
+            id="fe-process"
+            class="field-select"
+            formControlName="process"
+            [class.field-input--error]="hasError(processCtrl)"
+          >
+            <option value="" disabled>Seleccionar proceso</option>
+            @for (opt of processOptions; track opt) {
+              <option [value]="opt">{{ opt }}</option>
+            }
+          </select>
+          @if (hasError(processCtrl)) {
+            <span class="field-error" role="alert">{{ getError(processCtrl) }}</span>
+          }
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Sección 2: Descripción ── -->
+    <div class="form-section">
+      <h3 class="form-section-title">Descripción</h3>
+      <div class="form-grid">
+        <div class="form-field form-field--full">
+          <label class="field-label" for="fe-desc">Historia y características de la finca</label>
+          <textarea
+            id="fe-desc"
+            class="field-textarea"
+            formControlName="description"
+            placeholder="Describe la historia, prácticas de cultivo, entorno natural y qué hace única a tu finca..."
+            rows="5"
+            [class.field-input--error]="hasError(descriptionCtrl)"
+          ></textarea>
+          @if (hasError(descriptionCtrl)) {
+            <span class="field-error" role="alert">{{ getError(descriptionCtrl) }}</span>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Sección 3: Métricas de producción ── -->
+    <div class="form-section form-section--extended">
+      <h3 class="form-section-title">
+        Métricas de producción
+        <span class="badge-extended">Extendido</span>
+      </h3>
+      <div class="form-grid">
+
+        <!-- Producción anual -->
+        <div class="form-field">
+          <label class="field-label" for="fe-anprod">Producción anual</label>
+          <input
+            id="fe-anprod"
+            class="field-input"
+            type="text"
+            formControlName="annualProduction"
+            placeholder="Ej. 240 sacos"
+            [class.field-input--error]="hasError(annualProductionCtrl)"
+          />
+          @if (hasError(annualProductionCtrl)) {
+            <span class="field-error" role="alert">{{ getError(annualProductionCtrl) }}</span>
+          }
+        </div>
+
+        <!-- Rendimiento por Ha -->
+        <div class="form-field">
+          <label class="field-label" for="fe-yield">Rendimiento / Ha</label>
+          <input
+            id="fe-yield"
+            class="field-input"
+            type="text"
+            formControlName="yieldPerHa"
+            placeholder="Ej. 19,2 sacos"
+            [class.field-input--error]="hasError(yieldPerHaCtrl)"
+          />
+          @if (hasError(yieldPerHaCtrl)) {
+            <span class="field-error" role="alert">{{ getError(yieldPerHaCtrl) }}</span>
+          }
+        </div>
+
+        <!-- Temporada de cosecha -->
+        <div class="form-field">
+          <label class="field-label" for="fe-harvest">Temporada de cosecha</label>
+          <input
+            id="fe-harvest"
+            class="field-input"
+            type="text"
+            formControlName="harvestSeason"
+            placeholder="Ej. Sep – Dic"
+            [class.field-input--error]="hasError(harvestSeasonCtrl)"
+          />
+          @if (hasError(harvestSeasonCtrl)) {
+            <span class="field-error" role="alert">{{ getError(harvestSeasonCtrl) }}</span>
+          }
+        </div>
+
+        <!-- Árboles en producción -->
+        <div class="form-field">
+          <label class="field-label" for="fe-trees">Árboles en producción</label>
+          <input
+            id="fe-trees"
+            class="field-input"
+            type="text"
+            formControlName="treeCount"
+            placeholder="Ej. 8.400"
+            [class.field-input--error]="hasError(treeCountCtrl)"
+          />
+          @if (hasError(treeCountCtrl)) {
+            <span class="field-error" role="alert">{{ getError(treeCountCtrl) }}</span>
+          }
+        </div>
+
+        <!-- Score de catación -->
+        <div class="form-field">
+          <label class="field-label" for="fe-score">Score de catación (SCA)</label>
+          <input
+            id="fe-score"
+            class="field-input"
+            type="text"
+            formControlName="cuppingScore"
+            placeholder="Ej. 87 puntos SCA"
+            [class.field-input--error]="hasError(cuppingScoreCtrl)"
+          />
+          @if (hasError(cuppingScoreCtrl)) {
+            <span class="field-error" role="alert">{{ getError(cuppingScoreCtrl) }}</span>
+          }
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="form-footer">
+      <button type="button" class="btn-cancel" (click)="onClose()">
+        Cancelar
+      </button>
+      <button type="submit" class="btn-save" [disabled]="form.invalid">
+        Guardar cambios
+      </button>
+    </div>
+
+  </form>
+</app-modal>

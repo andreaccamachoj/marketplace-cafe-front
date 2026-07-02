@@ -1,0 +1,22 @@
+<div class="certs-list">
+  @for (cert of certifications(); track cert.id) {
+    <div class="cert-item">
+      <div class="cert-item-icon" [style.background]="cert.iconBg">{{ cert.icon }}</div>
+      <div class="cert-item-info">
+        <div class="cert-item-name">{{ cert.name }}</div>
+        <div class="cert-item-body">{{ cert.body }}</div>
+      </div>
+      <span
+        class="cert-item-status"
+        [class.cert-valid]="cert.status === 'valid'"
+        [class.cert-expire]="cert.status === 'expiring'"
+      >
+        @if (cert.status === 'valid') {
+          ✓ Vigente
+        } @else {
+          ⚠ Próximo vencimiento
+        }
+      </span>
+    </div>
+  }
+</div>

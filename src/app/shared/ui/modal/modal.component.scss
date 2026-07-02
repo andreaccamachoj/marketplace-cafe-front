@@ -1,0 +1,121 @@
+/* ── Backdrop ─────────────────────────────────────────────── */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+  backdrop-filter: blur(2px);
+}
+
+/* ── Dialog ──────────────────────────────────────────────── */
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1001;
+  background: var(--white, #fff);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-xl, 0 25px 50px rgba(0,0,0,0.25));
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100dvh - var(--sp-10));
+  animation: scaleIn 0.2s ease;
+  outline: none;
+
+  /* Sizes */
+  &--sm   { width: min(360px, 95vw); }
+  &--md   { width: min(560px, 95vw); }
+  &--lg   { width: min(760px, 95vw); }
+  &--xl   { width: min(1000px, 95vw); }
+  &--full {
+    width: 95vw;
+    height: calc(100dvh - var(--sp-8));
+  }
+}
+
+/* ── Header ──────────────────────────────────────────────── */
+.modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-5) var(--sp-6);
+  border-bottom: 1px solid var(--neutral-100, #f3f4f6);
+  flex-shrink: 0;
+}
+
+.modal__title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--espresso);
+  margin: 0;
+}
+
+.modal__close {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  border-radius: var(--r-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--neutral-500, #6b7280);
+  transition: background var(--transition-fast), color var(--transition-fast);
+  flex-shrink: 0;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    background: var(--neutral-100, #f3f4f6);
+    color: var(--neutral-900, #111827);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--espresso);
+    outline-offset: 2px;
+  }
+}
+
+/* ── Body ─────────────────────────────────────────────────── */
+.modal__body {
+  padding: var(--sp-6);
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* ── Animations (reuse globals when available) ────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.95); }
+  to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .modal {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    transform: none;
+    border-radius: var(--r-lg) var(--r-lg) 0 0;
+    max-height: 92dvh;
+    width: 100% !important;
+    animation: slideUp 0.25s ease;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+  }
+}

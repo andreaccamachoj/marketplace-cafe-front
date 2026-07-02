@@ -1,0 +1,10 @@
+<div
+  class="farm-map"
+  [attr.aria-label]="'Mapa ilustrativo de ubicación de ' + farmName() + ' en ' + location()"
+>
+  <div class="farm-map-bg" aria-hidden="true"></div>
+  <div class="farm-map-pin">
+    <div class="pin-circle" aria-hidden="true">🌿</div>
+    <div class="pin-label">{{ farmName() }}{{ location() ? ' · ' + location() : '' }}</div>
+  </div>
+</div>

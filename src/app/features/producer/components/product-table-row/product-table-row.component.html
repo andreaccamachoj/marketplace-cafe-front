@@ -1,0 +1,98 @@
+<div class="product-row">
+  <!-- Producto -->
+  <div class="pr-product">
+    <div class="pr-emoji">
+      @if (product().coverImageUrl) {
+        <img class="pr-cover" [src]="product().coverImageUrl" [alt]="product().name" />
+      } @else {
+        {{ product().emoji }}
+      }
+    </div>
+    <div class="pr-info">
+      <div class="pr-name">{{ product().name }}</div>
+      <div class="pr-cat">{{ product().category }}</div>
+      <div class="pr-certs">
+        @if (hasOrganico()) {
+          <span class="badge b-org">Orgánico</span>
+        }
+        @if (hasFairtrade()) {
+          <span class="badge b-fair">Fairtrade</span>
+        }
+        @if (hasRainforest()) {
+          <span class="badge b-rain">Rainforest</span>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Stock -->
+  <div class="pr-stock">
+    <div class="stock-num" [class]="stockClass()">{{ product().stock }}</div>
+    <div class="stock-unit">{{ stockUnit() }}</div>
+  </div>
+
+  <!-- Precio -->
+  <div class="pr-price">
+    ${{ product().price | number:'1.0-0' }}<br>
+    <span class="pr-price-unit">/{{ product().unit }}</span>
+  </div>
+
+  <!-- Estado -->
+  <div style="text-align:center">
+    <span class="status-pill" [ngClass]="statusClass()">{{ statusLabel() }}</span>
+  </div>
+
+  <!-- Calificación -->
+  <div class="pr-rating">
+    @if (product().rating > 0) {
+      <div class="stars" [attr.aria-label]="'Calificación ' + product().rating">{{ starsHtml() }}</div>
+      <div class="rating-val">{{ product().rating }} ({{ product().reviewCount }})</div>
+    } @else {
+      <span class="no-rating">Sin reseñas</span>
+    }
+  </div>
+
+  <!-- Acciones -->
+  <div class="pr-actions">
+    <button
+      class="btn-row-action view"
+      type="button"
+      title="Ver detalle del producto"
+      aria-label="Ver detalle del producto"
+      (click)="onView()"
+    >
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+    </button>
+    <button
+      class="btn-row-action edit"
+      type="button"
+      title="Editar producto"
+      aria-label="Editar producto"
+      (click)="onEdit()"
+    >
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+    </button>
+    <button
+      class="btn-row-action toggle-off"
+      type="button"
+      [title]="product().status === 'active' ? 'Inactivar producto' : 'Activar producto'"
+      [attr.aria-label]="product().status === 'active' ? 'Inactivar producto' : 'Activar producto'"
+      (click)="onToggle()"
+    >
+      @if (product().status === 'active') {
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+      } @else {
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      }
+    </button>
+    <button
+      class="btn-row-action del"
+      type="button"
+      title="Eliminar producto"
+      aria-label="Eliminar producto"
+      (click)="onRemove()"
+    >
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+    </button>
+  </div>
+</div>

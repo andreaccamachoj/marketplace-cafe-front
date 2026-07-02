@@ -1,0 +1,149 @@
+.fav-card {
+  background: #fff;
+  border: 1px solid var(--neutral-200);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow var(--transition-normal), transform var(--transition-normal);
+
+  &:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+}
+
+/* Image */
+.fav-card__image {
+  height: 140px;
+  background: rgba(74, 140, 86, 0.07);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.fav-card__emoji {
+  font-size: 3rem;
+}
+
+.fav-card__category {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: var(--verde-fresco);
+  color: #fff;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Body */
+.fav-card__body {
+  padding: var(--sp-4) var(--sp-5);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.fav-card__origin {
+  font-size: 0.75rem;
+  color: var(--cafe-medio);
+  font-weight: 600;
+}
+
+.fav-card__name {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--espresso);
+  line-height: 1.3;
+  margin: 0;
+}
+
+.fav-card__rating {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.fav-card__star {
+  color: var(--neutral-300);
+  font-size: 0.875rem;
+
+  &--filled {
+    color: var(--amber);
+  }
+}
+
+.fav-card__rating-num {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--cafe-medio);
+  margin-left: var(--sp-1);
+}
+
+.fav-card__price {
+  font-size: 1.0625rem;
+  font-weight: 800;
+  color: var(--verde-selva);
+}
+
+.fav-card__added {
+  font-size: 0.6875rem;
+  color: var(--neutral-400);
+}
+
+/* Footer */
+.fav-card__footer {
+  padding: var(--sp-3) var(--sp-4);
+  border-top: 1px solid var(--neutral-100);
+  display: flex;
+  gap: var(--sp-2);
+  align-items: center;
+}
+
+.fav-card__btn {
+  border: none;
+  border-radius: var(--r-md);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  font-family: var(--font-body);
+  cursor: pointer;
+  padding: 7px 14px;
+  transition: background var(--transition-fast), color var(--transition-fast);
+
+  &--cart {
+    flex: 1;
+    background: var(--espresso);
+    color: var(--marfil);
+
+    &:hover {
+      background: var(--cafe-oscuro);
+    }
+  }
+
+  &--view {
+    background: var(--neutral-100);
+    color: var(--espresso);
+
+    &:hover {
+      background: var(--neutral-200);
+    }
+  }
+
+  &--remove {
+    background: transparent;
+    color: var(--neutral-400);
+    padding: 7px 10px;
+
+    &:hover {
+      background: var(--error-light);
+      color: var(--error);
+    }
+  }
+}

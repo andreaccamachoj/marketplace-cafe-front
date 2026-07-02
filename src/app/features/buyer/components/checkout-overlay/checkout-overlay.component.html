@@ -1,0 +1,131 @@
+@if (open()) {
+  <!-- Backdrop -->
+  <div
+    class="co-backdrop"
+    (click)="onBackdropClick()"
+    aria-hidden="true"
+  ></div>
+
+  <!-- Panel -->
+  <div
+    class="co-panel"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="co-title"
+    tabindex="-1"
+  >
+
+    <!-- Header -->
+    <div class="co-header">
+      <div class="co-header-left">
+        <span class="co-header-icon" aria-hidden="true">💳</span>
+        <div>
+          <h2 id="co-title" class="co-title">Instrucciones de pago</h2>
+          <p class="co-subtitle">
+            {{ itemCount() }} producto{{ itemCount() !== 1 ? 's' : '' }} ·
+            <strong>${{ total() | number:'1.0-0' }}</strong>
+          </p>
+        </div>
+      </div>
+      <button
+        class="co-close"
+        type="button"
+        aria-label="Cerrar"
+        [disabled]="confirming()"
+        (click)="onCancel()"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" aria-hidden="true" width="20" height="20">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Scrollable body -->
+    <div class="co-body">
+
+      <!-- Dirección seleccionada -->
+      @if (selectedAddress()) {
+        <div class="co-address-row">
+          <span class="co-address-icon" aria-hidden="true">📍</span>
+          <div class="co-address-info">
+            <span class="co-address-label">{{ selectedAddress()!.label }}</span>
+            <span class="co-address-line">{{ selectedAddress()!.line1 }}, {{ selectedAddress()!.city }}</span>
+          </div>
+        </div>
+      }
+
+      <!-- Instrucción principal -->
+      <p class="co-instruction">
+        Realiza una transferencia por el monto exacto usando cualquiera de estos métodos:
+      </p>
+
+      <!-- Grid de métodos de pago -->
+      <div class="co-methods-grid">
+        @for (method of paymentMethods(); track method.id) {
+          <div class="co-method-card" [style.--accent]="method.accentColor">
+            <div class="co-method-header">
+              <span class="co-method-emoji" aria-hidden="true">{{ method.emoji }}</span>
+              <span class="co-method-name">{{ method.name }}</span>
+            </div>
+            <ul class="co-method-lines">
+              @for (line of method.lines; track line.label) {
+                <li class="co-method-line">
+                  <span class="co-line-label">{{ line.label }}</span>
+                  <span class="co-line-value">{{ line.value }}</span>
+                </li>
+              }
+            </ul>
+          </div>
+        }
+      </div>
+
+      <!-- WhatsApp notice -->
+      <div class="co-whatsapp-notice" role="note">
+        <span class="co-wa-icon" aria-hidden="true">📲</span>
+        <div class="co-wa-text">
+          <strong>Envía el comprobante de pago al WhatsApp del vendedor</strong>
+          <span class="co-wa-number">{{ whatsappNumber }}</span>
+          <span class="co-wa-hint">
+            Sin el comprobante, tu pedido no podrá ser verificado ni procesado.
+          </span>
+        </div>
+      </div>
+
+      <!-- Resumen total -->
+      <div class="co-total-row">
+        <span class="co-total-label">Total a transferir</span>
+        <span class="co-total-value">${{ total() | number:'1.0-0' }}</span>
+      </div>
+
+    </div><!-- /co-body -->
+
+    <!-- Footer con acciones -->
+    <div class="co-footer">
+      <button
+        class="co-btn co-btn--cancel"
+        type="button"
+        [disabled]="confirming()"
+        (click)="onCancel()"
+      >
+        Cancelar
+      </button>
+      <button
+        class="co-btn co-btn--confirm"
+        type="button"
+        [disabled]="confirming()"
+        [attr.aria-busy]="confirming()"
+        (click)="onConfirm()"
+      >
+        @if (confirming()) {
+          <span class="co-spinner" aria-hidden="true"></span>
+          Registrando pedido…
+        } @else {
+          ✓ Confirmar pedido
+        }
+      </button>
+    </div>
+
+  </div><!-- /co-panel -->
+}

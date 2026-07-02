@@ -1,0 +1,500 @@
+<app-dashboard-nav [pageTitle]="'Panel del Comprador'" (menuToggle)="toggleSidebar()" />
+
+<div class="page-layout">
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar" [class.open]="sidebarOpen()" id="sidebar" aria-label="Navegación del panel">
+
+    <div class="sidebar-section">
+      <span class="sidebar-label" id="sidebar-nav-label">Principal</span>
+      <nav class="sidebar-nav" aria-labelledby="sidebar-nav-label">
+        <button
+          [class.active]="activeTab() === 'cart'"
+          [attr.aria-current]="activeTab() === 'cart' ? 'page' : null"
+          (click)="setTab('cart')"
+          type="button"
+          aria-controls="tab-panel-cart"
+        >
+          🛒 Carrito
+          <span class="nav-pill" [attr.aria-label]="cartCount() + ' productos en carrito'">{{ cartCount() }}</span>
+        </button>
+        <button
+          [class.active]="activeTab() === 'orders'"
+          [attr.aria-current]="activeTab() === 'orders' ? 'page' : null"
+          (click)="setTab('orders')"
+          type="button"
+          aria-controls="tab-panel-orders"
+        >
+          📋 Mis Pedidos
+          <span class="nav-pill amber" [attr.aria-label]="activeOrdersCount() + ' pedidos activos'">{{ activeOrdersCount() }}</span>
+        </button>
+        <button
+          [class.active]="activeTab() === 'favorites'"
+          [attr.aria-current]="activeTab() === 'favorites' ? 'page' : null"
+          (click)="setTab('favorites')"
+          type="button"
+          aria-controls="tab-panel-favorites"
+        >
+          ❤️ Favoritos
+          <span class="nav-pill green" [attr.aria-label]="stats().favorites + ' favoritos'">{{ stats().favorites }}</span>
+        </button>
+        <button
+          [class.active]="activeTab() === 'reviews'"
+          [attr.aria-current]="activeTab() === 'reviews' ? 'page' : null"
+          (click)="setTab('reviews')"
+          type="button"
+          aria-controls="tab-panel-reviews"
+        >
+          ★ Reseñas
+          <span class="nav-pill" [attr.aria-label]="stats().reviews + ' reseñas'">{{ stats().reviews }}</span>
+        </button>
+        <button
+          [class.active]="activeTab() === 'profile'"
+          [attr.aria-current]="activeTab() === 'profile' ? 'page' : null"
+          (click)="setTab('profile')"
+          type="button"
+          aria-controls="tab-panel-profile"
+        >
+          👤 Mi Perfil
+        </button>
+      </nav>
+    </div>
+
+    <hr class="sidebar-sep" />
+
+    <div class="sidebar-section">
+      <span class="sidebar-label">Historial</span>
+      <nav class="sidebar-nav">
+        <button type="button" (click)="setTabAndFilter('orders', 'delivered')">✓ Entregados</button>
+      </nav>
+    </div>
+
+    <hr class="sidebar-sep" />
+
+    <div class="sidebar-bottom">
+      <nav class="sidebar-nav">
+        <button type="button" class="danger" (click)="logout()">↩ Cerrar sesión</button>
+      </nav>
+    </div>
+
+  </aside>
+
+  <!-- Overlay (mobile) -->
+  <div
+    class="sidebar-overlay"
+    [class.visible]="sidebarOpen()"
+    (click)="toggleSidebar()"
+    aria-hidden="true"
+  ></div>
+
+  <!-- ── Main content ── -->
+  <main class="main-content">
+
+    <!-- Page header -->
+    <div class="page-header">
+      <div>
+        <div class="page-eyebrow">Mi cuenta</div>
+        <h1 class="page-title">Bienvenido, {{ firstName() }}</h1>
+        <p class="page-subtitle">Gestiona tus pedidos y descubre nuevos cafés</p>
+      </div>
+      <a routerLink="/" class="btn-primary">☕ Ir al catálogo</a>
+    </div>
+
+    <!-- Stats row -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(55,38,23,.07)">🛒</div>
+        <div class="stat-card-label">En carrito</div>
+        <div class="stat-card-value">{{ cartCount() }}</div>
+        <div class="stat-card-sub">productos · <strong>${{ cartSubtotal() | number:'1.0-0' }}</strong></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(192,120,32,.1)">📦</div>
+        <div class="stat-card-label">Pedidos activos</div>
+        <div class="stat-card-value">{{ activeOrdersCount() }}</div>
+        <div class="stat-card-sub">en camino</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(30,94,41,.1)">✅</div>
+        <div class="stat-card-label">Entregados</div>
+        <div class="stat-card-value">{{ deliveredCount() }}</div>
+        <div class="stat-card-sub">pedidos completados</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(192,120,32,.1)">❤️</div>
+        <div class="stat-card-label">Favoritos</div>
+        <div class="stat-card-value">{{ stats().favorites }}</div>
+        <div class="stat-card-sub">productos guardados</div>
+      </div>
+    </div>
+
+    <!-- Tabs (WCAG 4.1.2 — role=tablist con aria-selected y aria-controls) -->
+    <div class="tabs-row" role="tablist" aria-label="Secciones del panel">
+      <button
+        id="tab-cart"
+        role="tab"
+        class="tab"
+        [class.active]="activeTab() === 'cart'"
+        [attr.aria-selected]="activeTab() === 'cart'"
+        aria-controls="tab-panel-cart"
+        (click)="setTab('cart')"
+        type="button"
+      >
+        🛒 Carrito
+        <span class="tab-count espresso" aria-hidden="true">{{ cartCount() }}</span>
+      </button>
+      <button
+        id="tab-orders"
+        role="tab"
+        class="tab"
+        [class.active]="activeTab() === 'orders'"
+        [attr.aria-selected]="activeTab() === 'orders'"
+        aria-controls="tab-panel-orders"
+        (click)="setTab('orders')"
+        type="button"
+      >
+        📋 Pedidos
+        <span class="tab-count amber" aria-hidden="true">{{ activeOrdersCount() }}</span>
+      </button>
+      <button
+        id="tab-favorites"
+        role="tab"
+        class="tab"
+        [class.active]="activeTab() === 'favorites'"
+        [attr.aria-selected]="activeTab() === 'favorites'"
+        aria-controls="tab-panel-favorites"
+        (click)="setTab('favorites')"
+        type="button"
+      >
+        ❤️ Favoritos
+        <span class="tab-count green" aria-hidden="true">{{ stats().favorites }}</span>
+      </button>
+      <button
+        id="tab-reviews"
+        role="tab"
+        class="tab"
+        [class.active]="activeTab() === 'reviews'"
+        [attr.aria-selected]="activeTab() === 'reviews'"
+        aria-controls="tab-panel-reviews"
+        (click)="setTab('reviews')"
+        type="button"
+      >
+        ★ Reseñas
+        <span class="tab-count espresso" aria-hidden="true">{{ stats().reviews }}</span>
+      </button>
+      <button
+        id="tab-profile"
+        role="tab"
+        class="tab"
+        [class.active]="activeTab() === 'profile'"
+        [attr.aria-selected]="activeTab() === 'profile'"
+        aria-controls="tab-panel-profile"
+        (click)="setTab('profile')"
+        type="button"
+      >
+        👤 Perfil
+      </button>
+    </div>
+
+    <!-- ── CART TAB ── -->
+    @if (activeTab() === 'cart') {
+      <div id="tab-panel-cart" role="tabpanel" aria-labelledby="tab-cart" tabindex="-1">
+      <div class="cart-tab-header">
+        <div class="page-eyebrow">Mi selección</div>
+        <h2 class="cart-tab-title">Carrito de compras</h2>
+        <p class="page-subtitle">{{ cartCount() }} productos listos para pedir</p>
+      </div>
+
+      <div class="cart-layout">
+
+        <div class="cart-table-wrap">
+          <div class="cart-table-header" aria-hidden="true">
+            <span class="th">Producto</span>
+            <span class="th">Precio</span>
+            <span class="th">Cantidad</span>
+            <span class="th">Subtotal</span>
+            <span class="th"></span>
+          </div>
+
+          @for (item of cartItems(); track item.id) {
+            <app-cart-item-row
+              [item]="item"
+              (remove)="onItemRemove($event)"
+              (qtyChange)="onQtyChange($event)"
+            />
+          }
+
+          @if (cartItems().length === 0) {
+            <div class="cart-empty">
+              <div class="cart-empty-icon" aria-hidden="true">🛒</div>
+              <div class="cart-empty-title">Tu carrito está vacío</div>
+              <div class="cart-empty-desc">Explora el catálogo y agrega tus cafés favoritos</div>
+              <a routerLink="/" class="btn-primary">Explorar cafés</a>
+            </div>
+          }
+        </div>
+
+        @if (cartItems().length > 0) {
+          <div class="cart-summary-col">
+            <app-cart-summary
+              [subtotal]="cartSubtotal()"
+              [shipping]="cartShipping()"
+              [discount]="cartDiscount()"
+              [total]="cartTotal()"
+              [itemCount]="cartCount()"
+              [addresses]="addresses()"
+              [selectedAddressId]="selectedAddressId()"
+              [selectedShippingId]="selectedShippingId()"
+              [couponCode]="appliedCoupon()"
+              (addressChange)="onAddressChange($event)"
+              (shippingChange)="onShippingChange($event)"
+              (couponApply)="onCouponApply($event)"
+              (couponRemove)="onCouponRemove()"
+              (checkoutClick)="onCheckout()"
+            />
+          </div>
+        }
+
+      </div>
+      </div><!-- /tab-panel-cart -->
+    }
+
+    <!-- ── ORDERS TAB ── -->
+    @if (activeTab() === 'orders') {
+      <div id="tab-panel-orders" role="tabpanel" aria-labelledby="tab-orders" tabindex="-1">
+      <div class="orders-section">
+
+        <div class="orders-filters" role="group" aria-label="Filtrar pedidos">
+          @for (f of orderFilters; track f.value) {
+            <button
+              class="filter-chip"
+              type="button"
+              [class.active]="orderFilter() === f.value"
+              (click)="orderFilter.set(f.value)"
+            >{{ f.label }}</button>
+          }
+        </div>
+
+        @for (order of filteredOrders(); track order.id) {
+          <app-order-card
+            [order]="order"
+            [expanded]="expandedOrder() === order.id"
+            [reviewedProductIds]="reviewedProductIds()"
+            (orderToggle)="toggleOrder($event)"
+            (reviewClick)="onOrderReviewClick($event)"
+          />
+        }
+
+        @if (filteredOrders().length === 0) {
+          <div class="cart-empty">
+            <div class="cart-empty-icon" aria-hidden="true">📋</div>
+            <div class="cart-empty-title">No hay pedidos</div>
+            <div class="cart-empty-desc">No encontramos pedidos con este filtro</div>
+          </div>
+        }
+
+      </div>
+      </div><!-- /tab-panel-orders -->
+    }
+
+    <!-- ── FAVORITES TAB ── -->
+    @if (activeTab() === 'favorites') {
+      <div id="tab-panel-favorites" role="tabpanel" aria-labelledby="tab-favorites" tabindex="-1">
+      <div class="section-header">
+        <div class="page-eyebrow">Mi lista</div>
+        <h2 class="section-title">Productos favoritos</h2>
+        <p class="page-subtitle">{{ stats().favorites }} productos guardados</p>
+      </div>
+
+      @if (myFavorites().length > 0) {
+        <div class="favorites-grid">
+          @for (fav of myFavorites(); track fav.id) {
+            <app-favorite-product-card
+              [favorite]="fav"
+              (remove)="handleRemoveFavorite($event)"
+              (addToCart)="handleAddFavoriteToCart($event)"
+              (viewProduct)="handleViewFavoriteProduct($event)"
+            />
+          }
+        </div>
+      } @else {
+        <div class="cart-empty">
+          <div class="cart-empty-icon" aria-hidden="true">❤️</div>
+          <div class="cart-empty-title">No tienes favoritos</div>
+          <div class="cart-empty-desc">Guarda tus cafés preferidos para encontrarlos fácilmente</div>
+          <button type="button" class="btn-primary" (click)="router.navigate(['/'])">
+            Explorar catálogo
+          </button>
+        </div>
+      }
+      </div><!-- /tab-panel-favorites -->
+    }
+
+    <!-- ── REVIEWS TAB ── -->
+    @if (activeTab() === 'reviews') {
+      <div id="tab-panel-reviews" role="tabpanel" aria-labelledby="tab-reviews" tabindex="-1">
+      <div class="section-header">
+        <div class="page-eyebrow">Mis opiniones</div>
+        <h2 class="section-title">Mis reseñas</h2>
+      </div>
+
+      <!-- Stats -->
+      <div class="reviews-stats">
+        <div class="review-stat">
+          <span class="review-stat__value">{{ stats().reviews }}</span>
+          <span class="review-stat__label">Reseñas escritas</span>
+        </div>
+        <div class="review-stat">
+          <span class="review-stat__value">{{ avgRating() }}</span>
+          <span class="review-stat__label">Calificación promedio</span>
+        </div>
+        <div class="review-stat">
+          <span class="review-stat__value">{{ stats().reviews }}</span>
+          <span class="review-stat__label">Compras verificadas</span>
+        </div>
+      </div>
+
+      <!-- Pendientes de reseñar -->
+      @if (reviewableProducts().length > 0) {
+        <div class="reviewable-section">
+          <h3 class="reviewable-title">Pendientes de reseñar</h3>
+          <div class="reviewable-list">
+            @for (item of reviewableProducts(); track item.productId) {
+              <div class="reviewable-item">
+                <span class="reviewable-name">☕ {{ item.productName }}</span>
+                <button
+                  type="button"
+                  class="btn-review"
+                  (click)="openCreateReview(item.productId, item.productName, item.orderId)"
+                >
+                  ✏️ Escribir reseña
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Lista de reseñas -->
+      @if (myReviews().length > 0) {
+        <div class="reviews-list">
+          @for (review of myReviews(); track review.id) {
+            <app-review-card
+              [review]="review"
+              [isOwner]="true"
+              (edit)="openEditReview($event)"
+              (delete)="handleDeleteReview($event)"
+            />
+          }
+        </div>
+      } @else {
+        <div class="cart-empty">
+          <div class="cart-empty-icon" aria-hidden="true">★</div>
+          <div class="cart-empty-title">Aún no has escrito reseñas</div>
+          <div class="cart-empty-desc">Comparte tu experiencia con los cafés que has pedido</div>
+        </div>
+      }
+      </div><!-- /tab-panel-reviews -->
+    }
+
+    <!-- ── PROFILE TAB ── -->
+    @if (activeTab() === 'profile') {
+      <div id="tab-panel-profile" role="tabpanel" aria-labelledby="tab-profile" tabindex="-1">
+      <div class="section-header">
+        <div class="page-eyebrow">Configuración</div>
+        <h2 class="section-title">Mi perfil</h2>
+      </div>
+
+      <!-- Datos personales + contraseña -->
+      <app-buyer-profile-form
+        [profile]="profile()"
+        [loading]="profileSaving()"
+        [passwordLoading]="passwordSaving()"
+        (save)="handleSaveProfile($event)"
+        (savePassword)="handleSavePassword($event)"
+      />
+
+      <!-- ── Sección: Mis Direcciones ── -->
+      <section class="pf-section pf-section--addresses" aria-labelledby="addr-section-title">
+
+        <div class="pf-section-header">
+          <div class="pf-section-icon" aria-hidden="true">📍</div>
+          <div class="pf-section-header-text">
+            <h2 id="addr-section-title" class="pf-section-title">Mis Direcciones</h2>
+            <p class="pf-section-sub">Direcciones de entrega para tus pedidos</p>
+          </div>
+          @if (!addressFormOpen()) {
+            <button
+              type="button"
+              class="btn-add-address"
+              (click)="openAddressForm()"
+              aria-label="Agregar nueva dirección"
+            >
+              ＋ Nueva dirección
+            </button>
+          }
+        </div>
+
+        <!-- Formulario de creación / edición (inline) -->
+        @if (addressFormOpen()) {
+          <app-address-form
+            [address]="editingAddress()"
+            [saving]="addressSaving()"
+            (saved)="handleSaveAddress($event)"
+            (cancelled)="closeAddressForm()"
+          />
+        }
+
+        <!-- Lista de tarjetas de dirección -->
+        @if (addresses().length > 0) {
+          <div class="addresses-grid">
+            @for (addr of addresses(); track addr.id) {
+              <app-address-card
+                [address]="addr"
+                (setDefault)="handleSetDefaultAddress($event)"
+                (edit)="openAddressForm($event)"
+                (delete)="handleDeleteAddress($event)"
+              />
+            }
+          </div>
+        } @else if (!addressFormOpen()) {
+          <div class="addresses-empty">
+            <span class="addresses-empty-icon" aria-hidden="true">📭</span>
+            <p class="addresses-empty-text">Aún no tienes direcciones guardadas.</p>
+            <button
+              type="button"
+              class="btn-add-address"
+              (click)="openAddressForm()"
+            >
+              Agregar tu primera dirección
+            </button>
+          </div>
+        }
+
+      </section>
+
+      </div><!-- /tab-panel-profile -->
+    }
+
+  </main>
+</div>
+
+<!-- Checkout overlay -->
+<app-checkout-overlay
+  [open]="checkoutOpen()"
+  [total]="cartTotal()"
+  [itemCount]="cartCount()"
+  [selectedAddress]="selectedAddress()"
+  [confirming]="checkoutConfirming()"
+  (confirmed)="handleConfirmOrder()"
+  (cancelled)="handleCancelCheckout()"
+/>
+
+<!-- Review form modal -->
+<app-review-form-modal
+  [open]="reviewModalOpen()"
+  [review]="selectedReview()"
+  [productName]="reviewModalProduct()"
+  (closed)="closeReviewModal()"
+  (saved)="handleSaveReview($event)"
+/>

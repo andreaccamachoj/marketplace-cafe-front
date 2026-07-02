@@ -1,0 +1,593 @@
+<app-dashboard-nav [pageTitle]="'Panel del Productor'" (menuToggle)="toggleSidebar()" />
+
+<div class="page-layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" [class.open]="sidebarOpen()" role="navigation" aria-label="Menú del productor">
+
+    <!-- Panel -->
+    <div class="sidebar-section">
+      <span class="sidebar-label">Panel</span>
+      <nav class="sidebar-nav">
+        <button
+          class="nav-item"
+          [class.active]="activeTab() === 'products'"
+          [attr.aria-current]="activeTab() === 'products' ? 'page' : null"
+          (click)="setTab('products')"
+        >
+          <span class="nav-item-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+          </span>
+          Mis Productos
+          <span class="nav-pill green">{{ activeCount() }}</span>
+        </button>
+        <button
+          class="nav-item"
+          [class.active]="activeTab() === 'orders'"
+          [attr.aria-current]="activeTab() === 'orders' ? 'page' : null"
+          (click)="setTab('orders')"
+        >
+          <span class="nav-item-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><path d="M9 12h6M9 16h4"/></svg>
+          </span>
+          Pedidos recibidos
+          <span class="nav-pill">{{ pendingCount() }}</span>
+        </button>
+        <button
+          class="nav-item"
+          [class.active]="activeTab() === 'farm'"
+          [attr.aria-current]="activeTab() === 'farm' ? 'page' : null"
+          (click)="setTab('farm')"
+        >
+          <span class="nav-item-icon">🌿</span>
+          Mi Finca
+        </button>
+      </nav>
+    </div>
+
+    <hr class="sidebar-sep" />
+
+    <!-- Desempeño -->
+    <div class="sidebar-section">
+      <span class="sidebar-label">Desempeño</span>
+      <nav class="sidebar-nav">
+        <button class="nav-item" (click)="notify.info('Próximamente')">
+          <span class="nav-item-icon">📊</span>
+          Estadísticas
+        </button>
+        <button
+          class="nav-item"
+          [class.active]="activeTab() === 'reviews'"
+          [attr.aria-current]="activeTab() === 'reviews' ? 'page' : null"
+          (click)="setTab('reviews')"
+        >
+          <span class="nav-item-icon">★</span>
+          Mis reseñas
+          <span class="nav-pill">{{ reviewSvc.totalReviews() }}</span>
+        </button>
+        <button class="nav-item" (click)="notify.info('Próximamente')">
+          <span class="nav-item-icon">💰</span>
+          Ganancias
+        </button>
+      </nav>
+    </div>
+
+    <hr class="sidebar-sep" />
+
+    <!-- Bottom -->
+    <div class="sidebar-bottom">
+      <nav class="sidebar-nav">
+        <button
+          class="nav-item"
+          [class.active]="activeTab() === 'profile'"
+          [attr.aria-current]="activeTab() === 'profile' ? 'page' : null"
+          (click)="setTab('profile')"
+        >
+          <span class="nav-item-icon">⚙</span>
+          Mi Perfil
+        </button>
+        <button class="nav-item danger" (click)="logout()">
+          <span class="nav-item-icon">↩</span>
+          Cerrar sesión
+        </button>
+      </nav>
+    </div>
+  </aside>
+
+  <div
+    class="sidebar-overlay"
+    [class.visible]="sidebarOpen()"
+    aria-hidden="true"
+    tabindex="-1"
+    (click)="toggleSidebar()"
+    (keydown)="false"
+  ></div>
+
+  <main class="main-content" role="main">
+
+    <!-- Stats row -->
+    <div class="stats-row" role="list" aria-label="Resumen del productor">
+      <div class="stat-card" role="listitem">
+        <div class="stat-icon" style="background:rgba(55,38,23,.07)">🫘</div>
+        <div class="stat-label">Productos activos</div>
+        <div class="stat-value">{{ activeCount() }}</div>
+        <div class="stat-sub">
+          <span class="stat-up">{{ draftCount() }} borradores</span>
+        </div>
+      </div>
+      <div class="stat-card" role="listitem">
+        <div class="stat-icon" style="background:rgba(192,120,32,.1)">📦</div>
+        <div class="stat-label">Pedidos pendientes</div>
+        <div class="stat-value">{{ pendingCount() }}</div>
+        <div class="stat-sub">
+          <span class="stat-warn">{{ preparingCount() }} por preparar</span>
+        </div>
+      </div>
+      <div class="stat-card" role="listitem">
+        <div class="stat-icon" style="background:rgba(30,94,41,.1)">💰</div>
+        <div class="stat-label">Ventas este mes</div>
+        <div class="stat-value">${{ monthlySalesFormatted() }}</div>
+        <div class="stat-sub">
+          <span class="stat-up">↑ 18% vs mes anterior</span>
+        </div>
+      </div>
+      <div class="stat-card" role="listitem">
+        <div class="stat-icon" style="background:rgba(192,120,32,.1)">★</div>
+        <div class="stat-label">Calificación</div>
+        <div class="stat-value">{{ avgRating() }}</div>
+        <div class="stat-sub">de 5 · {{ reviewCount() }} reseñas</div>
+      </div>
+    </div>
+
+    <!-- Tabs row -->
+    <div class="tabs-row" role="tablist">
+      <button
+        class="tab"
+        role="tab"
+        [class.active]="activeTab() === 'products'"
+        [attr.aria-selected]="activeTab() === 'products'"
+        aria-controls="panel-productos"
+        (click)="setTab('products')"
+      >
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
+        Mis Productos
+        <span class="tab-count tc-espresso">{{ products().length }}</span>
+      </button>
+      <button
+        class="tab"
+        role="tab"
+        [class.active]="activeTab() === 'orders'"
+        [attr.aria-selected]="activeTab() === 'orders'"
+        aria-controls="panel-pedidos"
+        (click)="setTab('orders')"
+      >
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/></svg>
+        Pedidos recibidos
+        <span class="tab-count tc-amber">{{ orders().length }}</span>
+      </button>
+      <button
+        class="tab"
+        role="tab"
+        [class.active]="activeTab() === 'farm'"
+        [attr.aria-selected]="activeTab() === 'farm'"
+        aria-controls="panel-finca"
+        (click)="setTab('farm')"
+      >
+        🌿 Mi Finca
+      </button>
+    </div>
+
+    <!-- ── Tab: Mis Productos ── -->
+    @if (activeTab() === 'products') {
+      <div id="panel-productos" role="tabpanel" aria-labelledby="tab-productos">
+        <div class="page-header">
+          <div>
+            <div class="page-eyebrow">Gestión de catálogo</div>
+            <h1 class="page-title">Mis Productos</h1>
+            <p class="page-subtitle">{{ products().length }} productos registrados</p>
+          </div>
+          <div class="header-actions">
+            <button
+              class="btn-secondary"
+              type="button"
+              aria-label="Exportar lista de productos"
+              (click)="notify.info('Exportando productos a CSV...')"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Exportar
+            </button>
+            <button
+              class="btn-primary"
+              type="button"
+              aria-label="Crear nuevo producto"
+              (click)="openCreateProduct()"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Nuevo producto
+            </button>
+          </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="products-toolbar">
+          <div class="toolbar-search">
+            <span class="toolbar-search-icon" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            </span>
+            <input
+              class="toolbar-search-input"
+              type="search"
+              placeholder="Buscar producto..."
+              [value]="productSearch()"
+              (input)="onSearchInput($event)"
+              aria-label="Buscar en mis productos"
+            />
+          </div>
+          <div class="toolbar-filter" role="group" aria-label="Filtrar por estado">
+            <button
+              class="filter-chip"
+              [class.active]="productFilter() === 'all'"
+              [attr.aria-pressed]="productFilter() === 'all'"
+              (click)="productFilter.set('all')"
+            >
+              Todos
+            </button>
+            <button
+              class="filter-chip"
+              [class.active]="productFilter() === 'active'"
+              [attr.aria-pressed]="productFilter() === 'active'"
+              (click)="productFilter.set('active')"
+            >
+              Activos
+            </button>
+            <button
+              class="filter-chip"
+              [class.active]="productFilter() === 'draft'"
+              [attr.aria-pressed]="productFilter() === 'draft'"
+              (click)="productFilter.set('draft')"
+            >
+              Borradores
+            </button>
+            <button
+              class="filter-chip"
+              [class.active]="productFilter() === 'inactive'"
+              [attr.aria-pressed]="productFilter() === 'inactive'"
+              (click)="productFilter.set('inactive')"
+            >
+              Inactivos
+            </button>
+          </div>
+        </div>
+
+        <!-- Tabla de productos -->
+        <div class="products-table-wrap">
+          <div class="table-header" aria-hidden="true">
+            <div class="th">Producto</div>
+            <div class="th" style="text-align:center">Stock</div>
+            <div class="th" style="text-align:right">Precio</div>
+            <div class="th" style="text-align:center">Estado</div>
+            <div class="th" style="text-align:center">Calificación</div>
+            <div class="th" style="text-align:right">Acciones</div>
+          </div>
+
+          <div role="list" aria-label="Lista de productos">
+            @for (product of filteredProducts(); track product.id) {
+              <app-product-table-row
+                [product]="product"
+                (toggleStatus)="onToggleStatus($event)"
+                (edit)="onEditProduct($event)"
+                (view)="onViewProduct($event)"
+                (remove)="onRemoveProduct($event)"
+              />
+            }
+          </div>
+
+          @if (filteredProducts().length === 0) {
+            <div class="empty-state">
+              <div class="empty-icon">🫘</div>
+              <div class="empty-title">Sin productos</div>
+              <div class="empty-desc">No hay productos con esos filtros.</div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- ── Tab: Pedidos recibidos ── -->
+    @if (activeTab() === 'orders') {
+      <div id="panel-pedidos" role="tabpanel" aria-labelledby="tab-pedidos">
+        <div class="page-header">
+          <div>
+            <div class="page-eyebrow">Gestión de ventas</div>
+            <h1 class="page-title">Pedidos recibidos</h1>
+            <p class="page-subtitle">Gestiona y actualiza el estado de cada pedido</p>
+          </div>
+          <div class="header-actions">
+            <button
+              class="btn-secondary"
+              type="button"
+              (click)="notify.info('Exportando pedidos...')"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Exportar
+            </button>
+          </div>
+        </div>
+
+        <div class="orders-table-wrap">
+          <div class="orders-table-head" aria-hidden="true">
+            <div class="th">Pedido</div>
+            <div class="th">Comprador y productos</div>
+            <div class="th" style="text-align:center">Estado</div>
+            <div class="th" style="text-align:right">Total</div>
+            <div class="th">Envío</div>
+            <div class="th" style="text-align:right">Acciones</div>
+          </div>
+
+          <div role="list" aria-label="Pedidos recibidos">
+            @for (order of orders(); track order.id) {
+              <app-received-order-row
+                [order]="order"
+                (statusChange)="onOrderStatusChange($event)"
+              />
+            }
+          </div>
+
+          @if (orders().length === 0) {
+            <div class="empty-state">
+              <div class="empty-icon">📋</div>
+              <div class="empty-title">Sin pedidos</div>
+              <div class="empty-desc">No tienes pedidos recibidos aún.</div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- ── Tab: Mi Finca ── -->
+    @if (activeTab() === 'farm') {
+      <div id="panel-finca" role="tabpanel" aria-labelledby="tab-finca">
+        <div class="page-header">
+          <div>
+            <div class="page-eyebrow">Información de origen</div>
+            <h1 class="page-title">Mi Finca</h1>
+            <p class="page-subtitle">Datos que los compradores ven en el detalle de tus productos</p>
+          </div>
+          <div class="header-actions">
+            <button
+              class="btn-primary"
+              type="button"
+              aria-label="Editar información de la finca"
+              (click)="openFarmEdit()"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              Editar finca
+            </button>
+          </div>
+        </div>
+
+        <div class="farm-layout">
+          <!-- Columna principal -->
+          <div>
+            <!-- Ubicación con mapa integrado -->
+            <app-farm-info-card [farm]="farm()" />
+
+            <!-- Descripción -->
+            <div class="farm-card farm-card--mt">
+              <div class="farm-card-header">
+                <div class="farm-card-title">📖 Descripción de la finca</div>
+              </div>
+              <div class="farm-card-body">
+                <p class="farm-description">{{ farm().description }}</p>
+              </div>
+            </div>
+
+            <!-- Certificaciones -->
+            <div class="farm-card farm-card--mt">
+              <div class="farm-card-header">
+                <div class="farm-card-title">🏅 Certificaciones activas</div>
+                <button
+                  class="btn-secondary btn-secondary--sm"
+                  type="button"
+                  aria-label="Agregar certificación"
+                  (click)="openCertModal()"
+                >
+                  + Agregar
+                </button>
+              </div>
+              <div class="farm-card-body">
+                <app-certification-list [certifications]="farm().certifications" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Columna lateral -->
+          <div>
+            <!-- Métricas de la finca -->
+            <div class="farm-sidebar-card">
+              <div class="fsb-head">
+                <div class="fsb-title">📊 Métricas de la finca</div>
+              </div>
+              <div class="fsb-body">
+                <div class="metric-row">
+                  <span class="metric-label">Producción anual</span>
+                  <span class="metric-value green">{{ farm().metrics.annualProduction }}</span>
+                </div>
+                <div class="metric-row">
+                  <span class="metric-label">Rendimiento / ha</span>
+                  <span class="metric-value">{{ farm().metrics.yieldPerHa }}</span>
+                </div>
+                <div class="metric-row">
+                  <span class="metric-label">Proceso</span>
+                  <span class="metric-value">{{ farm().metrics.process }}</span>
+                </div>
+                <div class="metric-row">
+                  <span class="metric-label">Cosecha</span>
+                  <span class="metric-value">{{ farm().metrics.harvestSeason }}</span>
+                </div>
+                <div class="metric-row">
+                  <span class="metric-label">Árboles en producción</span>
+                  <span class="metric-value">{{ farm().metrics.treeCount }}</span>
+                </div>
+                <div class="metric-row">
+                  <span class="metric-label">Score catación</span>
+                  <span class="metric-value green">{{ farm().metrics.cuppingScore }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Ventas últimos 6 meses -->
+            <div class="farm-sidebar-card">
+              <div class="fsb-head">
+                <div class="fsb-title">📈 Ventas últimos 6 meses</div>
+              </div>
+              <div class="fsb-body">
+                <div class="sales-total">${{ semesterSales() }}</div>
+                <div class="sales-growth">↑ 22% vs semestre anterior</div>
+                <app-sales-mini-chart />
+              </div>
+            </div>
+
+            <!-- Estado del perfil -->
+            <div class="farm-sidebar-card">
+              <div class="fsb-head">
+                <div class="fsb-title">✅ Estado del perfil</div>
+              </div>
+              <div class="fsb-body">
+                <div class="metric-row">
+                  <span class="metric-label">Estado</span>
+                  <span class="status-pill sp-active">Aprobado</span>
+                </div>
+                <div class="metric-row">
+                  <span class="metric-label">Aprobado por</span>
+                  <span class="metric-value metric-value--sm">{{ farm().profileStatus.approvedBy }}</span>
+                </div>
+                <div class="metric-row">
+                  <span class="metric-label">Aprobación</span>
+                  <span class="metric-value metric-value--sm">{{ farm().profileStatus.approvalDate }}</span>
+                </div>
+                <div class="metric-row">
+                  <span class="metric-label">Documentos</span>
+                  <span class="metric-value green">{{ farm().profileStatus.verifiedDocs }} verificados</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- ── Tab: Mi Perfil ── -->
+    @if (activeTab() === 'profile') {
+      <div id="panel-perfil" role="tabpanel" aria-labelledby="tab-perfil">
+        <div class="page-header">
+          <div>
+            <div class="page-eyebrow">Cuenta</div>
+            <h1 class="page-title">Mi Perfil</h1>
+            <p class="page-subtitle">Información personal y seguridad de tu cuenta</p>
+          </div>
+        </div>
+
+        <app-producer-profile-form
+          [profile]="profile()"
+          [loading]="profileLoading()"
+          (saveProfile)="handleSaveProfile($event)"
+          (savePassword)="handleSavePassword($event)"
+        />
+      </div>
+    }
+
+    <!-- ── Tab: Mis Reseñas ── -->
+    @if (activeTab() === 'reviews') {
+      <div id="panel-resenas" role="tabpanel" aria-labelledby="tab-resenas">
+        <div class="page-header">
+          <div>
+            <div class="page-eyebrow">Reputación</div>
+            <h1 class="page-title">Mis Reseñas</h1>
+            <p class="page-subtitle">
+              {{ reviewSvc.totalReviews() }} reseñas · Promedio
+              <strong>{{ reviewSvc.globalAvgRating() }}</strong> ★
+            </p>
+          </div>
+        </div>
+
+        <!-- Resumen global de calificación -->
+        <div class="reviews-summary-bar">
+          <div class="rsb-score">
+            <div class="rsb-big">{{ reviewSvc.globalAvgRating() }}</div>
+            <div class="rsb-stars" aria-hidden="true">
+              @for (s of [1,2,3,4,5]; track s) {
+                <span [style.color]="s <= reviewSvc.globalAvgRating() ? 'var(--amber,#c07820)' : 'rgba(55,38,23,.15)'">★</span>
+              }
+            </div>
+            <div class="rsb-total">{{ reviewSvc.totalReviews() }} reseñas</div>
+          </div>
+        </div>
+
+        <!-- Grupos por producto -->
+        @if (reviewGroups().length > 0) {
+          @for (group of reviewGroups(); track group.productId) {
+            <div class="review-group">
+              <div class="review-group-header">
+                <span class="rg-emoji" aria-hidden="true">{{ group.productEmoji }}</span>
+                <div class="rg-info">
+                  <h2 class="rg-title">{{ group.productName }}</h2>
+                  <div class="rg-meta">
+                    <span class="rg-avg">{{ group.avgRating }} ★</span>
+                    <span class="rg-count">{{ group.totalReviews }} reseñas</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="review-cards-grid">
+                @for (review of group.reviews; track review.id) {
+                  <app-producer-review-card
+                    [review]="review"
+                    (replied)="handleReply($event)"
+                  />
+                }
+              </div>
+            </div>
+          }
+        } @else {
+          <div class="empty-state">
+            <div class="empty-icon">★</div>
+            <div class="empty-title">Sin reseñas aún</div>
+            <div class="empty-desc">Cuando los compradores califiquen tus productos, las reseñas aparecerán aquí.</div>
+          </div>
+        }
+      </div>
+    }
+
+  </main>
+</div>
+
+<!-- Modal: producto (create / edit / view) -->
+<app-product-form-modal
+  [mode]="productModalMode()"
+  [product]="selectedProduct()"
+  [open]="productModalOpen()"
+  (closed)="closeProductModal()"
+  (coverSelected)="pendingCoverFile.set($event)"
+  (saved)="handleSaveProduct($event)"
+/>
+
+<!-- Modal: editar finca -->
+<app-farm-edit-modal
+  [farm]="farm()"
+  [open]="farmEditOpen()"
+  (closed)="closeFarmEdit()"
+  (saved)="handleSaveFarm($event)"
+/>
+
+<!-- Modal: agregar certificación -->
+<app-certification-form-modal
+  [open]="certModalOpen()"
+  (closed)="closeCertModal()"
+  (saved)="handleSaveCert($event)"
+/>
+
+<!-- Overlay de guardado (crear/editar producto + subida de imagen a S3) -->
+@if (productSvc.saving()) {
+  <app-loading-spinner [overlay]="true" size="lg" label="Guardando producto…" />
+}

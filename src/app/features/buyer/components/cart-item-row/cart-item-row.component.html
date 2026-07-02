@@ -1,0 +1,51 @@
+<div class="cart-item">
+  <!-- Producto -->
+  <div class="ci-product">
+    <div class="ci-img" aria-hidden="true">{{ item().emoji }}</div>
+    <div class="ci-info">
+      <div class="ci-producer">{{ item().producer }}</div>
+      <div class="ci-name">{{ item().name }}</div>
+      <div class="ci-badges">
+        @if (item().organic) {
+          <span class="badge badge-org">Orgánico</span>
+        }
+        @if (item().fairTrade) {
+          <span class="badge badge-fair">Fair Trade</span>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Precio unitario -->
+  <div class="ci-price">${{ item().price | number:'1.0-0' }}</div>
+
+  <!-- Cantidad -->
+  <div class="qty-ctrl" role="group" [attr.aria-label]="'Cantidad de ' + item().name">
+    <button
+      class="qty-btn"
+      type="button"
+      [disabled]="item().qty <= 1"
+      (click)="onDecrease()"
+      aria-label="Reducir cantidad"
+    >−</button>
+    <span class="qty-val" aria-live="polite">{{ item().qty }}</span>
+    <button
+      class="qty-btn"
+      type="button"
+      [disabled]="item().qty >= item().maxStock"
+      (click)="onIncrease()"
+      aria-label="Aumentar cantidad"
+    >+</button>
+  </div>
+
+  <!-- Subtotal -->
+  <div class="ci-subtotal">${{ (item().price * item().qty) | number:'1.0-0' }}</div>
+
+  <!-- Eliminar -->
+  <button
+    class="btn-remove-item"
+    type="button"
+    (click)="onRemove()"
+    [attr.aria-label]="'Eliminar ' + item().name"
+  >✕</button>
+</div>

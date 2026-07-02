@@ -1,0 +1,157 @@
+.flavor-section {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* ─── Cupping row — light background ─── */
+.cupping-row {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 20px;
+  background: var(--marfil-light, #ede6dd);
+  border-radius: 16px;
+}
+
+.cupping-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.cup-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--espresso, #372617);
+  line-height: 1;
+}
+
+.cup-stars {
+  font-size: 1rem;
+  color: var(--amber, #c07820);
+  letter-spacing: 2px;
+  margin: 4px 0 2px;
+}
+
+.cup-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cafe-medio, #7a5c42);
+  text-align: center;
+}
+
+.cupping-attrs {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  min-width: 200px;
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cup-attr {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cup-attr-label {
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--cafe-medio, #7a5c42);
+}
+
+.cup-attr-bar {
+  height: 6px;
+  background: rgba(55, 38, 23, 0.08);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.cup-attr-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--espresso, #372617);
+  transition: width 0.6s ease;
+}
+
+.cup-attr-val {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--espresso, #372617);
+}
+
+/* ─── Flavor cards — horizontal layout ─── */
+.flavor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.flavor-card {
+  padding: 14px;
+  background: #fff;
+  border: 1px solid rgba(55, 38, 23, 0.07);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: box-shadow 0.18s;
+
+  &:hover {
+    box-shadow: 0 1px 4px rgba(55, 38, 23, 0.07);
+  }
+}
+
+.flavor-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(192, 120, 32, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.flavor-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.flavor-name {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--espresso, #372617);
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.flavor-intensity {
+  height: 4px;
+  background: rgba(55, 38, 23, 0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.flavor-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--amber, #c07820);
+  transition: width 0.6s ease;
+}

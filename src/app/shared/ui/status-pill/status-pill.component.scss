@@ -1,0 +1,25 @@
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: capitalize;
+
+  &--green   { background: rgba(46,125,50,0.12); color: #1b5e20; }
+  &--amber   { background: rgba(245,158,11,0.15); color: #78350f; }
+  &--blue    { background: rgba(29,78,216,0.1);  color: #1e40af; }
+  &--red     { background: rgba(220,38,38,0.1);  color: #991b1b; }
+  &--purple  { background: rgba(124,58,237,0.1); color: #5b21b6; }
+  &--neutral { background: var(--neutral-100);   color: var(--neutral-600); }
+}
+
+.pill__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}

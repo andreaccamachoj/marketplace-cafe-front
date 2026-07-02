@@ -1,0 +1,148 @@
+.cell-user-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cell-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(91, 62, 143, 0.2);
+  color: #5b3e8f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+.cell-primary {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--espresso);
+}
+
+.cell-secondary {
+  font-size: 0.75rem;
+  color: var(--cafe-medio);
+}
+
+.role-badge {
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  display: inline-block;
+
+  &--buyer {
+    background: rgba(26, 107, 138, 0.12);
+    color: var(--blue-rain);
+  }
+
+  &--producer {
+    background: var(--verde-light);
+    color: var(--verde-selva);
+  }
+
+  &--admin {
+    background: rgba(91, 62, 143, 0.15);
+    color: #5b3e8f;
+  }
+}
+
+.status-badge {
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+
+  &::before {
+    content: '';
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  &--active {
+    background: var(--verde-light);
+    color: var(--verde-selva);
+
+    &::before {
+      background: var(--verde-selva);
+    }
+  }
+
+  &--suspended {
+    background: var(--error-light);
+    color: var(--error);
+
+    &::before {
+      background: var(--error);
+    }
+  }
+
+  &--pending {
+    background: var(--amber-light);
+    color: var(--amber);
+
+    &::before {
+      background: var(--amber);
+    }
+  }
+}
+
+.row-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.btn-sm {
+  padding: 5px 10px;
+  border-radius: var(--r-md);
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: all 0.15s;
+  border: none;
+}
+
+.btn-ghost {
+  border: 1.5px solid rgba(55, 38, 23, 0.15);
+  background: none;
+  color: var(--cafe-medio);
+
+  &:hover {
+    border-color: var(--espresso);
+    color: var(--espresso);
+  }
+}
+
+.btn-success {
+  background: var(--verde-selva);
+  color: #fff;
+
+  &:hover {
+    background: #174d20;
+  }
+}
+
+.btn-danger {
+  background: none;
+  border: 1.5px solid rgba(139, 32, 32, 0.2);
+  color: var(--error);
+
+  &:hover {
+    background: var(--error-light);
+  }
+}

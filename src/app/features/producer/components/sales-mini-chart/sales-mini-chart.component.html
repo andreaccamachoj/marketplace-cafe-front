@@ -1,0 +1,13 @@
+<div class="mini-chart" role="img" aria-label="Gráfico de ventas por mes">
+  @for (bar of bars; track bar.month) {
+    <div class="bar-col">
+      <div
+        class="bar"
+        [class.active]="bar.active === true"
+        [style.height.%]="bar.value"
+        [attr.aria-label]="bar.month + ': ' + bar.value + '%'"
+      ></div>
+      <span class="bar-lbl">{{ bar.month }}</span>
+    </div>
+  }
+</div>

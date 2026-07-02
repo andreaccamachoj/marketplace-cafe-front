@@ -1,0 +1,125 @@
+.navbar {
+  height: var(--navbar-height, 64px);
+  background: var(--white, #fff);
+  border-bottom: 1px solid var(--neutral-100, #f3f4f6);
+  display: flex;
+  align-items: center;
+  padding: 0 var(--sp-6);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar__container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 100%;
+}
+
+.navbar__left {
+  flex: 1;
+  /* For future search bar or other elements */
+}
+
+.navbar__right {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+}
+
+/* ── User Menu ──────────────────────────────────────────────── */
+.user-menu {
+  position: relative;
+}
+
+.user-menu__toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  background: none;
+  border: 1px solid var(--neutral-200, #e5e7eb);
+  border-radius: var(--r-lg);
+  padding: var(--sp-1) var(--sp-2) var(--sp-1) var(--sp-1);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+
+  &:hover {
+    background: var(--neutral-50, #f9fafb);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--espresso);
+    outline-offset: 2px;
+  }
+}
+
+.user-menu__name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--neutral-700, #374151);
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-menu__icon {
+  font-size: 0.625rem;
+  color: var(--neutral-400, #9ca3af);
+  flex-shrink: 0;
+}
+
+.user-menu__dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: var(--white, #fff);
+  border: 1px solid var(--neutral-200, #e5e7eb);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-lg);
+  min-width: 200px;
+  z-index: 1000;
+  animation: slideDown 0.2s ease;
+}
+
+.user-menu__item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  width: 100%;
+  padding: var(--sp-3) var(--sp-4);
+  background: none;
+  border: none;
+  color: var(--neutral-700, #374151);
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-align: left;
+  text-decoration: none;
+  transition: background var(--transition-fast);
+
+  &:hover {
+    background: var(--neutral-50, #f9fafb);
+  }
+
+  &:focus-visible {
+    outline: none;
+    background: var(--neutral-100, #f3f4f6);
+  }
+
+  &--logout {
+    color: var(--error, #dc2626);
+  }
+}
+
+.user-menu__divider {
+  margin: var(--sp-1) 0;
+  border: none;
+  border-top: 1px solid var(--neutral-100, #f3f4f6);
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

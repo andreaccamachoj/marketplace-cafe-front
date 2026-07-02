@@ -1,0 +1,40 @@
+<div class="farm-card">
+  <div class="farm-card-header">
+    <div class="farm-card-title">📍 Ubicación de la finca</div>
+  </div>
+  <div class="farm-card-body">
+    <!-- Mapa visual -->
+    <app-farm-map
+      [farmName]="farm().name"
+      [location]="farm().municipality"
+    />
+
+    <!-- Info grid -->
+    <div class="farm-info-grid">
+      <div class="farm-field">
+        <span class="farm-field-label">Nombre</span>
+        <span class="farm-field-value big">{{ farm().name }}</span>
+      </div>
+      <div class="farm-field">
+        <span class="farm-field-label">Municipio</span>
+        <span class="farm-field-value">{{ farm().municipality }}</span>
+      </div>
+      <div class="farm-field">
+        <span class="farm-field-label">Departamento</span>
+        <span class="farm-field-value">{{ farm().department }}</span>
+      </div>
+      <div class="farm-field">
+        <span class="farm-field-label">Altitud</span>
+        <span class="farm-field-value">{{ farm().altitude }}</span>
+      </div>
+      <div class="farm-field">
+        <span class="farm-field-label">Extensión</span>
+        <span class="farm-field-value">{{ farm().area }}</span>
+      </div>
+      <div class="farm-field">
+        <span class="farm-field-label">Variedad principal</span>
+        <span class="farm-field-value">{{ farm().mainVariety }}</span>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,89 @@
+.stat-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-4);
+  background: var(--white, #fff);
+  border: 1px solid var(--neutral-100, #f3f4f6);
+  border-radius: var(--r-lg);
+  padding: var(--sp-5);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition-normal);
+
+  &:hover {
+    box-shadow: var(--shadow-md);
+  }
+}
+
+/* ── Color variants (left accent bar) ───────────────────── */
+@mixin accent($color) {
+  border-left: 4px solid $color;
+
+  .stat-card__icon {
+    background: rgba($color, 0.12);
+    color: $color;
+  }
+}
+
+.stat-card--espresso { @include accent(#372617); }
+.stat-card--green    { @include accent(#2e7d32); }
+.stat-card--amber    { @include accent(#f59e0b); }
+.stat-card--blue     { @include accent(#1d4ed8); }
+.stat-card--purple   { @include accent(#7c3aed); }
+.stat-card--neutral  { border-left: 4px solid var(--neutral-200, #e5e7eb); }
+
+/* ── Icon ─────────────────────────────────────────────────── */
+.stat-card__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--r-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: var(--neutral-100, #f3f4f6);
+  color: var(--neutral-500, #6b7280);
+
+  .material-icon {
+    font-size: 1.5rem;
+    font-family: 'Material Icons', sans-serif;
+    font-style: normal;
+    line-height: 1;
+  }
+}
+
+/* ── Body ─────────────────────────────────────────────────── */
+.stat-card__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.stat-card__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--neutral-500, #6b7280);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 var(--sp-1);
+}
+
+.stat-card__value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--neutral-900, #111827);
+  line-height: 1.1;
+  margin: 0 0 var(--sp-2);
+}
+
+/* ── Trend ───────────────────────────────────────────────── */
+.stat-card__change {
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+
+  &--up      { color: var(--verde-selva, #2e7d32); }
+  &--down    { color: var(--error, #dc2626); }
+  &--neutral { color: var(--neutral-400, #9ca3af); }
+}

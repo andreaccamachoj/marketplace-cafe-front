@@ -1,0 +1,253 @@
+<div class="buyer-profile">
+
+  <!-- ── Sección 1: Información personal ── -->
+  <section class="pf-section" aria-labelledby="bpf-title-personal">
+
+    <div class="pf-section-header">
+      <div class="pf-section-icon" aria-hidden="true">👤</div>
+      <div>
+        <h2 id="bpf-title-personal" class="pf-section-title">Información personal</h2>
+        <p class="pf-section-sub">Datos de tu cuenta de comprador</p>
+      </div>
+    </div>
+
+    <form class="profile-form" [formGroup]="profileForm" (ngSubmit)="onSubmitProfile()" novalidate>
+
+      <!-- Avatar + email read-only -->
+      <div class="profile-form__top">
+        <div class="profile-form__avatar" aria-hidden="true">
+          {{ profile().avatarInitials }}
+        </div>
+        <div class="profile-form__email-wrap">
+          <span class="profile-form__email-label">
+            <span class="lock-icon" aria-hidden="true">🔒</span> Correo electrónico
+          </span>
+          <span class="profile-form__email-value" aria-label="Correo electrónico (solo lectura)">
+            {{ profile().email }}
+          </span>
+          <span class="profile-form__email-hint">El correo no puede modificarse</span>
+        </div>
+      </div>
+
+      <!-- Grid 2 columnas -->
+      <div class="profile-form__grid">
+
+        <!-- Nombre completo -->
+        <div class="field" [class.field--error]="fullName.invalid && fullName.touched">
+          <label class="field__label" for="bpf-fullName">Nombre completo</label>
+          <input
+            id="bpf-fullName"
+            class="field__input"
+            type="text"
+            formControlName="fullName"
+            autocomplete="name"
+            placeholder="Tu nombre completo"
+          />
+          @if (fullName.invalid && fullName.touched) {
+            <span class="field__error" role="alert">
+              @if (fullName.errors?.['required'])  { El nombre es requerido }
+              @if (fullName.errors?.['minlength']) { Mínimo 3 caracteres }
+            </span>
+          }
+        </div>
+
+        <!-- Teléfono -->
+        <div class="field" [class.field--error]="phone.invalid && phone.touched">
+          <label class="field__label" for="bpf-phone">Teléfono</label>
+          <input
+            id="bpf-phone"
+            class="field__input"
+            type="tel"
+            formControlName="phone"
+            autocomplete="tel"
+            placeholder="310-555-0100"
+          />
+          @if (phone.invalid && phone.touched) {
+            <span class="field__error" role="alert">El teléfono es requerido</span>
+          }
+        </div>
+
+        <!-- Ciudad -->
+        <div class="field" [class.field--error]="city.invalid && city.touched">
+          <label class="field__label" for="bpf-city">Ciudad / Municipio</label>
+          <input
+            id="bpf-city"
+            class="field__input"
+            type="text"
+            formControlName="city"
+            autocomplete="address-level2"
+            placeholder="Bogotá"
+          />
+          @if (city.invalid && city.touched) {
+            <span class="field__error" role="alert">La ciudad es requerida</span>
+          }
+        </div>
+
+        <!-- Departamento -->
+        <div class="field" [class.field--error]="department.invalid && department.touched">
+          <label class="field__label" for="bpf-department">Departamento</label>
+          <input
+            id="bpf-department"
+            class="field__input"
+            type="text"
+            formControlName="department"
+            autocomplete="address-level1"
+            placeholder="Cundinamarca"
+          />
+          @if (department.invalid && department.touched) {
+            <span class="field__error" role="alert">El departamento es requerido</span>
+          }
+        </div>
+
+      </div>
+
+      <!-- Método de pago preferido -->
+      <div class="field">
+        <label class="field__label" for="bpf-payment">Método de pago preferido</label>
+        <select id="bpf-payment" class="field__select" formControlName="preferredPayment">
+          <option value="card">Tarjeta de crédito / débito</option>
+          <option value="transfer">Transferencia bancaria</option>
+          <option value="cash_on_delivery">Contra entrega</option>
+        </select>
+      </div>
+
+      <!-- Newsletter -->
+      <label class="profile-form__checkbox">
+        <input
+          type="checkbox"
+          formControlName="newsletterOptIn"
+          aria-describedby="bpf-newsletter-desc"
+        />
+        <span id="bpf-newsletter-desc">Recibir novedades y ofertas especiales por correo</span>
+      </label>
+
+      <!-- Acciones -->
+      <div class="profile-form__actions">
+        <button
+          type="submit"
+          class="profile-form__btn-save"
+          [disabled]="profileForm.invalid || profileForm.pristine || loading()"
+          [attr.aria-busy]="loading()"
+        >
+          @if (loading()) {
+            <span class="spinner" aria-hidden="true"></span> Guardando...
+          } @else {
+            Guardar cambios
+          }
+        </button>
+      </div>
+
+    </form>
+  </section>
+
+  <!-- ── Sección 2: Cambio de contraseña ── -->
+  <section class="pf-section" aria-labelledby="bpf-title-password">
+
+    <div class="pf-section-header">
+      <div class="pf-section-icon" aria-hidden="true">🔐</div>
+      <div>
+        <h2 id="bpf-title-password" class="pf-section-title">Cambiar contraseña</h2>
+        <p class="pf-section-sub">Usa una contraseña segura con mayúsculas, números y caracteres especiales</p>
+      </div>
+    </div>
+
+    <form class="profile-form" [formGroup]="passwordForm" (ngSubmit)="onSubmitPassword()" novalidate>
+
+      <div class="profile-form__grid">
+
+        <!-- Contraseña actual -->
+        <div class="field field--full" [class.field--error]="currentPassword.invalid && currentPassword.touched">
+          <label class="field__label" for="bpf-currentPwd">Contraseña actual</label>
+          <div class="field__pwd-wrap">
+            <input
+              id="bpf-currentPwd"
+              class="field__input"
+              [type]="showCurrentPwd() ? 'text' : 'password'"
+              formControlName="currentPassword"
+              autocomplete="current-password"
+              placeholder="••••••••"
+            />
+            <button
+              type="button"
+              class="field__eye"
+              (click)="showCurrentPwd.set(!showCurrentPwd())"
+              [attr.aria-label]="showCurrentPwd() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+            >{{ showCurrentPwd() ? '🙈' : '👁' }}</button>
+          </div>
+          @if (currentPassword.invalid && currentPassword.touched) {
+            <span class="field__error" role="alert">La contraseña actual es requerida</span>
+          }
+        </div>
+
+        <!-- Nueva contraseña -->
+        <div class="field" [class.field--error]="newPassword.invalid && newPassword.touched">
+          <label class="field__label" for="bpf-newPwd">Nueva contraseña</label>
+          <div class="field__pwd-wrap">
+            <input
+              id="bpf-newPwd"
+              class="field__input"
+              [type]="showNewPwd() ? 'text' : 'password'"
+              formControlName="newPassword"
+              autocomplete="new-password"
+              placeholder="••••••••"
+            />
+            <button
+              type="button"
+              class="field__eye"
+              (click)="showNewPwd.set(!showNewPwd())"
+              [attr.aria-label]="showNewPwd() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+            >{{ showNewPwd() ? '🙈' : '👁' }}</button>
+          </div>
+          @if (newPassword.invalid && newPassword.touched) {
+            <span class="field__error" role="alert">
+              @if (newPassword.errors?.['required'])     { La nueva contraseña es requerida }
+              @if (newPassword.errors?.['weakPassword']) { Debe tener mayúsculas, números y un carácter especial }
+            </span>
+          }
+        </div>
+
+        <!-- Confirmar nueva contraseña -->
+        <div class="field" [class.field--error]="confirmNewPassword.invalid && confirmNewPassword.touched">
+          <label class="field__label" for="bpf-confirmPwd">Confirmar contraseña</label>
+          <div class="field__pwd-wrap">
+            <input
+              id="bpf-confirmPwd"
+              class="field__input"
+              [type]="showConfirmPwd() ? 'text' : 'password'"
+              formControlName="confirmNewPassword"
+              autocomplete="new-password"
+              placeholder="••••••••"
+            />
+            <button
+              type="button"
+              class="field__eye"
+              (click)="showConfirmPwd.set(!showConfirmPwd())"
+              [attr.aria-label]="showConfirmPwd() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+            >{{ showConfirmPwd() ? '🙈' : '👁' }}</button>
+          </div>
+          @if ((confirmNewPassword.touched || confirmNewPassword.dirty) && confirmNewPassword.errors?.['mismatch']) {
+            <span class="field__error" role="alert">Las contraseñas no coinciden</span>
+          }
+        </div>
+
+      </div>
+
+      <div class="profile-form__actions">
+        <button
+          type="submit"
+          class="profile-form__btn-save profile-form__btn-save--secondary"
+          [disabled]="passwordForm.invalid || passwordLoading()"
+          [attr.aria-busy]="passwordLoading()"
+        >
+          @if (passwordLoading()) {
+            <span class="spinner" aria-hidden="true"></span> Actualizando...
+          } @else {
+            Actualizar contraseña
+          }
+        </button>
+      </div>
+
+    </form>
+  </section>
+
+</div>

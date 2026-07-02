@@ -1,0 +1,8 @@
+<div class="stepper">
+  @for (step of steps(); track step.label) {
+    <div class="step" [class.done]="step.done" [class.active]="step.active">
+      <div class="step-circle">{{ step.done ? '✓' : '' }}</div>
+      <div class="step-label">{{ step.label }}</div>
+    </div>
+  }
+</div>

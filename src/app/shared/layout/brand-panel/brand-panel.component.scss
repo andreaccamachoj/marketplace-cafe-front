@@ -1,0 +1,196 @@
+.panel-brand {
+  background: var(--espresso, #372617);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: var(--sp-12, 48px) var(--sp-10, 40px);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 10% 90%, rgba(153, 120, 93, .14) 0%, transparent 65%),
+      radial-gradient(ellipse 60% 40% at 90% 10%, rgba(37, 115, 50, .07) 0%, transparent 55%);
+    pointer-events: none;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      -55deg,
+      transparent 0px, transparent 22px,
+      rgba(205, 196, 181, .04) 22px, rgba(205, 196, 181, .04) 23px
+    );
+    pointer-events: none;
+  }
+}
+
+.brand-header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3, 12px);
+  animation: fadeSlideUp .7s .1s both;
+}
+
+.brand-logo-circle {
+  width: 44px;
+  height: 44px;
+  background: rgba(205, 196, 181, .12);
+  border: 1px solid rgba(205, 196, 181, .2);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.brand-name-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.brand-name {
+  font-family: var(--font-display, 'Playfair Display', Georgia, serif);
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--marfil, #e4dcd1);
+  letter-spacing: .04em;
+  line-height: 1.2;
+}
+
+.brand-tagline {
+  font-size: 0.6875rem;
+  color: rgba(205, 196, 181, .55);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  font-weight: 400;
+}
+
+.brand-illustration {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  padding: var(--sp-8, 32px) 0;
+  animation: fadeSlideUp .7s .25s both;
+}
+
+.cup-illustration svg {
+  filter: drop-shadow(0 20px 40px rgba(0, 0, 0, .3));
+}
+
+.brand-body {
+  position: relative;
+  z-index: 2;
+  animation: fadeSlideUp .7s .4s both;
+}
+
+.brand-headline {
+  font-family: var(--font-display, 'Playfair Display', Georgia, serif);
+  font-size: clamp(1.6rem, 2.4vw, 2.5rem);
+  font-weight: 700;
+  color: var(--marfil, #e4dcd1);
+  line-height: 1.2;
+  letter-spacing: -.01em;
+  margin-bottom: var(--sp-4, 16px);
+
+  em {
+    font-style: italic;
+    font-weight: 500;
+    color: rgba(205, 196, 181, .65);
+  }
+}
+
+.brand-desc {
+  font-size: 0.8125rem;
+  color: rgba(205, 196, 181, .5);
+  line-height: 1.75;
+  max-width: 320px;
+  font-weight: 300;
+}
+
+.brand-pillars {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3, 12px);
+  margin-top: var(--sp-8, 32px);
+  animation: fadeSlideUp .7s .55s both;
+}
+
+.pillar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3, 12px);
+  padding: var(--sp-3, 12px) var(--sp-4, 16px);
+  border: 1px solid rgba(205, 196, 181, .1);
+  border-radius: var(--r-md, 10px);
+  background: rgba(205, 196, 181, .04);
+  transition: background .2s, border-color .2s;
+
+  &:hover {
+    background: rgba(205, 196, 181, .08);
+    border-color: rgba(205, 196, 181, .2);
+  }
+}
+
+.pillar-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  flex-shrink: 0;
+
+  &.green { background: rgba(37, 115, 50, .18); }
+  &.amber { background: rgba(153, 120, 93, .18); }
+  &.earth { background: rgba(55, 38, 23, .3); }
+}
+
+.pillar-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.pillar-title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--marfil, #e4dcd1);
+}
+
+.pillar-sub {
+  font-size: 0.6875rem;
+  color: rgba(205, 196, 181, .45);
+  font-weight: 300;
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes vapor {
+  0%   { transform: translateY(0) scaleX(1);    opacity: 0; }
+  15%  { opacity: .6; }
+  80%  { opacity: .3; }
+  100% { transform: translateY(-50px) scaleX(1.4); opacity: 0; }
+}
+
+:host ::ng-deep .v1 { animation: vapor 2.8s 0s   ease-out infinite; }
+:host ::ng-deep .v2 { animation: vapor 2.8s 0.9s ease-out infinite; }
+:host ::ng-deep .v3 { animation: vapor 2.8s 1.8s ease-out infinite; }

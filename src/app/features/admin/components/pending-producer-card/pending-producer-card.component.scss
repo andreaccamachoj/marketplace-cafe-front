@@ -1,0 +1,166 @@
+.producer-card {
+  background: #fff;
+  border: 1px solid rgba(55, 38, 23, 0.08);
+  border-radius: var(--r-lg);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: box-shadow 0.2s;
+
+  &:hover {
+    box-shadow: var(--shadow-md);
+  }
+}
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.card-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--verde-fresco);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 800;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+.card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-producer-name {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--espresso);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-farm {
+  font-size: 0.8125rem;
+  color: var(--cafe-medio);
+  font-weight: 600;
+}
+
+.card-region {
+  font-size: 0.75rem;
+  color: var(--cafe-claro);
+  margin-top: 2px;
+}
+
+.status-badge {
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  &--pending {
+    background: var(--amber-light);
+    color: var(--amber);
+  }
+
+  &--approved {
+    background: var(--verde-light);
+    color: var(--verde-selva);
+  }
+
+  &--rejected {
+    background: var(--error-light);
+    color: var(--error);
+  }
+}
+
+.card-meta {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  background: var(--blanco);
+  border-radius: var(--r-md);
+  padding: 10px 12px;
+}
+
+.meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.meta-label {
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--cafe-claro);
+}
+
+.meta-value {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--espresso);
+}
+
+.card-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-ghost,
+.btn-approve,
+.btn-reject {
+  padding: 6px 14px;
+  border-radius: var(--r-md);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: all 0.15s;
+  border: none;
+}
+
+.btn-ghost {
+  border: 1.5px solid rgba(55, 38, 23, 0.15);
+  background: none;
+  color: var(--cafe-medio);
+
+  &:hover {
+    border-color: var(--espresso);
+    color: var(--espresso);
+    background: rgba(55, 38, 23, 0.04);
+  }
+}
+
+.btn-approve {
+  background: var(--verde-selva);
+  color: #fff;
+
+  &:hover {
+    background: #174d20;
+  }
+}
+
+.btn-reject {
+  background: none;
+  border: 1.5px solid rgba(139, 32, 32, 0.2);
+  color: var(--error);
+
+  &:hover {
+    background: var(--error-light);
+  }
+}

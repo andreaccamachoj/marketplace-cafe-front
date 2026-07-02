@@ -1,0 +1,117 @@
+.addr-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+  border: 2px solid var(--neutral-200);
+  border-radius: var(--r-md);
+  background: #fff;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+
+  &:hover {
+    box-shadow: var(--shadow-md);
+  }
+
+  &--default {
+    border-color: var(--verde-fresco);
+    background: rgba(74, 140, 86, 0.04);
+  }
+}
+
+.addr-icon {
+  font-size: 1.25rem;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.addr-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.addr-label-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-bottom: 4px;
+}
+
+.addr-label {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--espresso);
+  font-family: var(--font-body);
+}
+
+.addr-badge {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: rgba(74, 140, 86, 0.12);
+  color: var(--verde-selva);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.addr-line,
+.addr-city,
+.addr-zip {
+  font-size: 0.8125rem;
+  color: var(--neutral-600);
+  font-family: var(--font-body);
+  line-height: 1.5;
+}
+
+.addr-zip {
+  margin-top: 2px;
+  font-size: 0.75rem;
+  color: var(--neutral-400);
+}
+
+/* Actions column */
+.addr-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  flex-shrink: 0;
+}
+
+.btn-addr {
+  padding: 5px 12px;
+  background: var(--espresso);
+  color: var(--marfil);
+  border: 1.5px solid var(--espresso);
+  border-radius: var(--r-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: opacity var(--transition-fast), background var(--transition-fast);
+  white-space: nowrap;
+
+  &:hover:not(:disabled) {
+    opacity: 0.85;
+  }
+
+  &--ghost {
+    background: transparent;
+    color: var(--espresso);
+
+    &:hover {
+      background: var(--neutral-100);
+      opacity: 1;
+    }
+  }
+
+  &--danger {
+    background: transparent;
+    border-color: var(--error);
+    color: var(--error);
+
+    &:hover {
+      background: rgba(220, 53, 69, 0.07);
+      opacity: 1;
+    }
+  }
+}

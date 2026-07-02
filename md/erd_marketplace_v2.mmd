@@ -1,0 +1,491 @@
+erDiagram
+  %% ════════════════ MÓDULO 1: USUARIOS E IDENTIDAD ════════════════
+  USERS ||--o{ USER_ROLES                : "tiene"
+  ROLES ||--o{ USER_ROLES                : "asignado_a"
+  USERS ||--o| BUYER_PROFILES            : "extiende"
+  USERS ||--o| PRODUCER_PROFILES         : "extiende"
+  USERS ||--o{ ADDRESSES                 : "registra"
+  USERS ||--o{ PASSWORD_RESET_TOKENS     : "solicita"
+  USERS ||--o{ PRIVACY_CONSENTS          : "acepta"
+  USERS ||--o{ NOTIFICATIONS             : "recibe"
+  USERS ||--o{ AUDIT_LOGS                : "ejecuta"
+  USERS ||--o{ ADMIN_ACTIVITY_LOG        : "registra"
+  PRODUCER_PROFILES ||--o{ PRODUCER_DOCUMENTS : "adjunta"
+
+  %% ════════════════ MÓDULO 2: FINCA Y CATÁLOGO ════════════════
+  PRODUCER_PROFILES ||--|| FARMS                   : "posee"
+  FARMS ||--o{ FARM_CERTIFICATIONS                 : "tiene"
+  CERTIFICATIONS ||--o{ FARM_CERTIFICATIONS        : "otorga"
+  CERTIFICATIONS ||--o{ PRODUCT_CERTIFICATIONS     : "etiqueta"
+  CATEGORIES ||--o{ CATEGORIES                     : "padre"
+  CATEGORIES ||--o{ PRODUCTS                       : "clasifica"
+  PRODUCER_PROFILES ||--o{ PRODUCTS                : "vende"
+  PRODUCTS ||--o{ PRODUCT_IMAGES                   : "muestra"
+  PRODUCTS ||--o{ PRODUCT_CERTIFICATIONS           : "certificado_por"
+  PRODUCTS ||--o{ PRODUCT_PRESENTATIONS            : "ofrece"
+  PRODUCTS ||--o{ PRODUCT_ROAST_LEVELS             : "tostado_en"
+  PRODUCTS ||--o{ PRODUCT_FLAVOR_NOTES             : "tiene_nota"
+  PRODUCTS ||--|| PRODUCT_CUPPING                  : "perfil_sensorial"
+  PRODUCTS ||--|| INVENTORY                        : "stock"
+  ROAST_LEVELS ||--o{ PRODUCT_ROAST_LEVELS         : "asignado"
+
+  %% ════════════════ MÓDULO 3: CARRITO Y FAVORITOS ════════════════
+  USERS ||--|| CARTS                               : "posee"
+  CARTS ||--o{ CART_ITEMS                          : "contiene"
+  PRODUCTS ||--o{ CART_ITEMS                       : "agregado_en"
+  USERS ||--o{ FAVORITES                           : "marca"
+  PRODUCTS ||--o{ FAVORITES                        : "favorito_de"
+  COUPONS ||--o{ CARTS                             : "aplicado_a"
+  SHIPPING_OPTIONS ||--o{ CARTS                    : "elegida_en"
+
+  %% ════════════════ MÓDULO 4: PEDIDOS ════════════════
+  USERS ||--o{ ORDERS                              : "realiza"
+  ADDRESSES ||--o{ ORDERS                          : "envío_a"
+  SHIPPING_OPTIONS ||--o{ ORDERS                   : "envío_con"
+  COUPONS ||--o{ ORDERS                            : "descuento_en"
+  ORDERS ||--o{ ORDER_ITEMS                        : "incluye"
+  PRODUCTS ||--o{ ORDER_ITEMS                      : "vendido_en"
+  ORDERS ||--o{ ORDER_STATUS_HISTORY               : "historial"
+  USERS ||--o{ ORDER_STATUS_HISTORY                : "actualiza"
+
+  %% ════════════════ MÓDULO 5: PAGOS ════════════════
+  PAYMENT_METHODS ||--o{ ORDER_PAYMENTS            : "usado_en"
+  ORDERS ||--|| ORDER_PAYMENTS                     : "pagado_con"
+
+  %% ════════════════ MÓDULO 6: SOCIAL ════════════════
+  PRODUCTS ||--o{ REVIEWS                          : "reseña_de"
+  USERS ||--o{ REVIEWS                             : "escribe"
+  ORDERS ||--o{ REVIEWS                            : "respaldada_por"
+  REVIEWS ||--o| REVIEW_REPLIES                    : "respondida"
+  USERS ||--o{ REVIEW_REPLIES                      : "responde"
+
+  %% ════════════════ MÓDULO 7: ADMIN ════════════════
+  USERS ||--o{ PRODUCER_APPROVALS                  : "solicita"
+  USERS ||--o{ PRODUCER_APPROVALS                  : "revisa"
+  PRODUCER_APPROVALS ||--o{ APPROVAL_DOCUMENTS     : "adjunta"
+
+  %% ════════════════ DEFINICIONES DE ENTIDADES ════════════════
+  USERS {
+    UUID id PK
+    VARCHAR email UK
+    VARCHAR password_hash
+    VARCHAR full_name
+    VARCHAR phone
+    VARCHAR status
+    BOOLEAN privacy_consent
+    TIMESTAMP created_at
+    TIMESTAMP updated_at
+  }
+
+  ROLES {
+    SERIAL id PK
+    VARCHAR name UK
+    VARCHAR description
+  }
+
+  USER_ROLES {
+    UUID user_id PK_FK
+    INTEGER role_id PK_FK
+    TIMESTAMP assigned_at
+  }
+
+  BUYER_PROFILES {
+    UUID id PK
+    UUID user_id FK_UK
+    VARCHAR city
+    VARCHAR department
+    VARCHAR preferred_payment
+    BOOLEAN newsletter_opt_in
+    VARCHAR avatar_initials
+    TIMESTAMP created_at
+    TIMESTAMP updated_at
+  }
+
+  PRODUCER_PROFILES {
+    UUID id PK
+    UUID user_id FK_UK
+    TEXT bio
+    VARCHAR city
+    VARCHAR department
+    VARCHAR status
+    TEXT rejection_reason
+    UUID approved_by FK
+    TIMESTAMP approved_at
+    VARCHAR avatar_initials
+    TIMESTAMP created_at
+    TIMESTAMP updated_at
+  }
+
+  PRODUCER_DOCUMENTS {
+    UUID id PK
+    UUID producer_id FK
+    VARCHAR document_type
+    VARCHAR file_name
+    VARCHAR file_url
+    VARCHAR status
+    TIMESTAMP uploaded_at
+  }
+
+  PASSWORD_RESET_TOKENS {
+    UUID id PK
+    UUID user_id FK
+    VARCHAR token_hash
+    TIMESTAMP expires_at
+    TIMESTAMP used_at
+    TIMESTAMP created_at
+  }
+
+  PRIVACY_CONSENTS {
+    UUID id PK
+    UUID user_id FK
+    VARCHAR policy_version
+    TIMESTAMP accepted_at
+    VARCHAR ip_address
+  }
+
+  ADDRESSES {
+    UUID id PK
+    UUID user_id FK
+    VARCHAR label
+    VARCHAR line1
+    VARCHAR line2
+    VARCHAR city
+    VARCHAR department
+    VARCHAR zip_code
+    BOOLEAN is_default
+    TIMESTAMP created_at
+    TIMESTAMP updated_at
+  }
+
+  FARMS {
+    UUID id PK
+    UUID producer_id FK_UK
+    VARCHAR name
+    VARCHAR municipality
+    VARCHAR department
+    DECIMAL altitude_masl
+    DECIMAL area_hectares
+    VARCHAR main_variety
+    VARCHAR process
+    INTEGER tree_count
+    VARCHAR harvest_season
+    DECIMAL annual_production_sacos
+    DECIMAL yield_per_ha
+    DECIMAL cupping_score
+    TEXT description
+    TIMESTAMP created_at
+    TIMESTAMP updated_at
+  }
+
+  CERTIFICATIONS {
+    SERIAL id PK
+    VARCHAR code UK
+    VARCHAR name
+    VARCHAR issuing_body
+    TEXT description
+  }
+
+  FARM_CERTIFICATIONS {
+    UUID id PK
+    UUID farm_id FK
+    INTEGER certification_id FK
+    VARCHAR issuer
+    DATE issue_date
+    DATE expiry_date
+    VARCHAR status
+    VARCHAR document_url
+    TEXT notes
+  }
+
+  CATEGORIES {
+    UUID id PK
+    VARCHAR name UK
+    VARCHAR slug UK
+    TEXT description
+    INTEGER parent_id FK
+    BOOLEAN is_active
+    VARCHAR icon_emoji
+    TIMESTAMP created_at
+  }
+
+  PRODUCTS {
+    UUID id PK
+    UUID producer_id FK
+    UUID category_id FK
+    VARCHAR name
+    TEXT description
+    DECIMAL price
+    DECIMAL original_price
+    DECIMAL discount_percent
+    VARCHAR unit
+    VARCHAR region
+    VARCHAR emoji
+    INTEGER sold_count
+    VARCHAR status
+    TIMESTAMP created_at
+    TIMESTAMP updated_at
+  }
+
+  PRODUCT_IMAGES {
+    UUID id PK
+    UUID product_id FK
+    VARCHAR image_url
+    INTEGER display_order
+    TIMESTAMP uploaded_at
+  }
+
+  PRODUCT_CERTIFICATIONS {
+    UUID id PK
+    UUID product_id FK
+    INTEGER certification_id FK
+    VARCHAR document_url
+    DATE issued_at
+  }
+
+  PRODUCT_PRESENTATIONS {
+    UUID id PK
+    UUID product_id FK
+    VARCHAR presentation
+    DECIMAL extra_price
+  }
+
+  ROAST_LEVELS {
+    SERIAL id PK
+    VARCHAR code UK
+    VARCHAR name
+    VARCHAR description
+    VARCHAR icon
+  }
+
+  PRODUCT_ROAST_LEVELS {
+    UUID product_id PK_FK
+    INTEGER roast_level_id PK_FK
+  }
+
+  PRODUCT_FLAVOR_NOTES {
+    UUID id PK
+    UUID product_id FK
+    VARCHAR name
+    VARCHAR icon
+    SMALLINT intensity
+  }
+
+  PRODUCT_CUPPING {
+    UUID product_id PK_FK
+    DECIMAL score
+    SMALLINT aroma
+    SMALLINT flavor
+    SMALLINT body
+    SMALLINT finish
+    SMALLINT acidity
+  }
+
+  INVENTORY {
+    UUID id PK
+    UUID product_id FK_UK
+    INTEGER quantity
+    INTEGER max_stock
+    TIMESTAMP updated_at
+  }
+
+  CARTS {
+    UUID id PK
+    UUID user_id FK_UK
+    INTEGER coupon_id FK
+    VARCHAR shipping_option_id FK
+    TIMESTAMP created_at
+    TIMESTAMP updated_at
+  }
+
+  CART_ITEMS {
+    UUID id PK
+    UUID cart_id FK
+    UUID product_id FK
+    INTEGER quantity
+    DECIMAL unit_price_snapshot
+    TIMESTAMP added_at
+  }
+
+  FAVORITES {
+    UUID id PK
+    UUID user_id FK
+    UUID product_id FK
+    TIMESTAMP added_at
+  }
+
+  COUPONS {
+    SERIAL id PK
+    VARCHAR code UK
+    VARCHAR description
+    VARCHAR discount_type
+    DECIMAL discount_value
+    DECIMAL min_subtotal
+    INTEGER usage_limit
+    INTEGER used_count
+    TIMESTAMP valid_from
+    TIMESTAMP valid_until
+    BOOLEAN is_active
+  }
+
+  SHIPPING_OPTIONS {
+    VARCHAR id PK
+    VARCHAR name
+    VARCHAR delivery_window
+    DECIMAL price
+    BOOLEAN is_active
+    INTEGER display_order
+  }
+
+  ORDERS {
+    UUID id PK
+    UUID buyer_id FK
+    UUID address_id FK
+    VARCHAR shipping_option_id FK
+    INTEGER coupon_id FK
+    VARCHAR code UK
+    INTEGER yearly_sequence
+    INTEGER year
+    DECIMAL subtotal
+    DECIMAL shipping_amount
+    DECIMAL discount_amount
+    DECIMAL total_amount
+    VARCHAR status
+    TEXT shipping_address_snapshot
+    TIMESTAMP created_at
+    TIMESTAMP updated_at
+  }
+
+  ORDER_ITEMS {
+    UUID id PK
+    UUID order_id FK
+    UUID product_id FK
+    VARCHAR product_name_snapshot
+    VARCHAR product_emoji_snapshot
+    INTEGER quantity
+    DECIMAL unit_price_snapshot
+    DECIMAL subtotal
+  }
+
+  ORDER_STATUS_HISTORY {
+    UUID id PK
+    UUID order_id FK
+    VARCHAR status
+    UUID changed_by FK
+    TEXT notes
+    TIMESTAMP changed_at
+  }
+
+  PAYMENT_METHODS {
+    UUID id PK
+    VARCHAR code UK
+    VARCHAR name
+    VARCHAR type
+    VARCHAR account_number
+    VARCHAR account_holder
+    VARCHAR bank
+    VARCHAR alias
+    VARCHAR nit
+    VARCHAR emoji
+    VARCHAR accent_color
+    BOOLEAN is_active
+    INTEGER display_order
+  }
+
+  ORDER_PAYMENTS {
+    UUID id PK
+    UUID order_id FK_UK
+    UUID payment_method_id FK
+    VARCHAR payment_method_code
+    DECIMAL amount
+    VARCHAR status
+    VARCHAR reference
+    VARCHAR proof_url
+    TIMESTAMP submitted_at
+    TIMESTAMP verified_at
+    UUID verified_by FK
+  }
+
+  REVIEWS {
+    UUID id PK
+    UUID product_id FK
+    UUID buyer_id FK
+    UUID order_id FK
+    SMALLINT rating
+    VARCHAR title
+    TEXT body
+    VARCHAR status
+    BOOLEAN is_verified_purchase
+    INTEGER helpful_count
+    TIMESTAMP created_at
+    TIMESTAMP updated_at
+  }
+
+  REVIEW_REPLIES {
+    UUID id PK
+    UUID review_id FK_UK
+    UUID producer_id FK
+    TEXT body
+    TIMESTAMP created_at
+    TIMESTAMP updated_at
+  }
+
+  PRODUCER_APPROVALS {
+    UUID id PK
+    UUID producer_id FK
+    VARCHAR producer_name_snapshot
+    VARCHAR farm_name_snapshot
+    VARCHAR region
+    VARCHAR department
+    DECIMAL hectares
+    VARCHAR main_variety
+    VARCHAR email
+    VARCHAR phone
+    VARCHAR status
+    TEXT rejection_reason
+    UUID reviewed_by FK
+    TIMESTAMP reviewed_at
+    TIMESTAMP submitted_at
+  }
+
+  APPROVAL_DOCUMENTS {
+    UUID id PK
+    UUID approval_id FK
+    VARCHAR name
+    VARCHAR type
+    VARCHAR url
+    TIMESTAMP uploaded_at
+  }
+
+  ADMIN_ACTIVITY_LOG {
+    UUID id PK
+    UUID actor_id FK
+    VARCHAR actor_name_snapshot
+    VARCHAR type
+    VARCHAR title
+    TEXT description
+    VARCHAR severity
+    VARCHAR icon_emoji
+    JSONB metadata
+    TIMESTAMP created_at
+  }
+
+  NOTIFICATIONS {
+    UUID id PK
+    UUID user_id FK
+    VARCHAR type
+    TEXT message
+    BOOLEAN is_read
+    JSONB metadata
+    TIMESTAMP created_at
+  }
+
+  AUDIT_LOGS {
+    UUID id PK
+    UUID user_id FK
+    VARCHAR action
+    VARCHAR entity_type
+    VARCHAR entity_id
+    VARCHAR ip_address
+    JSONB metadata
+    TIMESTAMP created_at
+  }

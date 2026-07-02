@@ -1,0 +1,135 @@
+.review-card {
+  display: flex;
+  gap: var(--sp-4);
+  padding: var(--sp-5);
+  background: var(--white);
+  border: 1px solid var(--neutral-200);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition-fast);
+
+  &:hover {
+    box-shadow: var(--shadow-md);
+  }
+}
+
+.review-product-img {
+  width: 60px;
+  height: 60px;
+  border-radius: var(--r-md);
+  background: var(--marfil-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  flex-shrink: 0;
+}
+
+.review-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.review-product-name {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--cafe-medio);
+  margin-bottom: 6px;
+  font-family: var(--font-body);
+}
+
+.review-stars {
+  font-size: 1rem;
+  margin-bottom: 6px;
+  letter-spacing: 2px;
+}
+
+.review-title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--espresso);
+  font-family: var(--font-body);
+  margin: 0 0 var(--sp-2);
+}
+
+.review-text {
+  font-size: 0.875rem;
+  color: var(--neutral-600);
+  line-height: 1.6;
+  font-family: var(--font-body);
+  margin: 0 0 var(--sp-3);
+}
+
+.review-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+}
+
+.review-date {
+  font-size: 0.75rem;
+  color: var(--neutral-400);
+  font-family: var(--font-body);
+}
+
+.review-verified {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--verde-selva);
+  background: var(--verde-light);
+  padding: 2px 10px;
+  border-radius: 20px;
+}
+
+.review-helpful {
+  font-size: 0.75rem;
+  color: var(--neutral-500);
+  font-family: var(--font-body);
+}
+
+.review-owner-actions {
+  display: flex;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+}
+
+.review-confirm-delete {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--error-light);
+  border-radius: var(--r-sm);
+  font-size: 0.8125rem;
+  color: var(--error);
+  font-family: var(--font-body);
+}
+
+.btn-review-action {
+  padding: var(--sp-1) var(--sp-3);
+  background: var(--marfil-light);
+  color: var(--espresso);
+  border: 1px solid var(--neutral-200);
+  border-radius: var(--r-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+
+  &:hover {
+    background: var(--marfil);
+  }
+
+  &--danger {
+    background: var(--error-light);
+    color: var(--error);
+    border-color: rgba(139, 32, 32, 0.2);
+
+    &:hover {
+      background: rgba(139, 32, 32, 0.15);
+    }
+  }
+}

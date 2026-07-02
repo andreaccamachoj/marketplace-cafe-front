@@ -1,0 +1,165 @@
+<app-modal
+  [open]="open()"
+  title="Nueva Certificación"
+  size="md"
+  (closed)="onClose()"
+>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+    <div class="form-stack">
+
+      <!-- Tipo de certificación -->
+      <div class="form-field">
+        <label class="field-label" for="cf-type">Tipo de certificación</label>
+        <select
+          id="cf-type"
+          class="field-select"
+          formControlName="type"
+          [class.field-input--error]="hasError(typeCtrl)"
+        >
+          @for (entry of certTypeEntries; track entry[0]) {
+            <option [value]="entry[0]">{{ entry[1] }}</option>
+          }
+        </select>
+        @if (hasError(typeCtrl)) {
+          <span class="field-error" role="alert">{{ getError(typeCtrl) }}</span>
+        }
+      </div>
+
+      <!-- Nombre completo -->
+      <div class="form-field">
+        <label class="field-label" for="cf-name">Nombre de la certificación</label>
+        <input
+          id="cf-name"
+          class="field-input"
+          type="text"
+          formControlName="name"
+          placeholder="Ej. Café Orgánico Certificado BioLatina"
+          [class.field-input--error]="hasError(nameCtrl)"
+        />
+        @if (hasError(nameCtrl)) {
+          <span class="field-error" role="alert">{{ getError(nameCtrl) }}</span>
+        }
+      </div>
+
+      <!-- Organismo certificador -->
+      <div class="form-field">
+        <label class="field-label" for="cf-issuer">Organismo certificador</label>
+        <input
+          id="cf-issuer"
+          class="field-input"
+          type="text"
+          formControlName="issuer"
+          placeholder="Ej. BioLatina, FLO-CERT GmbH"
+          [class.field-input--error]="hasError(issuerCtrl)"
+        />
+        @if (hasError(issuerCtrl)) {
+          <span class="field-error" role="alert">{{ getError(issuerCtrl) }}</span>
+        }
+      </div>
+
+      <!-- Fechas: grid 2 cols -->
+      <div class="form-grid-dates">
+
+        <div class="form-field">
+          <label class="field-label" for="cf-issue">Fecha de emisión</label>
+          <input
+            id="cf-issue"
+            class="field-input"
+            type="date"
+            formControlName="issueDate"
+            [class.field-input--error]="hasError(issueDateCtrl)"
+          />
+          @if (hasError(issueDateCtrl)) {
+            <span class="field-error" role="alert">{{ getError(issueDateCtrl) }}</span>
+          }
+        </div>
+
+        <div class="form-field">
+          <label class="field-label" for="cf-expiry">Fecha de vencimiento</label>
+          <input
+            id="cf-expiry"
+            class="field-input"
+            type="date"
+            formControlName="expiryDate"
+            [class.field-input--error]="hasError(expiryDateCtrl) || hasDateRangeError"
+          />
+          @if (hasError(expiryDateCtrl)) {
+            <span class="field-error" role="alert">{{ getError(expiryDateCtrl) }}</span>
+          }
+        </div>
+
+        <!-- Cross-field date error -->
+        @if (hasDateRangeError) {
+          <div class="field-error field-error--full" role="alert">
+            La fecha de vencimiento debe ser posterior a la fecha de emisión.
+          </div>
+        }
+
+      </div>
+
+      <!-- Zona de carga de archivo -->
+      <div class="form-field">
+        <span class="field-label">Documento acreditativo</span>
+        <div class="file-upload-zone" [class.has-file]="selectedFile()">
+          <input
+            #fileInput
+            type="file"
+            accept=".pdf,.jpg,.png"
+            style="display:none"
+            aria-label="Cargar documento de certificación"
+            (change)="onFileChange($event)"
+          />
+          @if (selectedFile()) {
+            <div class="file-preview">
+              <span class="file-icon" aria-hidden="true">📄</span>
+              <span class="file-name">{{ selectedFile()!.name }}</span>
+              <button
+                type="button"
+                class="file-remove"
+                aria-label="Eliminar archivo seleccionado"
+                (click)="removeFile()"
+              >&#x2715;</button>
+            </div>
+          } @else {
+            <button
+              type="button"
+              class="file-upload-btn"
+              (click)="fileInput.click()"
+            >
+              <span>&#128206; Adjuntar documento</span>
+              <small>PDF, JPG o PNG · máx. 5MB</small>
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Notas adicionales -->
+      <div class="form-field">
+        <label class="field-label" for="cf-notes">Notas adicionales (opcional)</label>
+        <textarea
+          id="cf-notes"
+          class="field-textarea"
+          formControlName="notes"
+          placeholder="Información complementaria sobre la certificación..."
+          rows="3"
+          [class.field-input--error]="hasError(notesCtrl)"
+        ></textarea>
+        @if (hasError(notesCtrl)) {
+          <span class="field-error" role="alert">{{ getError(notesCtrl) }}</span>
+        }
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="form-footer">
+      <button type="button" class="btn-cancel" (click)="onClose()">
+        Cancelar
+      </button>
+      <button type="submit" class="btn-save" [disabled]="form.invalid">
+        Agregar certificación
+      </button>
+    </div>
+
+  </form>
+</app-modal>

@@ -1,0 +1,144 @@
+<form class="addr-form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+  <div class="addr-form__header">
+    <h3 class="addr-form__title">
+      {{ isEditMode ? '✏️ Editar dirección' : '➕ Nueva dirección' }}
+    </h3>
+  </div>
+
+  <div class="addr-form__grid">
+
+    <!-- Etiqueta -->
+    <div class="field field--full" [class.field--error]="label.invalid && label.touched">
+      <label class="field__label" for="af-label">Etiqueta</label>
+      <input
+        id="af-label"
+        class="field__input"
+        type="text"
+        formControlName="label"
+        placeholder="Casa, Oficina, Trabajo…"
+        maxlength="40"
+        autocomplete="off"
+      />
+      @if (label.invalid && label.touched) {
+        <span class="field__error" role="alert">
+          @if (label.errors?.['required'])  { La etiqueta es requerida }
+          @if (label.errors?.['minlength']) { Mínimo 2 caracteres }
+        </span>
+      }
+    </div>
+
+    <!-- Dirección línea 1 -->
+    <div class="field field--full" [class.field--error]="line1.invalid && line1.touched">
+      <label class="field__label" for="af-line1">Dirección <span class="field__req">*</span></label>
+      <input
+        id="af-line1"
+        class="field__input"
+        type="text"
+        formControlName="line1"
+        placeholder="Calle / Carrera, número, apto…"
+        maxlength="120"
+        autocomplete="street-address"
+      />
+      @if (line1.invalid && line1.touched) {
+        <span class="field__error" role="alert">
+          @if (line1.errors?.['required'])  { La dirección es requerida }
+          @if (line1.errors?.['minlength']) { Mínimo 5 caracteres }
+        </span>
+      }
+    </div>
+
+    <!-- Línea 2 (opcional) -->
+    <div class="field field--full">
+      <label class="field__label" for="af-line2">
+        Complemento <span class="field__optional">(opcional)</span>
+      </label>
+      <input
+        id="af-line2"
+        class="field__input"
+        type="text"
+        formControlName="line2"
+        placeholder="Barrio, urbanización, referencias…"
+        maxlength="80"
+        autocomplete="address-line2"
+      />
+    </div>
+
+    <!-- Ciudad -->
+    <div class="field" [class.field--error]="city.invalid && city.touched">
+      <label class="field__label" for="af-city">Ciudad / Municipio <span class="field__req">*</span></label>
+      <input
+        id="af-city"
+        class="field__input"
+        type="text"
+        formControlName="city"
+        placeholder="Bogotá D.C."
+        autocomplete="address-level2"
+      />
+      @if (city.invalid && city.touched) {
+        <span class="field__error" role="alert">La ciudad es requerida</span>
+      }
+    </div>
+
+    <!-- Departamento -->
+    <div class="field" [class.field--error]="department.invalid && department.touched">
+      <label class="field__label" for="af-dept">Departamento <span class="field__req">*</span></label>
+      <input
+        id="af-dept"
+        class="field__input"
+        type="text"
+        formControlName="department"
+        placeholder="Cundinamarca"
+        autocomplete="address-level1"
+      />
+      @if (department.invalid && department.touched) {
+        <span class="field__error" role="alert">El departamento es requerido</span>
+      }
+    </div>
+
+    <!-- Código postal -->
+    <div class="field field--half" [class.field--error]="zipCode.invalid && zipCode.touched">
+      <label class="field__label" for="af-zip">
+        Código postal <span class="field__optional">(opcional)</span>
+      </label>
+      <input
+        id="af-zip"
+        class="field__input"
+        type="text"
+        inputmode="numeric"
+        formControlName="zipCode"
+        placeholder="110221"
+        maxlength="6"
+        autocomplete="postal-code"
+      />
+      @if (zipCode.invalid && zipCode.touched) {
+        <span class="field__error" role="alert">Máximo 6 dígitos numéricos</span>
+      }
+    </div>
+
+  </div>
+
+  <!-- Acciones -->
+  <div class="addr-form__actions">
+    <button
+      type="button"
+      class="addr-form__btn addr-form__btn--cancel"
+      (click)="onCancel()"
+    >
+      Cancelar
+    </button>
+    <button
+      type="submit"
+      class="addr-form__btn addr-form__btn--save"
+      [disabled]="form.invalid || saving()"
+      [attr.aria-busy]="saving()"
+    >
+      @if (saving()) {
+        <span class="spinner" aria-hidden="true"></span> Guardando…
+      } @else {
+        {{ isEditMode ? 'Guardar cambios' : 'Agregar dirección' }}
+      }
+    </button>
+  </div>
+
+</form>

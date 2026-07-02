@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="World Coffee Marketplace — Café sostenible de origen colombiano. Conectamos productores certificados con compradores que valoran la trazabilidad y el sabor auténtico.">
+<title>Catálogo — World Coffee Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,400;1,600&family=Mulish:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════
+   DESIGN TOKENS
+══════════════════════════════════════ */
+:root {
+  --espresso:      #372617;
+  --cafe-oscuro:   #3E2919;
+  --cafe-medio:    #7A5C42;
+  --cafe-claro:    #A8866A;
+  --crema:         #CDC4B5;
+  --marfil:        #E4DCD1;
+  --marfil-light:  #EDE6DD;
+  --blanco:        #F7F3EF;
+  --verde-selva:   #1E5E29;
+  --verde-fresco:  #4A8C56;
+  --verde-light:   #D4EAD7;
+  --amber:         #C07820;
+  --amber-light:   #FFF0D0;
+  --error:         #8B2020;
+
+  --font-display:  'Playfair Display', Georgia, serif;
+  --font-body:     'Mulish', 'Segoe UI', sans-serif;
+
+  --r-sm: 6px; --r-md: 10px; --r-lg: 16px; --r-xl: 24px;
+  --shadow-sm:   0 1px 4px rgba(55,38,23,.08);
+  --shadow-md:   0 4px 16px rgba(55,38,23,.1);
+  --shadow-lg:   0 8px 32px rgba(55,38,23,.14);
+  --shadow-card: 0 2px 8px rgba(55,38,23,.07), 0 8px 24px rgba(55,38,23,.09);
+
+  --nav-h: 68px;
+  --max-w: 1280px;
+}
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body { font-family: var(--font-body); background: var(--blanco); color: var(--espresso); line-height: 1.6; }
+img  { display: block; max-width: 100%; }
+a    { text-decoration: none; color: inherit; }
+button { font-family: var(--font-body); cursor: pointer; border: none; background: none; }
+ul, ol { list-style: none; }
+
+/* ── Skip link ── */
+.skip { position: absolute; top: -100%; left: 16px; background: var(--espresso); color: var(--marfil);
+  padding: 8px 16px; border-radius: 0 0 8px 8px; z-index: 9999; font-size:.8125rem; font-weight:600; }
+.skip:focus { top: 0; }
+
+/* Focus global */
+:focus-visible { outline: 3px solid var(--espresso); outline-offset: 2px; border-radius: var(--r-sm); }
+
+/* ══════════════════════════════════════
+   NAVEGACIÓN
+══════════════════════════════════════ */
+.nav {
+  position: sticky; top: 0; z-index: 500;
+  height: var(--nav-h);
+  background: var(--espresso);
+  border-bottom: 1px solid rgba(205,196,181,.12);
+  display: flex; align-items: center;
+  box-shadow: 0 2px 12px rgba(0,0,0,.25);
+}
+.nav-inner {
+  max-width: var(--max-w); width: 100%; margin: 0 auto;
+  padding: 0 24px;
+  display: flex; align-items: center; gap: 20px;
+}
+
+/* Logo */
+.nav-logo { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.nav-logo-icon {
+  width: 38px; height: 38px;
+  background: rgba(205,196,181,.12); border: 1px solid rgba(205,196,181,.2);
+  border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px;
+}
+.nav-logo-text { line-height: 1.2; }
+.nav-logo-name { font-family: var(--font-display); font-size: .875rem; font-weight: 700; color: var(--marfil); letter-spacing:.03em; }
+.nav-logo-sub  { font-size: .625rem; color: rgba(205,196,181,.5); letter-spacing:.18em; text-transform:uppercase; }
+
+/* Search */
+.nav-search {
+  flex: 1; max-width: 460px; margin: 0 auto;
+  position: relative; display: flex; align-items: center;
+}
+.nav-search-input {
+  width: 100%; padding: 10px 16px 10px 42px;
+  background: rgba(205,196,181,.1); border: 1.5px solid rgba(205,196,181,.2);
+  border-radius: 40px; font-family: var(--font-body); font-size: .875rem;
+  color: var(--marfil); outline: none;
+  transition: background .2s, border-color .2s;
+}
+.nav-search-input::placeholder { color: rgba(205,196,181,.45); }
+.nav-search-input:focus {
+  background: rgba(205,196,181,.16); border-color: rgba(205,196,181,.5);
+  outline: 2px solid rgba(205,196,181,.4); outline-offset: 2px;
+}
+.nav-search-icon {
+  position: absolute; left: 14px; pointer-events: none;
+  color: rgba(205,196,181,.55); display: flex;
+}
+.nav-search-clear {
+  position: absolute; right: 12px;
+  background: rgba(205,196,181,.15); border-radius: 50%;
+  width: 22px; height: 22px; display: none;
+  align-items: center; justify-content: center;
+  color: rgba(205,196,181,.7); font-size: 12px;
+  transition: background .15s;
+}
+.nav-search-clear:hover { background: rgba(205,196,181,.28); color: var(--marfil); }
+.nav-search-clear.show { display: flex; }
+
+/* Nav links */
+.nav-links { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+.nav-link {
+  padding: 7px 12px; border-radius: var(--r-md);
+  font-size: .8125rem; font-weight: 600; color: rgba(205,196,181,.7);
+  transition: background .15s, color .15s;
+  white-space: nowrap;
+}
+.nav-link:hover { background: rgba(205,196,181,.1); color: var(--marfil); }
+.nav-link.active { color: var(--marfil); }
+
+/* Nav actions */
+.nav-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.btn-nav-ghost {
+  padding: 8px 16px; border-radius: var(--r-md);
+  font-size: .8125rem; font-weight: 700;
+  color: var(--marfil); border: 1.5px solid rgba(205,196,181,.3);
+  transition: all .2s;
+}
+.btn-nav-ghost:hover { background: rgba(205,196,181,.12); border-color: rgba(205,196,181,.5); }
+
+.btn-nav-primary {
+  padding: 8px 18px; border-radius: var(--r-md);
+  font-size: .8125rem; font-weight: 700;
+  background: var(--marfil); color: var(--espresso);
+  transition: all .2s;
+}
+.btn-nav-primary:hover { background: var(--crema); box-shadow: 0 4px 12px rgba(0,0,0,.2); }
+
+/* Cart button */
+.btn-cart {
+  position: relative; width: 40px; height: 40px;
+  border-radius: var(--r-md); border: 1.5px solid rgba(205,196,181,.25);
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(205,196,181,.8); transition: all .2s;
+}
+.btn-cart:hover { background: rgba(205,196,181,.1); color: var(--marfil); border-color: rgba(205,196,181,.4); }
+.cart-badge {
+  position: absolute; top: -6px; right: -6px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--verde-fresco); color: #fff;
+  font-size: 9px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid var(--espresso); opacity: 0;
+  transform: scale(.6); transition: all .2s;
+}
+.cart-badge.show { opacity: 1; transform: scale(1); }
+
+/* Mobile menu button */
+.btn-menu { display: none; padding: 8px; border-radius: var(--r-md); color: var(--marfil); }
+.btn-menu:hover { background: rgba(205,196,181,.1); }
+
+/* ══════════════════════════════════════
+   HERO
+══════════════════════════════════════ */
+.hero {
+  background: var(--espresso);
+  position: relative; overflow: hidden;
+  padding: 80px 24px 90px;
+}
+/* Patrón de fondo */
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(ellipse 70% 80% at 85% 50%, rgba(153,120,93,.12) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 60% at 10% 80%, rgba(37,115,50,.08) 0%, transparent 50%),
+    repeating-linear-gradient(-45deg,
+      transparent 0, transparent 30px,
+      rgba(205,196,181,.025) 30px, rgba(205,196,181,.025) 31px);
+  pointer-events: none;
+}
+.hero-inner {
+  max-width: var(--max-w); margin: 0 auto;
+  display: grid; grid-template-columns: 1fr auto;
+  align-items: center; gap: 60px; position: relative; z-index: 2;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 14px;
+  background: rgba(74,140,86,.18); border: 1px solid rgba(74,140,86,.3);
+  border-radius: 40px; margin-bottom: 20px;
+  font-size: .6875rem; font-weight: 700; letter-spacing: .18em;
+  text-transform: uppercase; color: var(--verde-fresco);
+  animation: fadeUp .6s .1s both;
+}
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  font-weight: 700; color: var(--marfil);
+  line-height: 1.15; letter-spacing: -.02em;
+  margin-bottom: 20px;
+  animation: fadeUp .6s .2s both;
+}
+.hero-title em { font-style: italic; font-weight: 500; color: rgba(205,196,181,.65); }
+.hero-desc {
+  font-size: .9375rem; color: rgba(205,196,181,.6);
+  line-height: 1.75; max-width: 480px; font-weight: 300;
+  margin-bottom: 36px;
+  animation: fadeUp .6s .3s both;
+}
+.hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; animation: fadeUp .6s .4s both; }
+.btn-hero-primary {
+  padding: 14px 28px; border-radius: var(--r-md);
+  background: var(--marfil); color: var(--espresso);
+  font-weight: 800; font-size: .9375rem;
+  transition: all .2s; letter-spacing: .01em;
+}
+.btn-hero-primary:hover { background: var(--crema); box-shadow: 0 8px 24px rgba(0,0,0,.3); transform: translateY(-1px); }
+.btn-hero-ghost {
+  padding: 14px 28px; border-radius: var(--r-md);
+  border: 1.5px solid rgba(205,196,181,.3);
+  color: var(--marfil); font-weight: 600; font-size: .9375rem;
+  transition: all .2s;
+}
+.btn-hero-ghost:hover { background: rgba(205,196,181,.1); border-color: rgba(205,196,181,.5); }
+
+/* Estadísticas hero */
+.hero-stats {
+  display: flex; gap: 32px; margin-top: 40px;
+  animation: fadeUp .6s .5s both;
+}
+.stat-item { display: flex; flex-direction: column; gap: 2px; }
+.stat-num { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; color: var(--marfil); }
+.stat-lbl { font-size: .6875rem; color: rgba(205,196,181,.5); letter-spacing: .12em; text-transform: uppercase; font-weight: 500; }
+
+/* Ilustración hero */
+.hero-art {
+  flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  animation: fadeUp .6s .35s both;
+}
+
+/* Vapor animado */
+@keyframes vapor {
+  0%   { transform: translateY(0) scaleX(1);   opacity: 0; }
+  12%  { opacity: .55; }
+  85%  { opacity: .25; }
+  100% { transform: translateY(-56px) scaleX(1.5); opacity: 0; }
+}
+.v1 { animation: vapor 3s 0s   ease-out infinite; }
+.v2 { animation: vapor 3s .95s ease-out infinite; }
+.v3 { animation: vapor 3s 1.9s ease-out infinite; }
+
+/* ══════════════════════════════════════
+   FILTROS
+══════════════════════════════════════ */
+.filters-bar {
+  position: sticky; top: var(--nav-h); z-index: 400;
+  background: var(--blanco); border-bottom: 1px solid rgba(55,38,23,.08);
+  box-shadow: var(--shadow-sm);
+}
+.filters-inner {
+  max-width: var(--max-w); margin: 0 auto;
+  padding: 0 24px;
+  display: flex; align-items: center; gap: 16px;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.filters-inner::-webkit-scrollbar { display: none; }
+
+.filter-label {
+  font-size: .6875rem; font-weight: 700; letter-spacing: .18em;
+  text-transform: uppercase; color: var(--cafe-medio);
+  white-space: nowrap; padding: 16px 0; flex-shrink: 0;
+}
+
+/* Chips de categoría */
+.cat-chips { display: flex; gap: 8px; align-items: center; }
+.chip {
+  padding: 6px 14px; border-radius: 40px;
+  font-size: .8125rem; font-weight: 600;
+  border: 1.5px solid rgba(55,38,23,.15);
+  color: var(--cafe-medio); background: transparent;
+  white-space: nowrap; transition: all .18s; cursor: pointer;
+}
+.chip:hover { border-color: var(--espresso); color: var(--espresso); background: rgba(55,38,23,.04); }
+.chip.active { background: var(--espresso); color: var(--marfil); border-color: var(--espresso); }
+
+/* Separador vertical */
+.filter-sep { width: 1px; height: 28px; background: rgba(55,38,23,.1); flex-shrink: 0; }
+
+/* Chips de certificación */
+.cert-chips { display: flex; gap: 8px; align-items: center; }
+.cert-chip {
+  padding: 5px 12px; border-radius: 40px;
+  font-size: .75rem; font-weight: 700;
+  border: 1.5px solid transparent; white-space: nowrap;
+  transition: all .18s; cursor: pointer; display: flex; align-items: center; gap: 5px;
+}
+.cert-chip-org  { color: var(--verde-selva); border-color: rgba(30,94,41,.25); background: rgba(30,94,41,.06); }
+.cert-chip-org.active { background: var(--verde-selva); color: #fff; border-color: var(--verde-selva); }
+.cert-chip-fair { color: var(--amber); border-color: rgba(192,120,32,.25); background: var(--amber-light); }
+.cert-chip-fair.active { background: var(--amber); color: #fff; border-color: var(--amber); }
+.cert-chip-rain { color: #1a6b8a; border-color: rgba(26,107,138,.25); background: rgba(26,107,138,.06); }
+.cert-chip-rain.active { background: #1a6b8a; color: #fff; border-color: #1a6b8a; }
+
+/* Sort & count */
+.sort-wrap { margin-left: auto; display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.results-count { font-size: .8125rem; color: var(--cafe-medio); font-weight: 500; white-space: nowrap; }
+.sort-select {
+  padding: 7px 32px 7px 12px; border-radius: var(--r-md);
+  border: 1.5px solid rgba(55,38,23,.15); font-family: var(--font-body);
+  font-size: .8125rem; font-weight: 600; color: var(--espresso);
+  background: transparent; outline: none; cursor: pointer;
+  appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23372617' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 10px center;
+  transition: border-color .2s;
+}
+.sort-select:focus { border-color: var(--espresso); outline: 2px solid rgba(55,38,23,.2); }
+
+/* ══════════════════════════════════════
+   CONTENIDO PRINCIPAL
+══════════════════════════════════════ */
+.main { max-width: var(--max-w); margin: 0 auto; padding: 40px 24px 80px; }
+
+/* Mensaje sin resultados */
+.empty-state {
+  text-align: center; padding: 80px 24px; display: none;
+}
+.empty-icon { font-size: 56px; margin-bottom: 16px; }
+.empty-title { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; color: var(--espresso); margin-bottom: 8px; }
+.empty-desc  { font-size: .9rem; color: var(--cafe-medio); }
+
+/* ── Grid de productos ── */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+/* ── Tarjeta de producto ── */
+.product-card {
+  background: #fff; border-radius: var(--r-lg);
+  border: 1px solid rgba(55,38,23,.07);
+  overflow: hidden; transition: box-shadow .25s, transform .25s;
+  display: flex; flex-direction: column;
+  animation: fadeUp .5s both;
+}
+.product-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-3px); }
+
+/* Imagen / ilustración del producto */
+.card-img {
+  position: relative; height: 200px;
+  background: var(--marfil); overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+.card-img-bg {
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, var(--marfil) 0%, var(--crema) 100%);
+}
+.card-img-illustration { position: relative; z-index: 1; }
+.card-img-region {
+  position: absolute; bottom: 10px; left: 12px;
+  background: rgba(55,38,23,.75); color: var(--marfil);
+  font-size: .6875rem; font-weight: 700; letter-spacing: .14em;
+  text-transform: uppercase; padding: 4px 9px; border-radius: 20px;
+  z-index: 2; backdrop-filter: blur(4px);
+}
+.card-wishlist {
+  position: absolute; top: 10px; right: 10px; z-index: 2;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(255,255,255,.85); border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; transition: all .2s;
+  backdrop-filter: blur(4px);
+  opacity: 0;
+}
+.product-card:hover .card-wishlist { opacity: 1; }
+.card-wishlist:hover { background: #fff; transform: scale(1.1); }
+.card-wishlist.active { opacity: 1; color: #c23b3b; }
+
+/* Badges certificación */
+.card-badges {
+  position: absolute; top: 10px; left: 10px; z-index: 2;
+  display: flex; gap: 4px; flex-wrap: wrap;
+}
+.badge {
+  font-size: .6rem; font-weight: 800; letter-spacing: .1em;
+  text-transform: uppercase; padding: 3px 7px; border-radius: 20px;
+}
+.badge-org  { background: var(--verde-selva); color: #fff; }
+.badge-fair { background: var(--amber); color: #fff; }
+.badge-rain { background: #1a6b8a; color: #fff; }
+
+/* Contenido de la tarjeta */
+.card-body { padding: 18px 18px 14px; flex: 1; display: flex; flex-direction: column; gap: 6px; }
+
+.card-producer {
+  font-size: .7rem; font-weight: 700; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--cafe-claro);
+}
+.card-name {
+  font-family: var(--font-display); font-size: 1.0625rem;
+  font-weight: 700; color: var(--espresso); line-height: 1.3;
+}
+.card-desc { font-size: .8125rem; color: var(--cafe-medio); line-height: 1.55; font-weight: 400; }
+
+/* Rating */
+.card-rating { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+.stars { font-size: 12px; color: var(--amber); letter-spacing: 1px; }
+.rating-count { font-size: .75rem; color: var(--cafe-medio); font-weight: 500; }
+
+/* Stock */
+.stock-bar-wrap { margin-top: 6px; }
+.stock-label { font-size: .6875rem; color: var(--cafe-medio); font-weight: 600; margin-bottom: 4px; }
+.stock-bar { height: 4px; background: rgba(55,38,23,.08); border-radius: 2px; overflow: hidden; }
+.stock-fill { height: 100%; border-radius: 2px; transition: width .3s; }
+.stock-high   { background: var(--verde-fresco); }
+.stock-medium { background: var(--amber); }
+.stock-low    { background: var(--error); }
+
+/* Footer de la tarjeta */
+.card-footer { padding: 14px 18px 18px; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid rgba(55,38,23,.06); }
+.card-price { display: flex; flex-direction: column; gap: 1px; }
+.price-label { font-size: .625rem; color: var(--cafe-medio); letter-spacing: .12em; text-transform: uppercase; font-weight: 600; }
+.price-value { font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; color: var(--espresso); }
+.price-unit  { font-size: .75rem; color: var(--cafe-medio); font-weight: 400; }
+
+.btn-add-cart {
+  display: flex; align-items: center; gap: 6px;
+  padding: 10px 16px; border-radius: var(--r-md);
+  background: var(--espresso); color: var(--marfil);
+  font-size: .8125rem; font-weight: 700; letter-spacing: .02em;
+  transition: all .2s; position: relative; overflow: hidden;
+}
+.btn-add-cart::before {
+  content: ''; position: absolute; inset: 0;
+  background: var(--cafe-oscuro);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform .25s cubic-bezier(.4,0,.2,1);
+}
+.btn-add-cart:hover { box-shadow: 0 4px 14px rgba(55,38,23,.3); transform: translateY(-1px); }
+.btn-add-cart:hover::before { transform: scaleX(1); }
+.btn-add-cart:active { transform: translateY(0); }
+.btn-add-cart span { position: relative; z-index: 1; }
+.btn-add-cart svg  { position: relative; z-index: 1; flex-shrink: 0; }
+
+.btn-add-cart.added { background: var(--verde-selva); }
+.btn-add-cart.added::before { display: none; }
+
+/* ══════════════════════════════════════
+   SECCIÓN SOSTENIBILIDAD
+══════════════════════════════════════ */
+.section-sus {
+  background: var(--espresso); padding: 80px 24px;
+  position: relative; overflow: hidden;
+}
+.section-sus::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse 60% 70% at 100% 50%, rgba(74,140,86,.1) 0%, transparent 60%);
+  pointer-events: none;
+}
+.sus-inner { max-width: var(--max-w); margin: 0 auto; position: relative; z-index: 2; }
+.section-header { text-align: center; margin-bottom: 56px; }
+.section-eyebrow {
+  display: inline-block; font-size: .6875rem; font-weight: 700; letter-spacing: .24em;
+  text-transform: uppercase; margin-bottom: 12px;
+}
+.section-eyebrow.light { color: var(--verde-fresco); }
+.section-title {
+  font-family: var(--font-display); font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-weight: 700; line-height: 1.2; letter-spacing: -.02em;
+}
+.section-title.light { color: var(--marfil); }
+.section-title.dark  { color: var(--espresso); }
+.section-desc { margin-top: 14px; font-size: .9375rem; line-height: 1.75; max-width: 540px; margin-left: auto; margin-right: auto; }
+.section-desc.light { color: rgba(205,196,181,.55); }
+
+.sus-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+.sus-card {
+  background: rgba(205,196,181,.06); border: 1px solid rgba(205,196,181,.1);
+  border-radius: var(--r-lg); padding: 32px 28px;
+  transition: background .2s, border-color .2s;
+}
+.sus-card:hover { background: rgba(205,196,181,.1); border-color: rgba(205,196,181,.2); }
+.sus-icon {
+  width: 52px; height: 52px; border-radius: 14px; margin-bottom: 20px;
+  display: flex; align-items: center; justify-content: center; font-size: 22px;
+}
+.sus-icon-green  { background: rgba(74,140,86,.2); }
+.sus-icon-amber  { background: rgba(192,120,32,.18); }
+.sus-icon-earth  { background: rgba(153,120,93,.18); }
+.sus-card-title { font-family: var(--font-display); font-size: 1.125rem; font-weight: 700; color: var(--marfil); margin-bottom: 10px; }
+.sus-card-desc  { font-size: .875rem; color: rgba(205,196,181,.5); line-height: 1.7; font-weight: 300; }
+.sus-num { font-family: var(--font-display); font-size: 2rem; font-weight: 700; color: var(--verde-fresco); margin-top: 18px; }
+.sus-num-label { font-size: .75rem; color: rgba(205,196,181,.4); letter-spacing: .1em; text-transform: uppercase; margin-top: 2px; }
+
+/* ══════════════════════════════════════
+   SECCIÓN PRODUCTORES
+══════════════════════════════════════ */
+.section-prod { padding: 80px 24px; background: var(--marfil-light); }
+.prod-inner  { max-width: var(--max-w); margin: 0 auto; }
+.producers-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-top: 48px; }
+.producer-card {
+  background: #fff; border: 1px solid rgba(55,38,23,.08);
+  border-radius: var(--r-lg); padding: 24px;
+  text-align: center; transition: box-shadow .2s, transform .2s;
+}
+.producer-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.producer-avatar {
+  width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px; border: 3px solid var(--marfil);
+  box-shadow: 0 0 0 2px rgba(55,38,23,.1);
+}
+.producer-name { font-family: var(--font-display); font-size: 1rem; font-weight: 700; color: var(--espresso); margin-bottom: 4px; }
+.producer-region { font-size: .75rem; color: var(--cafe-medio); font-weight: 600; letter-spacing: .08em; margin-bottom: 10px; }
+.producer-certs { display: flex; justify-content: center; gap: 4px; flex-wrap: wrap; }
+.producer-verified {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: .6875rem; font-weight: 700; color: var(--verde-selva);
+  background: var(--verde-light); padding: 3px 8px; border-radius: 20px; margin-top: 8px;
+}
+
+/* ══════════════════════════════════════
+   FOOTER
+══════════════════════════════════════ */
+.footer {
+  background: var(--cafe-oscuro); color: rgba(205,196,181,.6);
+  padding: 60px 24px 32px;
+}
+.footer-inner { max-width: var(--max-w); margin: 0 auto; }
+.footer-grid  { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 48px; }
+.footer-brand { }
+.footer-logo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.footer-logo-icon { width: 36px; height: 36px; background: rgba(205,196,181,.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+.footer-logo-name { font-family: var(--font-display); font-size: .875rem; font-weight: 700; color: var(--marfil); }
+.footer-brand-desc { font-size: .8125rem; line-height: 1.75; color: rgba(205,196,181,.45); max-width: 260px; font-weight: 300; }
+.footer-col-title { font-size: .6875rem; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; color: rgba(205,196,181,.7); margin-bottom: 16px; }
+.footer-link { display: block; font-size: .875rem; color: rgba(205,196,181,.45); padding: 5px 0; transition: color .15s; font-weight: 400; }
+.footer-link:hover { color: var(--marfil); }
+.footer-bottom { border-top: 1px solid rgba(205,196,181,.08); padding-top: 28px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+.footer-copy { font-size: .8125rem; }
+.footer-certs { display: flex; gap: 8px; }
+.footer-cert  { padding: 4px 10px; border-radius: 20px; font-size: .6875rem; font-weight: 700; background: rgba(205,196,181,.06); border: 1px solid rgba(205,196,181,.12); color: rgba(205,196,181,.5); }
+
+/* ══════════════════════════════════════
+   TOAST / FEEDBACK
+══════════════════════════════════════ */
+.toast-wrap {
+  position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+  display: flex; flex-direction: column; gap: 8px; pointer-events: none;
+}
+.toast-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 18px; border-radius: 40px;
+  font-size: .875rem; font-weight: 600;
+  box-shadow: 0 8px 28px rgba(0,0,0,.2);
+  transform: translateX(120%); opacity: 0;
+  transition: transform .3s cubic-bezier(.22,.68,0,1.2), opacity .3s;
+  pointer-events: auto;
+}
+.toast-item.show { transform: translateX(0); opacity: 1; }
+.toast-item.success { background: var(--verde-selva); color: #fff; }
+.toast-item.info    { background: var(--espresso);    color: var(--marfil); }
+
+/* ══════════════════════════════════════
+   CART DRAWER (lateral)
+══════════════════════════════════════ */
+.cart-overlay {
+  position: fixed; inset: 0; background: rgba(55,38,23,.4);
+  z-index: 800; opacity: 0; pointer-events: none;
+  transition: opacity .25s; backdrop-filter: blur(2px);
+}
+.cart-overlay.open { opacity: 1; pointer-events: auto; }
+.cart-drawer {
+  position: fixed; top: 0; right: 0; bottom: 0; width: min(400px, 90vw);
+  background: #fff; z-index: 900; display: flex; flex-direction: column;
+  transform: translateX(100%); transition: transform .3s cubic-bezier(.22,.68,0,1.1);
+  box-shadow: -8px 0 32px rgba(55,38,23,.2);
+}
+.cart-drawer.open { transform: translateX(0); }
+.cart-drawer-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px; border-bottom: 1px solid rgba(55,38,23,.08);
+  flex-shrink: 0;
+}
+.cart-title { font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; color: var(--espresso); }
+.btn-close-cart {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(55,38,23,.06); display: flex; align-items: center; justify-content: center;
+  color: var(--espresso); font-size: 18px; font-weight: 300; transition: background .15s;
+}
+.btn-close-cart:hover { background: rgba(55,38,23,.12); }
+.cart-body { flex: 1; overflow-y: auto; padding: 20px 24px; }
+.cart-empty { text-align: center; padding: 60px 0; color: var(--cafe-medio); }
+.cart-empty-icon { font-size: 48px; margin-bottom: 12px; }
+.cart-item { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid rgba(55,38,23,.06); }
+.cart-item-img { width: 56px; height: 56px; border-radius: 10px; background: var(--marfil); display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+.cart-item-info { flex: 1; }
+.cart-item-name  { font-family: var(--font-display); font-size: .9375rem; font-weight: 700; color: var(--espresso); }
+.cart-item-price { font-size: .8125rem; color: var(--cafe-medio); margin-top: 2px; }
+.cart-item-qty   { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.qty-btn { width: 26px; height: 26px; border-radius: 6px; background: rgba(55,38,23,.06); font-size: 14px; font-weight: 700; color: var(--espresso); display: flex; align-items: center; justify-content: center; transition: background .15s; }
+.qty-btn:hover { background: rgba(55,38,23,.14); }
+.qty-val { font-size: .875rem; font-weight: 700; min-width: 20px; text-align: center; }
+.btn-remove { font-size: .75rem; color: var(--error); font-weight: 600; margin-left: auto; transition: opacity .15s; }
+.btn-remove:hover { opacity: .7; }
+.cart-footer { padding: 20px 24px; border-top: 1px solid rgba(55,38,23,.08); flex-shrink: 0; }
+.cart-total-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.cart-total-label { font-size: .875rem; color: var(--cafe-medio); font-weight: 600; }
+.cart-total-value { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; color: var(--espresso); }
+.btn-checkout {
+  width: 100%; padding: 15px; background: var(--espresso); color: var(--marfil);
+  border-radius: var(--r-md); font-size: .9375rem; font-weight: 800;
+  letter-spacing: .02em; transition: all .2s;
+}
+.btn-checkout:hover { background: var(--cafe-oscuro); box-shadow: var(--shadow-lg); }
+
+/* ══════════════════════════════════════
+   ANIMACIONES
+══════════════════════════════════════ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ══════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .products-grid   { grid-template-columns: repeat(2,1fr); }
+  .sus-grid        { grid-template-columns: repeat(2,1fr); }
+  .producers-grid  { grid-template-columns: repeat(2,1fr); }
+  .footer-grid     { grid-template-columns: 1fr 1fr; gap: 32px; }
+  .nav-links       { display: none; }
+  .hero-inner      { grid-template-columns: 1fr; }
+  .hero-art        { display: none; }
+}
+@media (max-width: 700px) {
+  .products-grid   { grid-template-columns: 1fr; }
+  .sus-grid        { grid-template-columns: 1fr; }
+  .producers-grid  { grid-template-columns: 1fr 1fr; }
+  .footer-grid     { grid-template-columns: 1fr; }
+  .hero { padding: 52px 20px 64px; }
+  .hero-stats { gap: 20px; flex-wrap: wrap; }
+  .btn-nav-ghost { display: none; }
+  .hero-ctas { flex-direction: column; }
+  .btn-hero-primary, .btn-hero-ghost { text-align: center; justify-content: center; }
+  .nav-inner { gap: 10px; }
+  .filter-label { display: none; }
+  .main { padding: 28px 16px 60px; }
+}
+@media (max-width: 400px) {
+  .producers-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<a href="#catalog" class="skip">Saltar al catálogo</a>
+
+<!-- ══════════ NAVBAR ══════════ -->
+<header>
+<nav class="nav" role="navigation" aria-label="Navegación principal">
+  <div class="nav-inner">
+
+    <!-- Logo -->
+    <a href="#" class="nav-logo" aria-label="World Coffee Marketplace — Inicio">
+      <div class="nav-logo-icon" aria-hidden="true">☕</div>
+      <div class="nav-logo-text">
+        <div class="nav-logo-name">World Coffee</div>
+        <div class="nav-logo-sub">Marketplace</div>
+      </div>
+    </a>
+
+    <!-- Búsqueda -->
+    <div class="nav-search" role="search">
+      <span class="nav-search-icon" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+        </svg>
+      </span>
+      <input
+        type="search" class="nav-search-input" id="searchInput"
+        placeholder="Buscar café por nombre, región o productor..."
+        aria-label="Buscar productos en el catálogo"
+        autocomplete="off"
+        oninput="handleSearch(this.value)"
+      >
+      <button class="nav-search-clear" id="searchClear" onclick="clearSearch()" aria-label="Limpiar búsqueda">✕</button>
+    </div>
+
+    <!-- Links -->
+    <div class="nav-links" role="list">
+      <a href="#catalog"  class="nav-link active" role="listitem">Catálogo</a>
+      <a href="#sus"      class="nav-link"         role="listitem">Sostenibilidad</a>
+      <a href="#prod-sec" class="nav-link"         role="listitem">Productores</a>
+    </div>
+
+    <!-- Acciones -->
+    <div class="nav-actions">
+      <button class="btn-cart" onclick="toggleCart()" aria-label="Ver carrito de compras">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+        </svg>
+        <span class="cart-badge" id="cartBadge" aria-live="polite" aria-label="Productos en carrito">0</span>
+      </button>
+      <a href="login_ux_marketplace_cafe.html" class="btn-nav-ghost">Iniciar sesión</a>
+      <a href="#"                               class="btn-nav-primary">Registrarse</a>
+    </div>
+
+  </div>
+</nav>
+</header>
+
+<!-- ══════════ HERO ══════════ -->
+<section class="hero" aria-label="Bienvenida al marketplace">
+  <div class="hero-inner">
+    <div class="hero-content">
+      <div class="hero-badge" role="note">
+        🌿 Café sostenible de origen colombiano
+      </div>
+      <h1 class="hero-title">
+        El mejor café de<br>origen, directo al<br><em>mundo.</em>
+      </h1>
+      <p class="hero-desc">
+        Conectamos productores certificados de las mejores regiones cafeteras
+        de Colombia con compradores que valoran la trazabilidad, la ética y
+        el sabor auténtico en cada taza.
+      </p>
+      <div class="hero-ctas">
+        <a href="#catalog" class="btn-hero-primary">Explorar catálogo</a>
+        <a href="#sus"     class="btn-hero-ghost">Conócenos</a>
+      </div>
+      <div class="hero-stats" role="list">
+        <div class="stat-item" role="listitem">
+          <span class="stat-num">120+</span>
+          <span class="stat-lbl">Productores</span>
+        </div>
+        <div class="stat-item" role="listitem">
+          <span class="stat-num">18</span>
+          <span class="stat-lbl">Regiones</span>
+        </div>
+        <div class="stat-item" role="listitem">
+          <span class="stat-num">100%</span>
+          <span class="stat-lbl">Certificado</span>
+        </div>
+        <div class="stat-item" role="listitem">
+          <span class="stat-num">4.9★</span>
+          <span class="stat-lbl">Valoración</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ilustración copa -->
+    <div class="hero-art" aria-hidden="true">
+      <svg width="260" height="300" viewBox="0 0 260 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path class="v1" d="M96 60 Q101 44 96 30" stroke="rgba(205,196,181,.4)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <path class="v2" d="M130 52 Q136 35 130 20" stroke="rgba(205,196,181,.3)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <path class="v3" d="M164 60 Q159 44 164 30" stroke="rgba(205,196,181,.35)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <ellipse cx="130" cy="272" rx="88" ry="13" fill="rgba(153,120,93,.2)"/>
+        <ellipse cx="130" cy="268" rx="82" ry="10" fill="rgba(55,38,23,.3)"/>
+        <path d="M60 95 L70 255 Q70 265 130 265 Q190 265 190 255 L200 95 Z" fill="rgba(62,41,25,.92)" stroke="rgba(153,120,93,.25)" stroke-width="1.5"/>
+        <path d="M62 140 L198 140" stroke="rgba(205,196,181,.07)" stroke-width="1"/>
+        <path d="M64 180 L196 180" stroke="rgba(205,196,181,.07)" stroke-width="1"/>
+        <path d="M66 218 L194 218" stroke="rgba(205,196,181,.07)" stroke-width="1"/>
+        <ellipse cx="130" cy="95" rx="70" ry="16" fill="rgba(100,68,40,.95)"/>
+        <ellipse cx="130" cy="95" rx="67" ry="13" fill="rgba(125,87,56,.9)"/>
+        <ellipse cx="112" cy="90" rx="22" ry="6" fill="rgba(165,120,80,.28)" transform="rotate(-15 112 90)"/>
+        <path d="M112 95 Q130 80 148 95 Q130 110 112 95Z" fill="rgba(205,196,181,.1)"/>
+        <path d="M128 88 L132 102" stroke="rgba(205,196,181,.12)" stroke-width="1" stroke-linecap="round"/>
+        <path d="M190 128 Q230 128 230 170 Q230 212 190 212" stroke="rgba(153,120,93,.55)" stroke-width="12" stroke-linecap="round" fill="none"/>
+        <path d="M190 128 Q223 128 223 170 Q223 212 190 212" stroke="rgba(62,41,25,.9)" stroke-width="6" stroke-linecap="round" fill="none"/>
+        <path d="M60 95 Q130 84 200 95" stroke="rgba(153,120,93,.3)" stroke-width="2" fill="none"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ FILTROS ══════════ -->
+<div class="filters-bar" role="region" aria-label="Filtros del catálogo" id="catalog">
+  <div class="filters-inner">
+    <span class="filter-label" aria-hidden="true">Filtrar por</span>
+
+    <!-- Categorías -->
+    <div class="cat-chips" role="group" aria-label="Categorías de producto">
+      <button class="chip active" onclick="filterCat(this,'todos')"         aria-pressed="true">Todos</button>
+      <button class="chip"        onclick="filterCat(this,'grano')"         aria-pressed="false">Grano entero</button>
+      <button class="chip"        onclick="filterCat(this,'molido')"        aria-pressed="false">Molido</button>
+      <button class="chip"        onclick="filterCat(this,'medio')"         aria-pressed="false">Tostado medio</button>
+      <button class="chip"        onclick="filterCat(this,'oscuro')"        aria-pressed="false">Tostado oscuro</button>
+      <button class="chip"        onclick="filterCat(this,'descafeinado')"  aria-pressed="false">Descafeinado</button>
+    </div>
+
+    <div class="filter-sep" aria-hidden="true"></div>
+
+    <!-- Certificaciones -->
+    <div class="cert-chips" role="group" aria-label="Filtrar por certificación">
+      <button class="cert-chip cert-chip-org"  onclick="filterCert(this,'org')"  aria-pressed="false">🌿 Orgánico</button>
+      <button class="cert-chip cert-chip-fair" onclick="filterCert(this,'fair')" aria-pressed="false">⚖️ Fairtrade</button>
+      <button class="cert-chip cert-chip-rain" onclick="filterCert(this,'rain')" aria-pressed="false">🌊 Rainforest</button>
+    </div>
+
+    <!-- Ordenar y count -->
+    <div class="sort-wrap">
+      <span class="results-count" id="resultsCount" aria-live="polite"></span>
+      <label for="sortSelect" class="sr-only">Ordenar por</label>
+      <select class="sort-select" id="sortSelect" onchange="handleSort(this.value)" aria-label="Ordenar productos">
+        <option value="featured">Destacados</option>
+        <option value="price-asc">Precio: menor a mayor</option>
+        <option value="price-desc">Precio: mayor a menor</option>
+        <option value="rating">Mejor valorados</option>
+        <option value="new">Más recientes</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ CATÁLOGO ══════════ -->
+<main class="main" role="main" aria-label="Catálogo de productos">
+  <div class="products-grid" id="productsGrid" aria-label="Productos disponibles"></div>
+  <div class="empty-state" id="emptyState" role="status">
+    <div class="empty-icon" aria-hidden="true">☕</div>
+    <div class="empty-title">Sin resultados</div>
+    <div class="empty-desc">No encontramos productos con esos filtros. Intenta con otros criterios.</div>
+  </div>
+</main>
+
+<!-- ══════════ SOSTENIBILIDAD ══════════ -->
+<section class="section-sus" id="sus" aria-label="Compromiso con la sostenibilidad">
+  <div class="sus-inner">
+    <div class="section-header">
+      <div class="section-eyebrow light">Nuestro compromiso</div>
+      <h2 class="section-title light">Café que cuida el planeta<br>y a quienes lo cultivan</h2>
+      <p class="section-desc light">Cada producto en nuestro marketplace ha sido verificado por su origen, prácticas sostenibles y trato justo a los productores.</p>
+    </div>
+    <div class="sus-grid">
+      <div class="sus-card">
+        <div class="sus-icon sus-icon-green" aria-hidden="true">🌿</div>
+        <div class="sus-card-title">100% Orgánico</div>
+        <div class="sus-card-desc">Sin pesticidas ni químicos. Cultivo natural en armonía con los ecosistemas de las regiones cafeteras colombianas.</div>
+        <div class="sus-num">87%</div>
+        <div class="sus-num-label">del catálogo certificado orgánico</div>
+      </div>
+      <div class="sus-card">
+        <div class="sus-icon sus-icon-amber" aria-hidden="true">⚖️</div>
+        <div class="sus-card-title">Comercio Justo</div>
+        <div class="sus-card-desc">Precio justo garantizado a los productores. Cada compra impacta directamente en el bienestar de las comunidades cafeteras.</div>
+        <div class="sus-num">120+</div>
+        <div class="sus-num-label">productores certificados Fairtrade</div>
+      </div>
+      <div class="sus-card">
+        <div class="sus-icon sus-icon-earth" aria-hidden="true">🌲</div>
+        <div class="sus-card-title">Trazabilidad Total</div>
+        <div class="sus-card-desc">Conoce exactamente la finca, altitud, región y proceso de cada café. Del árbol a tu taza con transparencia completa.</div>
+        <div class="sus-num">100%</div>
+        <div class="sus-num-label">de pedidos con trazabilidad verificada</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ PRODUCTORES ══════════ -->
+<section class="section-prod" id="prod-sec" aria-label="Productores destacados">
+  <div class="prod-inner">
+    <div class="section-header">
+      <div class="section-eyebrow" style="color:var(--verde-fresco)">Quiénes están detrás</div>
+      <h2 class="section-title dark">Productores verificados</h2>
+      <p class="section-desc" style="color:var(--cafe-medio)">Familias y cooperativas colombianas con décadas de tradición cafetera, comprometidas con la calidad y la sostenibilidad.</p>
+    </div>
+    <div class="producers-grid">
+      <div class="producer-card">
+        <div class="producer-avatar" style="background:rgba(74,140,86,.12)">👨‍🌾</div>
+        <div class="producer-name">Finca La Esperanza</div>
+        <div class="producer-region">📍 Huila, Colombia</div>
+        <div class="producer-certs">
+          <span class="badge badge-org">Orgánico</span>
+          <span class="badge badge-fair">Fairtrade</span>
+        </div>
+        <div class="producer-verified">✓ Verificado</div>
+      </div>
+      <div class="producer-card">
+        <div class="producer-avatar" style="background:rgba(192,120,32,.12)">👩‍🌾</div>
+        <div class="producer-name">Coop. Nariño Verde</div>
+        <div class="producer-region">📍 Nariño, Colombia</div>
+        <div class="producer-certs">
+          <span class="badge badge-org">Orgánico</span>
+          <span class="badge badge-rain">Rainforest</span>
+        </div>
+        <div class="producer-verified">✓ Verificado</div>
+      </div>
+      <div class="producer-card">
+        <div class="producer-avatar" style="background:rgba(26,107,138,.12)">👨‍🌾</div>
+        <div class="producer-name">Sierra Nevada Farms</div>
+        <div class="producer-region">📍 Magdalena, Colombia</div>
+        <div class="producer-certs">
+          <span class="badge badge-rain">Rainforest</span>
+        </div>
+        <div class="producer-verified">✓ Verificado</div>
+      </div>
+      <div class="producer-card">
+        <div class="producer-avatar" style="background:rgba(153,120,93,.15)">👩‍🌾</div>
+        <div class="producer-name">Coop. Eje Cafetero</div>
+        <div class="producer-region">📍 Quindío, Colombia</div>
+        <div class="producer-certs">
+          <span class="badge badge-org">Orgánico</span>
+          <span class="badge badge-fair">Fairtrade</span>
+          <span class="badge badge-rain">Rainforest</span>
+        </div>
+        <div class="producer-verified">✓ Verificado</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer class="footer" role="contentinfo">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo-row">
+          <div class="footer-logo-icon" aria-hidden="true">☕</div>
+          <div class="footer-logo-name">World Coffee Marketplace</div>
+        </div>
+        <p class="footer-brand-desc">Conectamos productores certificados de las mejores regiones cafeteras de Colombia con el mundo.</p>
+      </div>
+      <div>
+        <div class="footer-col-title">Marketplace</div>
+        <a href="#" class="footer-link">Catálogo</a>
+        <a href="#" class="footer-link">Productores</a>
+        <a href="#" class="footer-link">Certificaciones</a>
+        <a href="#" class="footer-link">Regiones</a>
+      </div>
+      <div>
+        <div class="footer-col-title">Cuenta</div>
+        <a href="#" class="footer-link">Iniciar sesión</a>
+        <a href="#" class="footer-link">Registrarse</a>
+        <a href="#" class="footer-link">Mis pedidos</a>
+        <a href="#" class="footer-link">Perfil</a>
+      </div>
+      <div>
+        <div class="footer-col-title">Legal</div>
+        <a href="#" class="footer-link">Términos de uso</a>
+        <a href="#" class="footer-link">Privacidad</a>
+        <a href="#" class="footer-link">Sostenibilidad</a>
+        <a href="#" class="footer-link">Contacto</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2025 World Coffee Marketplace · UNAB · Todos los derechos reservados</span>
+      <div class="footer-certs">
+        <span class="footer-cert">🌿 Orgánico</span>
+        <span class="footer-cert">⚖️ Fairtrade</span>
+        <span class="footer-cert">🌲 Rainforest</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Cart Drawer -->
+<div class="cart-overlay" id="cartOverlay" onclick="toggleCart()" aria-hidden="true"></div>
+<aside class="cart-drawer" id="cartDrawer" role="dialog" aria-label="Carrito de compras" aria-modal="true">
+  <div class="cart-drawer-header">
+    <div class="cart-title">Carrito</div>
+    <button class="btn-close-cart" onclick="toggleCart()" aria-label="Cerrar carrito">✕</button>
+  </div>
+  <div class="cart-body" id="cartBody">
+    <div class="cart-empty">
+      <div class="cart-empty-icon">🛒</div>
+      <div style="font-weight:600;color:var(--espresso);margin-bottom:6px">Tu carrito está vacío</div>
+      <div style="font-size:.875rem">Agrega productos del catálogo para comenzar</div>
+    </div>
+  </div>
+  <div class="cart-footer" id="cartFooter" style="display:none">
+    <div class="cart-total-row">
+      <div class="cart-total-label">Total del pedido</div>
+      <div class="cart-total-value" id="cartTotal">$0</div>
+    </div>
+    <button class="btn-checkout" onclick="showToast('Redirigiendo al pago...','info')">Proceder al pago →</button>
+  </div>
+</aside>
+
+<!-- Toast container -->
+<div class="toast-wrap" id="toastWrap" aria-live="polite" aria-atomic="false"></div>
+
+<script>
+/* ════════════════════════════════════════
+   DATOS DE PRODUCTOS
+════════════════════════════════════════ */
+const PRODUCTS = [
+  {
+    id:1, name:'Café Especial Huila', producer:'Finca La Esperanza',
+    region:'Huila', desc:'Notas de frutos rojos, chocolate y panela con acidez brillante. Proceso lavado, secado en cama africana.',
+    price:48000, unit:'500g', rating:4.9, reviews:128, stock:85,
+    cat:['grano','medio'], certs:['org','fair'], emoji:'🫘',
+    bg:'rgba(74,140,86,.08)'
+  },
+  {
+    id:2, name:'Nariño Supremo', producer:'Coop. Nariño Verde',
+    region:'Nariño', desc:'Taza limpia con acidez cítrica, cuerpo medio y dulzor de caña. Cultivado a 2.200 msnm.',
+    price:52000, unit:'500g', rating:4.8, reviews:96, stock:40,
+    cat:['grano','oscuro'], certs:['org','rain'], emoji:'🌿',
+    bg:'rgba(26,107,138,.07)'
+  },
+  {
+    id:3, name:'Blend Sierra Nevada', producer:'Sierra Nevada Farms',
+    region:'Magdalena', desc:'Mezcla de tres variedades de altura. Chocolate negro, nuez y caramelo con cuerpo cremoso.',
+    price:38000, unit:'500g', rating:4.7, reviews:74, stock:92,
+    cat:['molido','oscuro'], certs:['rain'], emoji:'🏔️',
+    bg:'rgba(192,120,32,.07)'
+  },
+  {
+    id:4, name:'San Agustín Washed', producer:'Finca El Paraíso',
+    region:'Huila', desc:'Proceso lavado de alta limpieza. Perfil floral con jazmín, durazno y acidez málica elegante.',
+    price:64000, unit:'500g', rating:5.0, reviews:42, stock:18,
+    cat:['grano','medio'], certs:['org','fair'], emoji:'🌸',
+    bg:'rgba(153,120,93,.08)'
+  },
+  {
+    id:5, name:'Café Tolima Natural', producer:'Familia Guerrero',
+    region:'Tolima', desc:'Proceso natural con fermentación lenta. Intenso en fruta tropical, mango y mora con dulzor pronunciado.',
+    price:56000, unit:'500g', rating:4.8, reviews:63, stock:60,
+    cat:['grano','oscuro'], certs:['org'], emoji:'🌺',
+    bg:'rgba(74,140,86,.06)'
+  },
+  {
+    id:6, name:'Caturra Antioquia', producer:'Coop. Eje Cafetero',
+    region:'Antioquia', desc:'Variedad Caturra de cuerpo robusto. Notas de almendra, chocolate amargo y cítrico tímido.',
+    price:42000, unit:'500g', rating:4.6, reviews:81, stock:75,
+    cat:['molido','medio'], certs:['org','fair','rain'], emoji:'☕',
+    bg:'rgba(55,38,23,.05)'
+  },
+  {
+    id:7, name:'Cauca Geisha', producer:'Hacienda La Divisa',
+    region:'Cauca', desc:'Variedad Geisha de altísima expresión. Té de jazmín, bergamota y acidez fosfórica muy delicada.',
+    price:98000, unit:'250g', rating:4.9, reviews:31, stock:12,
+    cat:['grano','medio'], certs:['org'], emoji:'✨',
+    bg:'rgba(192,120,32,.06)'
+  },
+  {
+    id:8, name:'Descafeinado Swiss Water', producer:'Coop. Nariño Verde',
+    region:'Nariño', desc:'Descafeinado por proceso natural Swiss Water. Conserva el sabor original con chocolate y nuez suave.',
+    price:46000, unit:'500g', rating:4.5, reviews:57, stock:50,
+    cat:['descafeinado','molido'], certs:['org','rain'], emoji:'💧',
+    bg:'rgba(26,107,138,.06)'
+  },
+  {
+    id:9, name:'Tostado Oscuro Bogotá', producer:'Tostadora Artesanal',
+    region:'Cundinamarca', desc:'Tostado oscuro español con cuerpo pleno. Ideal para espresso. Notas de tabaco, cacao y madera.',
+    price:35000, unit:'500g', rating:4.4, reviews:109, stock:95,
+    cat:['molido','oscuro'], certs:['fair'], emoji:'🖤',
+    bg:'rgba(55,38,23,.07)'
+  },
+];
+
+/* ════════════════════════════════════════
+   ESTADO
+════════════════════════════════════════ */
+let state = {
+  cat: 'todos', certs: [], search: '', sort: 'featured',
+  cart: [], wishlist: new Set(),
+};
+
+/* ════════════════════════════════════════
+   RENDERIZADO
+════════════════════════════════════════ */
+function getFiltered() {
+  let list = [...PRODUCTS];
+  if (state.cat !== 'todos') list = list.filter(p => p.cat.includes(state.cat));
+  if (state.certs.length)    list = list.filter(p => state.certs.every(c => p.certs.includes(c)));
+  if (state.search) {
+    const q = state.search.toLowerCase();
+    list = list.filter(p =>
+      p.name.toLowerCase().includes(q) ||
+      p.producer.toLowerCase().includes(q) ||
+      p.region.toLowerCase().includes(q) ||
+      p.desc.toLowerCase().includes(q)
+    );
+  }
+  // Sort
+  switch (state.sort) {
+    case 'price-asc':  list.sort((a,b) => a.price - b.price); break;
+    case 'price-desc': list.sort((a,b) => b.price - a.price); break;
+    case 'rating':     list.sort((a,b) => b.rating - a.rating); break;
+    case 'new':        list.sort((a,b) => b.id - a.id); break;
+  }
+  return list;
+}
+
+function stockLabel(pct) {
+  if (pct > 60) return { cls: 'stock-high',   txt: `Stock disponible (${Math.round(pct)}%)` };
+  if (pct > 20) return { cls: 'stock-medium', txt: `Stock limitado (${Math.round(pct)}%)` };
+  return              { cls: 'stock-low',    txt: `Últimas unidades (${Math.round(pct)}%)` };
+}
+
+function starsHTML(r) {
+  const full = Math.floor(r), half = r % 1 >= .5 ? 1 : 0, empty = 5 - full - half;
+  return '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(empty);
+}
+
+function badgesHTML(certs) {
+  return certs.map(c => {
+    if (c === 'org')  return '<span class="badge badge-org">Orgánico</span>';
+    if (c === 'fair') return '<span class="badge badge-fair">Fairtrade</span>';
+    if (c === 'rain') return '<span class="badge badge-rain">Rainforest</span>';
+    return '';
+  }).join('');
+}
+
+function formatPrice(n) {
+  return '$' + n.toLocaleString('es-CO');
+}
+
+function renderProducts() {
+  const list   = getFiltered();
+  const grid   = document.getElementById('productsGrid');
+  const empty  = document.getElementById('emptyState');
+  const count  = document.getElementById('resultsCount');
+
+  count.textContent = `${list.length} producto${list.length !== 1 ? 's' : ''}`;
+
+  if (!list.length) {
+    grid.innerHTML = '';
+    grid.style.display = 'none';
+    empty.style.display = 'block';
+    return;
+  }
+  grid.style.display = '';
+  empty.style.display = 'none';
+
+  grid.innerHTML = list.map((p, i) => {
+    const stk   = stockLabel(p.stock);
+    const inCart = state.cart.find(c => c.id === p.id);
+    const liked  = state.wishlist.has(p.id);
+    return `
+    <article class="product-card" style="animation-delay:${i * 0.07}s"
+             aria-label="${p.name} — ${p.producer}">
+      <div class="card-img" style="background:${p.bg}">
+        <div class="card-img-bg"></div>
+        <div class="card-img-illustration" aria-hidden="true" style="font-size:72px">${p.emoji}</div>
+        <div class="card-img-region">📍 ${p.region}</div>
+        <div class="card-badges" aria-label="Certificaciones">${badgesHTML(p.certs)}</div>
+        <button class="card-wishlist ${liked ? 'active' : ''}"
+                onclick="toggleWish(${p.id})"
+                aria-label="${liked ? 'Quitar de' : 'Agregar a'} lista de deseos"
+                aria-pressed="${liked}">
+          ${liked ? '♥' : '♡'}
+        </button>
+      </div>
+      <div class="card-body">
+        <div class="card-producer">${p.producer}</div>
+        <h2 class="card-name">${p.name}</h2>
+        <p class="card-desc">${p.desc}</p>
+        <div class="card-rating">
+          <span class="stars" aria-label="Calificación ${p.rating} de 5 estrellas">${starsHTML(p.rating)}</span>
+          <span class="rating-count">${p.rating} (${p.reviews} reseñas)</span>
+        </div>
+        <div class="stock-bar-wrap">
+          <div class="stock-label">${stk.txt}</div>
+          <div class="stock-bar" role="progressbar" aria-valuenow="${p.stock}" aria-valuemin="0" aria-valuemax="100" aria-label="Disponibilidad">
+            <div class="stock-fill ${stk.cls}" style="width:${p.stock}%"></div>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-price">
+          <span class="price-label">Precio</span>
+          <span class="price-value">${formatPrice(p.price)}</span>
+          <span class="price-unit">/ ${p.unit}</span>
+        </div>
+        <button class="btn-add-cart ${inCart ? 'added' : ''}"
+                onclick="addToCart(${p.id})"
+                aria-label="${inCart ? 'Ya en carrito' : 'Agregar al carrito'}: ${p.name}">
+          ${inCart
+            ? '<span>✓ En carrito</span>'
+            : `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span>Agregar</span>`
+          }
+        </button>
+      </div>
+    </article>`;
+  }).join('');
+}
+
+/* ════════════════════════════════════════
+   FILTROS
+════════════════════════════════════════ */
+function filterCat(btn, val) {
+  document.querySelectorAll('.cat-chips .chip').forEach(b => {
+    b.classList.remove('active'); b.setAttribute('aria-pressed','false');
+  });
+  btn.classList.add('active'); btn.setAttribute('aria-pressed','true');
+  state.cat = val;
+  renderProducts();
+}
+
+function filterCert(btn, val) {
+  btn.classList.toggle('active');
+  const pressed = btn.classList.contains('active');
+  btn.setAttribute('aria-pressed', pressed ? 'true' : 'false');
+  if (pressed) state.certs.push(val);
+  else state.certs = state.certs.filter(c => c !== val);
+  renderProducts();
+}
+
+function handleSort(val) { state.sort = val; renderProducts(); }
+
+/* ════════════════════════════════════════
+   BÚSQUEDA
+════════════════════════════════════════ */
+let searchTimer;
+function handleSearch(val) {
+  document.getElementById('searchClear').classList.toggle('show', val.length > 0);
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => { state.search = val.trim(); renderProducts(); }, 280);
+}
+function clearSearch() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('searchClear').classList.remove('show');
+  state.search = '';
+  renderProducts();
+  document.getElementById('searchInput').focus();
+}
+
+/* ════════════════════════════════════════
+   CARRITO
+════════════════════════════════════════ */
+function addToCart(id) {
+  const p = PRODUCTS.find(x => x.id === id);
+  const exists = state.cart.find(x => x.id === id);
+  if (exists) { exists.qty++; }
+  else { state.cart.push({ id, name: p.name, emoji: p.emoji, price: p.price, unit: p.unit, qty: 1 }); }
+  updateCartBadge();
+  renderCartDrawer();
+  renderProducts();
+  showToast(`☕ ${p.name} agregado al carrito`, 'success');
+}
+
+function removeFromCart(id) {
+  state.cart = state.cart.filter(x => x.id !== id);
+  updateCartBadge();
+  renderCartDrawer();
+  renderProducts();
+}
+
+function changeQty(id, delta) {
+  const item = state.cart.find(x => x.id === id);
+  if (!item) return;
+  item.qty += delta;
+  if (item.qty <= 0) removeFromCart(id);
+  else { updateCartBadge(); renderCartDrawer(); }
+}
+
+function updateCartBadge() {
+  const total = state.cart.reduce((s, x) => s + x.qty, 0);
+  const badge = document.getElementById('cartBadge');
+  badge.textContent = total;
+  badge.classList.toggle('show', total > 0);
+}
+
+function renderCartDrawer() {
+  const body   = document.getElementById('cartBody');
+  const footer = document.getElementById('cartFooter');
+  if (!state.cart.length) {
+    body.innerHTML = `<div class="cart-empty"><div class="cart-empty-icon">🛒</div>
+      <div style="font-weight:600;color:var(--espresso);margin-bottom:6px">Tu carrito está vacío</div>
+      <div style="font-size:.875rem;color:var(--cafe-medio)">Agrega productos del catálogo para comenzar</div></div>`;
+    footer.style.display = 'none';
+    return;
+  }
+  footer.style.display = 'block';
+  const total = state.cart.reduce((s, x) => s + x.qty * x.price, 0);
+  document.getElementById('cartTotal').textContent = formatPrice(total);
+  body.innerHTML = state.cart.map(item => `
+    <div class="cart-item">
+      <div class="cart-item-img" aria-hidden="true">${item.emoji}</div>
+      <div class="cart-item-info">
+        <div class="cart-item-name">${item.name}</div>
+        <div class="cart-item-price">${formatPrice(item.price)} / ${item.unit}</div>
+        <div class="cart-item-qty">
+          <button class="qty-btn" onclick="changeQty(${item.id},-1)" aria-label="Quitar uno">−</button>
+          <span class="qty-val" aria-live="polite">${item.qty}</span>
+          <button class="qty-btn" onclick="changeQty(${item.id}, 1)" aria-label="Agregar uno">+</button>
+          <button class="btn-remove" onclick="removeFromCart(${item.id})" aria-label="Eliminar ${item.name} del carrito">Eliminar</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function toggleCart() {
+  const drawer  = document.getElementById('cartDrawer');
+  const overlay = document.getElementById('cartOverlay');
+  const open    = drawer.classList.toggle('open');
+  overlay.classList.toggle('open', open);
+  overlay.setAttribute('aria-hidden', !open);
+  if (open) { renderCartDrawer(); drawer.querySelector('button').focus(); }
+}
+
+/* ════════════════════════════════════════
+   WISHLIST
+════════════════════════════════════════ */
+function toggleWish(id) {
+  const p = PRODUCTS.find(x => x.id === id);
+  if (state.wishlist.has(id)) {
+    state.wishlist.delete(id);
+    showToast(`Quitado de favoritos`, 'info');
+  } else {
+    state.wishlist.add(id);
+    showToast(`♥ ${p.name} guardado en favoritos`, 'success');
+  }
+  renderProducts();
+}
+
+/* ════════════════════════════════════════
+   TOAST
+════════════════════════════════════════ */
+function showToast(msg, type = 'info') {
+  const wrap = document.getElementById('toastWrap');
+  const el   = document.createElement('div');
+  el.className = `toast-item ${type}`;
+  el.textContent = msg;
+  el.setAttribute('role','status');
+  wrap.appendChild(el);
+  requestAnimationFrame(() => { requestAnimationFrame(() => el.classList.add('show')); });
+  setTimeout(() => {
+    el.classList.remove('show');
+    setTimeout(() => el.remove(), 350);
+  }, 2800);
+}
+
+/* ════════════════════════════════════════
+   TECLADO ESC para cerrar carrito
+════════════════════════════════════════ */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    const drawer = document.getElementById('cartDrawer');
+    if (drawer.classList.contains('open')) toggleCart();
+  }
+});
+
+/* ════════════════════════════════════════
+   INIT
+════════════════════════════════════════ */
+renderProducts();
+</script>
+</body>
+</html>

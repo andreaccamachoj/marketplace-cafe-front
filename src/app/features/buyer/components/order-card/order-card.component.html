@@ -1,0 +1,120 @@
+<div class="order-card" [class.show-progress]="expanded()">
+
+  <!-- Header -->
+  <div class="order-card-header">
+    <div class="order-num">#{{ order().number }}</div>
+    <div class="order-date">{{ order().date }}</div>
+    <div class="order-spacer"></div>
+    <span class="status-badge" [ngClass]="'status-' + order().status">
+      {{ statusLabels[order().status] }}
+    </span>
+    <div class="order-total">${{ order().total | number:'1.0-0' }}</div>
+  </div>
+
+  <!-- Items row -->
+  <div class="order-items-row">
+    @for (item of order().items; track item.productId) {
+      <div class="order-mini-item">
+        <span class="order-mini-emoji" aria-hidden="true">{{ item.emoji }}</span>
+        <div>
+          <div class="order-mini-name">{{ item.name }}</div>
+          <div class="order-mini-qty">x{{ item.qty }}</div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Footer -->
+  <div class="order-card-footer">
+    <div class="order-meta">
+      <span class="order-meta-item">📍 {{ order().address }}</span>
+    </div>
+    <div class="order-actions">
+      <button
+        class="btn-order-action btn-expand"
+        type="button"
+        (click)="onToggle()"
+        [attr.aria-expanded]="expanded()"
+      >
+        Ver detalle <span class="expand-arrow" aria-hidden="true">▼</span>
+      </button>
+      @if (isDelivered()) {
+        <span class="btn-order-action btn-review-hint" aria-hidden="true">
+          ⭐ Expande para reseñar
+        </span>
+      }
+    </div>
+  </div>
+
+  <!-- Detail (expanded) -->
+  @if (expanded()) {
+    <div class="order-detail" role="region" aria-label="Detalle del pedido">
+
+      <!-- Progress stepper -->
+      <app-order-stepper [steps]="order().steps" />
+
+      <!-- Items table -->
+      <div class="order-detail-items">
+        <div class="order-detail-item order-detail-item--header">
+          <span>Producto</span><span>Cant.</span><span>Precio unit.</span><span>Subtotal</span>
+          @if (isDelivered()) {
+            <span>Reseña</span>
+          }
+        </div>
+        @for (item of order().items; track item.productId) {
+          <div class="order-detail-item">
+            <span class="item-name">{{ item.emoji }} {{ item.name }}</span>
+            <span>{{ item.qty }}</span>
+            <span>${{ item.unitPrice | number:'1.0-0' }}</span>
+            <span>${{ item.subtotal | number:'1.0-0' }}</span>
+            @if (isDelivered()) {
+              <span>
+                @if (canReviewItem(item.productId)) {
+                  <button
+                    type="button"
+                    class="btn-review-item"
+                    (click)="onItemReviewClick(item.productId, item.name)"
+                    [attr.aria-label]="'Reseñar ' + item.name"
+                  >✏️ Reseñar</button>
+                } @else {
+                  <span class="review-done" aria-label="Ya reseñado">✓ Reseñado</span>
+                }
+              </span>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Price breakdown -->
+      <div class="order-detail-summary">
+        <div class="summary-row">
+          <span>Subtotal</span><span>${{ order().subtotal | number:'1.0-0' }}</span>
+        </div>
+        @if (order().shippingAmount > 0) {
+          <div class="summary-row">
+            <span>Envío ({{ order().shippingOptionId ?? 'estándar' }})</span>
+            <span>${{ order().shippingAmount | number:'1.0-0' }}</span>
+          </div>
+        }
+        @if (order().discountAmount > 0) {
+          <div class="summary-row summary-row--discount">
+            <span>Descuento</span><span>-${{ order().discountAmount | number:'1.0-0' }}</span>
+          </div>
+        }
+        <div class="summary-row summary-row--total">
+          <span>Total</span><span>${{ order().total | number:'1.0-0' }}</span>
+        </div>
+      </div>
+
+      <!-- Shipping address -->
+      @if (order().address) {
+        <div class="order-detail-address">
+          <span class="detail-label">📍 Dirección de entrega</span>
+          <span>{{ order().address }}</span>
+        </div>
+      }
+
+    </div>
+  }
+
+</div>

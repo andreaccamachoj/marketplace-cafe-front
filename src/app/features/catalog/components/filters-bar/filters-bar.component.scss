@@ -1,0 +1,186 @@
+.filters-bar {
+  position: sticky;
+  top: var(--nav-h, 68px);
+  z-index: 400;
+  background: var(--blanco, #f7f3ef);
+  border-bottom: 1px solid rgba(55, 38, 23, 0.08);
+  box-shadow: var(--shadow-sm, 0 1px 4px rgba(55,38,23,.08));
+}
+
+.filters-inner {
+  max-width: var(--max-w, 1280px);
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar { display: none; }
+}
+
+.filter-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--cafe-medio, #7a5c42);
+  white-space: nowrap;
+  padding: 16px 0;
+  flex-shrink: 0;
+}
+
+/* Category chips */
+.cat-chips {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.chip {
+  padding: 6px 14px;
+  border-radius: 40px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border: 1.5px solid rgba(55, 38, 23, 0.15);
+  color: var(--cafe-medio, #7a5c42);
+  background: transparent;
+  white-space: nowrap;
+  transition: all 0.18s;
+  cursor: pointer;
+  font-family: var(--font-body, 'Mulish', sans-serif);
+
+  &:hover {
+    border-color: var(--espresso, #372617);
+    color: var(--espresso, #372617);
+    background: rgba(55, 38, 23, 0.04);
+  }
+
+  &.active {
+    background: var(--espresso, #372617);
+    color: var(--marfil, #e4dcd1);
+    border-color: var(--espresso, #372617);
+  }
+}
+
+/* Vertical separator */
+.filter-sep {
+  width: 1px;
+  height: 28px;
+  background: rgba(55, 38, 23, 0.1);
+  flex-shrink: 0;
+}
+
+/* Certification chips */
+.cert-chips {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.cert-chip {
+  padding: 5px 12px;
+  border-radius: 40px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1.5px solid transparent;
+  white-space: nowrap;
+  transition: all 0.18s;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-body, 'Mulish', sans-serif);
+
+  &-org {
+    color: var(--verde-selva, #1e5e29);
+    border-color: rgba(30, 94, 41, 0.25);
+    background: rgba(30, 94, 41, 0.06);
+
+    &.active {
+      background: var(--verde-selva, #1e5e29);
+      color: #fff;
+      border-color: var(--verde-selva, #1e5e29);
+    }
+  }
+
+  &-fair {
+    color: var(--amber, #c07820);
+    border-color: rgba(192, 120, 32, 0.25);
+    background: var(--amber-light, #fff0d0);
+
+    &.active {
+      background: var(--amber, #c07820);
+      color: #fff;
+      border-color: var(--amber, #c07820);
+    }
+  }
+
+  &-rain {
+    color: var(--blue-rain, #1a6b8a);
+    border-color: rgba(26, 107, 138, 0.25);
+    background: rgba(26, 107, 138, 0.06);
+
+    &.active {
+      background: var(--blue-rain, #1a6b8a);
+      color: #fff;
+      border-color: var(--blue-rain, #1a6b8a);
+    }
+  }
+}
+
+/* Sort + count */
+.sort-wrap {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.results-count {
+  font-size: 0.8125rem;
+  color: var(--cafe-medio, #7a5c42);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.sort-select {
+  padding: 7px 32px 7px 12px;
+  border-radius: var(--r-md, 10px);
+  border: 1.5px solid rgba(55, 38, 23, 0.15);
+  font-family: var(--font-body, 'Mulish', sans-serif);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--espresso, #372617);
+  background-color: transparent;
+  background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23372617' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  appearance: none;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+
+  &:focus {
+    border-color: var(--espresso, #372617);
+    outline: 2px solid rgba(55, 38, 23, 0.2);
+  }
+}
+
+/* Accessibility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+  .filter-label { display: none; }
+}
