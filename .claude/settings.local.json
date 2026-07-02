@@ -2,7 +2,18 @@
   "permissions": {
     "allow": [
       "Bash(npm run *)",
-      "Bash(git *)"
+      "Bash(git *)",
+      "mcp__codegraph__codegraph_files",
+      "Bash(npx ng *)",
+      "Bash(python3 -c ' *)",
+      "Bash(powershell *)",
+      "Bash(node generate_rp.js)",
+      "Bash(pandoc \"C:\\\\Users\\\\accam\\\\Documents\\\\Unab\\\\Proyecto de grado\\\\Proyecto\\\\marketplace-cafe-front\\\\md\\\\anexos\\\\RP_Plantilla.docx\" -o - -t markdown)",
+      "Bash(pip install *)",
+      "Bash(python \"C:\\\\Users\\\\accam\\\\AppData\\\\Roaming\\\\Claude\\\\local-agent-mode-sessions\\\\skills-plugin\\\\c2242c15-495f-4e42-b3ca-80d811c9921b\\\\5e8767d4-b476-45ed-8fb4-233d612f2ecb\\\\skills\\\\docx\\\\scripts\\\\office\\\\unpack.py\" \"C:\\\\Users\\\\accam\\\\Documents\\\\Unab\\\\Proyecto de grado\\\\Proyecto\\\\marketplace-cafe-front\\\\md\\\\anexos\\\\RP_Plantilla.docx\" \"C:\\\\Users\\\\accam\\\\Documents\\\\Unab\\\\Proyecto de grado\\\\Proyecto\\\\marketplace-cafe-front\\\\md\\\\anexos\\\\plantilla_unpacked\")",
+      "Bash(python \"C:\\\\Users\\\\accam\\\\AppData\\\\Roaming\\\\Claude\\\\local-agent-mode-sessions\\\\skills-plugin\\\\c2242c15-495f-4e42-b3ca-80d811c9921b\\\\5e8767d4-b476-45ed-8fb4-233d612f2ecb\\\\skills\\\\docx\\\\scripts\\\\office\\\\unpack.py\" \"C:\\\\Users\\\\accam\\\\Documents\\\\Unab\\\\Proyecto de grado\\\\Proyecto\\\\marketplace-cafe-front\\\\md\\\\anexos\\\\RP_WCM_Completo.docx\" \"C:\\\\Users\\\\accam\\\\Documents\\\\Unab\\\\Proyecto de grado\\\\Proyecto\\\\marketplace-cafe-front\\\\md\\\\anexos\\\\completo_unpacked\")",
+      "Bash(python \"C:\\\\Users\\\\accam\\\\AppData\\\\Roaming\\\\Claude\\\\local-agent-mode-sessions\\\\skills-plugin\\\\c2242c15-495f-4e42-b3ca-80d811c9921b\\\\5e8767d4-b476-45ed-8fb4-233d612f2ecb\\\\skills\\\\docx\\\\scripts\\\\office\\\\unpack.py\" RP_Plantilla.docx plantilla_unpacked)",
+      "Bash(python \"C:\\\\Users\\\\accam\\\\AppData\\\\Roaming\\\\Claude\\\\local-agent-mode-sessions\\\\skills-plugin\\\\c2242c15-495f-4e42-b3ca-80d811c9921b\\\\5e8767d4-b476-45ed-8fb4-233d612f2ecb\\\\skills\\\\docx\\\\scripts\\\\office\\\\unpack.py\" RP_WCM_Completo.docx completo_unpacked)"
     ]
   },
   "hooks": {

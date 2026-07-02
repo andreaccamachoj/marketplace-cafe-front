@@ -493,7 +493,7 @@ npx ng test --include='**/features/buyer/services/**/*.spec.ts' --watch=false --
 
 ## Fase 9b — Feature Buyer: componentes
 
-- [ ] Completada
+- [x] Completada
 
 **Alcance:** `src/app/features/buyer/components/`
 
@@ -535,7 +535,7 @@ npx ng test --include='**/features/buyer/components/**/*.spec.ts' --watch=false 
 
 ## Fase 9c — Feature Buyer: dashboard page
 
-- [ ] Completada
+- [x] Completada
 
 **Alcance:** `src/app/features/buyer/pages/`
 
@@ -561,7 +561,7 @@ npx ng test --include='**/features/buyer/pages/**/*.spec.ts' --watch=false --bro
 
 ## Fase 10a — Feature Producer: servicios
 
-- [ ] Completada
+- [x] Completada
 
 **Alcance:** `src/app/features/producer/services/`
 
@@ -597,7 +597,7 @@ npx ng test --include='**/features/producer/services/**/*.spec.ts' --watch=false
 
 ## Fase 10b — Feature Producer: componentes y dashboard
 
-- [ ] Completada
+- [x] Completada
 
 **Alcance:** `src/app/features/producer/components/` + `pages/`
 
@@ -636,7 +636,7 @@ npx ng test --include='**/features/producer/**/*.spec.ts' --watch=false --browse
 
 ## Fase 11a — Feature Admin: servicios
 
-- [ ] Completada
+- [x] Completada
 
 **Alcance:** `src/app/features/admin/services/`
 
@@ -672,7 +672,7 @@ npx ng test --include='**/features/admin/services/**/*.spec.ts' --watch=false --
 
 ## Fase 11b — Feature Admin: componentes y dashboard
 
-- [ ] Completada
+- [x] Completada
 
 **Alcance:** `src/app/features/admin/components/` + `pages/`
 
@@ -738,8 +738,8 @@ npx ng test --watch=false --browsers=ChromeHeadless --code-coverage
 | 8a | Catalog servicios/resolver | 5 | ☐ |
 | 8b | Catalog componentes/páginas | 15 | ☐ |
 | 9a | Buyer servicios | 7 | ✅ |
-| 9b | Buyer componentes | 14 | ☐ |
-| 9c | Buyer dashboard | 1 | ☐ |
+| 9b | Buyer componentes | 14 | ✅ |
+| 9c | Buyer dashboard | 1 | ✅ |
 | 10a | Producer servicios | 5 | ☐ |
 | 10b | Producer componentes/dashboard | 12 | ☐ |
 | 11a | Admin servicios | 5 | ☐ |

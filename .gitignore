@@ -46,3 +46,6 @@ Thumbs.db
 
 /md
 .claude
+CLAUDE.md
+.codegraph/
+.mcp.json
