@@ -9,6 +9,7 @@ import {
 import { AuthService } from '@core/auth/services/auth.service';
 import { NotificationService } from '@core/services/notification.service';
 import { DashboardNavComponent } from '@shared/layout/dashboard-nav/dashboard-nav.component';
+import { LoadingSpinnerComponent } from '@shared/ui/loading-spinner/loading-spinner.component';
 
 import { ProducerProductService } from '../../services/producer-product.service';
 import { ProducerOrderService } from '../../services/producer-order.service';
@@ -48,6 +49,7 @@ import { ProducerReviewCardComponent } from '../../components/producer-review-ca
     CertificationFormModalComponent,
     ProducerProfileFormComponent,
     ProducerReviewCardComponent,
+    LoadingSpinnerComponent,
   ],
   templateUrl: './producer-dashboard.component.html',
   styleUrl: './producer-dashboard.component.scss',

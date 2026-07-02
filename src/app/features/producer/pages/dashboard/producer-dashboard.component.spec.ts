@@ -73,6 +73,7 @@ describe('ProducerDashboardComponent', () => {
       products: productsSignal.asReadonly(),
       activeCount: computed(() => productsSignal().filter(p => p.status === 'active').length),
       pendingCount: computed(() => productsSignal().filter(p => p.status === 'draft').length),
+      saving: signal(false).asReadonly(),
     });
 
     orderSvc = jasmine.createSpyObj('ProducerOrderService', ['load', 'updateStatus'], {

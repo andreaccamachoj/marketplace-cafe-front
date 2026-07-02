@@ -586,3 +586,8 @@
   (closed)="closeCertModal()"
   (saved)="handleSaveCert($event)"
 />
+
+<!-- Overlay de guardado (crear/editar producto + subida de imagen a S3) -->
+@if (productSvc.saving()) {
+  <app-loading-spinner overlay size="lg" label="Guardando producto…" />
+}
