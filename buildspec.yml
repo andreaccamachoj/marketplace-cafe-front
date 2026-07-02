@@ -1,0 +1,19 @@
+version: 0.2
+
+# CodeBuild: compila el frontend Angular SSR.
+phases:
+  install:
+    runtime-versions:
+      nodejs: 20
+  build:
+    commands:
+      - npm ci
+      - NODE_OPTIONS='--max-old-space-size=512' npm run build
+
+# El artefacto que recibe CodeDeploy: el dist SSR + appspec + scripts.
+artifacts:
+  files:
+    - dist/**/*
+    - appspec.yml
+    - scripts/**/*
+  discard-paths: no

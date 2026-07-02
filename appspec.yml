@@ -1,0 +1,19 @@
+version: 0.0
+os: linux
+
+# Copia el dist SSR a la EC2 y reinicia el servicio systemd del frontend.
+# El systemd usa WorkingDirectory /opt/marketplace/front/dist/marketplace-cafe-front,
+# por eso se copia 'dist' completo dentro de /opt/marketplace/front/dist.
+files:
+  - source: dist
+    destination: /opt/marketplace/front/dist
+
+hooks:
+  ApplicationStop:
+    - location: scripts/stop_frontend.sh
+      timeout: 60
+      runas: root
+  ApplicationStart:
+    - location: scripts/start_frontend.sh
+      timeout: 120
+      runas: root
