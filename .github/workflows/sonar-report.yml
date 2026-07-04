@@ -1,0 +1,134 @@
+# ==============================================================================
+# GitHub Actions — SonarCloud Report Generation
+# ==============================================================================
+# Genera reportes (JSON/MD/HTML/PDF) a partir del ULTIMO analisis de SonarCloud
+# ya publicado por el workflow "SonarCloud analysis" (sonarcloud.yml). No corre
+# un scan propio: evita duplicar el analisis y el conflicto de dos analisis CI
+# para la misma revision en SonarCloud.
+#
+# Required Secrets:
+#   SONAR_TOKEN          — Token de SonarCloud con permiso de lectura del proyecto
+#   SONAR_HOST_URL       — https://sonarcloud.io
+#   SONAR_PROJECT_KEY    — Project key en SonarCloud (andreaccamachoj_marketplace-cafe-back)
+# ==============================================================================
+
+name: SonarQube Report
+
+on:
+  workflow_run:
+    workflows: ["SonarCloud analysis"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      report_formats:
+        description: "Report formats (comma-separated: json,md,html,pdf)"
+        required: false
+        default: "json,md,html,pdf"
+      fail_on_gate:
+        description: "Fail pipeline if quality gate fails"
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  sonar-report:
+    name: Generate Report
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends curl jq wkhtmltopdf xvfb
+
+      - name: Wait for analysis & generate report
+        env:
+          SONAR_URL: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
+          SONAR_ORGANIZATION: andreaccamachoj
+          REPORT_FORMATS: ${{ github.event.inputs.report_formats || 'json,md,html,pdf' }}
+          REPORT_OUTPUT_DIR: ./reports
+        run: |
+          chmod +x scripts/sonar-report.sh scripts/wait-for-analysis.sh scripts/lib/*.sh
+          ./scripts/sonar-report.sh \
+            --wait \
+            --formats "${REPORT_FORMATS}" \
+            --output-dir "${REPORT_OUTPUT_DIR}" \
+            ${{ (github.event.inputs.fail_on_gate == 'true' || github.event_name != 'workflow_dispatch') && '--fail-on-gate' || '' }}
+
+      - name: Upload reports as artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sonarqube-reports
+          path: reports/
+          retention-days: 30
+
+      - name: Publish summary
+        if: always()
+        run: |
+          if [ -f reports/sonar-report.md ]; then
+            cat reports/sonar-report.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Post quality gate status on PR
+        if: always() && github.event_name == 'workflow_run' && github.event.workflow_run.event == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+
+            const mdPath = 'reports/sonar-report.md';
+            if (!fs.existsSync(mdPath)) {
+              console.log('No markdown report found, skipping PR comment.');
+              return;
+            }
+
+            const reportContent = fs.readFileSync(mdPath, 'utf-8');
+            const maxLen = 60000;
+            const body = reportContent.length > maxLen
+              ? reportContent.substring(0, maxLen) + '\n\n... (truncated)'
+              : reportContent;
+
+            const pulls = context.payload.workflow_run.pull_requests || [];
+            if (pulls.length === 0) {
+              console.log('workflow_run no trae PRs asociadas (posible PR de un fork); se omite el comentario.');
+              return;
+            }
+            const issueNumber = pulls[0].number;
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+            });
+
+            const marker = '<!-- sonarqube-report-bot -->';
+            const botComment = comments.find(c => c.body.includes(marker));
+            const finalBody = `${marker}\n${body}`;
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: finalBody,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                body: finalBody,
+              });
+            }
